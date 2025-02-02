@@ -1,11 +1,16 @@
 <script setup lang="ts">
 
+const emit = defineEmits(["toggleSheet"])
+
+function openOneMenu() {
+  emit("toggleSheet", 'home')
+}
 </script>
 
 <template>
-  <nav>
+  <div class="bottom-nav">
     <div class="nav-item">
-      <p>1</p>
+      <p @click="openOneMenu">1</p>
     </div>
     <div class="nav-item">
       <p>2</p>
@@ -16,12 +21,12 @@
     <div class="nav-item">
       <p>4</p>
     </div>
-  </nav>
+  </div>
 </template>
 
 <style scoped>
 /* 네비게이션 바 */
-nav {
+.bottom-nav {
   display: flex;
   bottom: 0;
   width: 100%;
