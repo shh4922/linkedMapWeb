@@ -27,7 +27,7 @@ html, body, #app {
   width: 100%;
   height: 100%;
   font-size: 10px;
-  //background-color: #181818;
+  ;
 }
 
 #app {
@@ -42,6 +42,16 @@ html, body, #app {
 input {
   border: none;
 }
+
+button {
+  border: none
+}
+
+ul {
+  list-style-type: none;
+}
+
+
 /* 모바일 화면에서 width를 100%로 조정 */
 @media screen and (max-width: 768px) {
   #app {

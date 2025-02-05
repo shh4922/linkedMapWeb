@@ -2,14 +2,15 @@
 import Map from '@/components/Map.vue'
 import BottomNavBar from '@/components/BottomNavBar.vue'
 import { ref } from 'vue'
+import BottomCategory from '@/bottomNav/BottomCategory.vue'
 
-const translateY = ref(80); // 초기 위치: 1/4만 보이도록 설정 (80%)
+const translateY = ref(60); // 초기 위치: 1/4만 보이도록 설정 (80%)
 let startY = 0;
-let currentY = 80; // 현재 위치 초기값
+let currentY = 60; // 현재 위치 초기값
 
 const openSheet = () => {
-  translateY.value = 80; // 초기 위치로 열기
-  currentY = 80; // 현재 위치 업데이트
+  translateY.value = 60; // 초기 위치로 열기
+  currentY = 60; // 현재 위치 업데이트
 };
 
 const closeSheet = () => {
@@ -60,6 +61,7 @@ function toggleBottomSheet(sheetName: string) {
     <Map />
     <!-- Bottom Sheet -->
     <div v-if="isHomeOpen === 'home'" class="overlay" @click="closeSheet">
+<!--      <BottomCategory />-->
       <div
         class="bottom-sheet"
         @click.stop
@@ -68,13 +70,7 @@ function toggleBottomSheet(sheetName: string) {
         @touchmove="onDrag"
         @touchend="endDrag"
       >
-        <div class="header">
-          <div class="drag-bar"></div>
-          <button @click="closeSheet">X</button>
-        </div>
-        <div class="content">
-          <p>드래그해서 올리거나 내리세요!</p>
-        </div>
+        <BottomCategory/>
       </div>
     </div>
     <BottomNavBar @toggle-sheet="toggleBottomSheet" />
