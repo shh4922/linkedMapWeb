@@ -1,12 +1,28 @@
 <script setup lang="ts">
 
-import { type Ref, ref } from 'vue'
+import { onMounted, type Ref, ref } from 'vue'
+import { useRouter } from 'vue-router'
 const isChecked : Ref<boolean> = ref(false)
+const emit = defineEmits(['toggleCategoryAdd'])
+
+// function moveToAddCategory() {
+//   if(window.ReactNativeWebView) {
+//     window.ReactNativeWebView.postMessage(JSON.stringify({ url: 'http://192.168.0.10:5173/categoryCreate' }));
+//   } else {
+//     console.log("err")
+//   }
+// }
+
+const router = useRouter()
+
+const moveToEditCategory = () => {
+  router.push({name: 'editCategory'})
+}
 </script>
 
 <template>
   <div class="category-container">
-    <router-link class="edit" to="s">편집하기</router-link>
+    <button @click="moveToEditCategory">카테고리 편집하기</button>
     <ul class="category-list">
       <li>
         <div class="category-item">
@@ -32,7 +48,6 @@ const isChecked : Ref<boolean> = ref(false)
         </div>
       </li>
     </ul>
-    <button>추가하기</button>
   </div>
 </template>
 

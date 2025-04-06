@@ -1,39 +1,44 @@
 <script setup lang="ts">
+import {  useRouter } from 'vue-router'
+import { pageType, usePageStore } from '@/store/usePageStore.ts'
 
-const emit = defineEmits(["toggleSheet"])
+const router = useRouter()
 
-function openOneMenu() {
-  emit("toggleSheet", 'home')
+const moveToPage = (name: string) => {
+  router.push({ name: name })
 }
+
+const pageStore = usePageStore()
 </script>
 
 <template>
   <div class="bottom-nav">
-    <div class="nav-item">
-      <p @click="openOneMenu">1</p>
+    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.HOME)">
+      <i class="pi pi-map" style="font-size: 2.5rem"></i>
     </div>
-    <div class="nav-item">
-      <p>2</p>
+    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.CATEGORY)">
+      <i class="pi pi-list" style="font-size: 2.5rem"></i>
     </div>
     <div class="nav-item">
       <p>3</p>
     </div>
-    <div class="nav-item">
-      <p>4</p>
+    <div class="nav-item" @click="moveToPage('mypage')">
+      <i class="pi pi-user" style="font-size: 2.5rem"></i>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 /* 네비게이션 바 */
 .bottom-nav {
   display: flex;
-  bottom: 0;
-  width: 100%;
   height: 8%; /* 높이 설정 */
-  background-color: #ffffff; /* 네비게이션 배경색 */
   border-top: 1px solid #ccc; /* 상단 구분선 */
-  z-index: 1000; /* 다른 요소 위에 표시 */
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: gray;
+  //z-index: 10;
+  background-color: white;
 }
 
 /* 네비게이션 아이템 */

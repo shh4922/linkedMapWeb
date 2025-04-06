@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import Header from '@/components/Header.vue'
-import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
-const router = useRouter()
+import debounce from "lodash.debounce"
 
 const searchInput = ref<HTMLInputElement | null>(null); // input을 참조할 ref 선언
 
@@ -11,21 +9,41 @@ onMounted(() => {
     searchInput.value.focus();
   }
 });
+
+const keyword = ref<string>('');
+const debouncedSearch = debounce(() => {
+  console.log(keyword.value) // 여기서 검색 API 호출 가능
+}, 300) // 300ms 후 실행
+
+const onInput = () => {
+  debouncedSearch() // 매 input 시 debounce된 함수 호출
+}
 </script>
 
 <template>
   <main>
-<!--    <Header />-->
-    <h1>검색임ㅋㅋ</h1>
-    <button @click="()=>{router.go(-1)}">버튼</button>
+    <input
+      class="search"
+      v-model="keyword"
+      @input="onInput"
+      placeholder="위치를 검색하세요"/>
+    <ul>
+      <li v-for="(index) in 10">
+        <p>{{index}}</p>
+      </li>
+    </ul>
   </main>
-
 </template>
 
 <style scoped>
 main {
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
+  background-color: #4caf50;
+
+  .search {
+    width: 100%;
+    height: 4%;
+  }
 }
 </style>
