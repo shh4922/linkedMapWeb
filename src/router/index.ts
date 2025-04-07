@@ -2,9 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from '@/page/Home.vue'
 import Search from '@/page/Search.vue'
-import CreateCategory from '@/page/CreateCategory.vue'
+import CreateCategory from '@/components/bottomNav/views/CreateCategory.vue'
 import KakaoLogin from '@/page/KakaoLogin.vue'
-import Mainlayout from '@/layout/Mainlayout.vue'
+import Mainlayout from '@/layout/MainContainer.vue'
 import MyPateView from '@/page/MyPateView.vue'
 import NavigationContainer from '@/layout/NavigationContainer.vue'
 import EditCategoryView from '@/page/EditCategoryView.vue'
@@ -29,17 +29,17 @@ const routes = [
     ]
   },
 
-
+  {
+    path: '/search',
+    name: 'search',
+    component: Search,
+  },
   {
     path: '/navigationView',
     name: 'navigationView',
     component: NavigationContainer,
     children: [
-      {
-        path: 'search',
-        name: 'search',
-        component: Search,
-      },
+
       {
         path: 'editCategory',
         name: 'editCategory',

@@ -3,26 +3,12 @@
 import { onMounted, type Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 const isChecked : Ref<boolean> = ref(false)
-const emit = defineEmits(['toggleCategoryAdd'])
 
-// function moveToAddCategory() {
-//   if(window.ReactNativeWebView) {
-//     window.ReactNativeWebView.postMessage(JSON.stringify({ url: 'http://192.168.0.10:5173/categoryCreate' }));
-//   } else {
-//     console.log("err")
-//   }
-// }
-
-const router = useRouter()
-
-const moveToEditCategory = () => {
-  router.push({name: 'editCategory'})
-}
 </script>
 
 <template>
   <div class="category-container">
-    <button @click="moveToEditCategory">카테고리 편집하기</button>
+    <router-link :to="{name: 'editCategory'}" class="edit">카테고리 편집</router-link>
     <ul class="category-list">
       <li>
         <div class="category-item">
@@ -57,14 +43,15 @@ const moveToEditCategory = () => {
   flex-direction: column;
   align-items: end;
   gap: 1rem;
+  padding: 1rem 1rem;
 
-}
-
-.edit {
-  color: dodgerblue;
-  background-color: transparent;
-  font-size: 1.6rem;
-  //background-color: red;
+  .edit {
+    outline: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    color: black;
+  }
 }
 
 .toggle-input {
@@ -105,7 +92,6 @@ const moveToEditCategory = () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  //background-color: red;
 }
 
 .category-item {

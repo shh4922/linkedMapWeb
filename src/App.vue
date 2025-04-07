@@ -45,6 +45,29 @@ button {
 
 ul {
   list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family:'nanum-aLt';
+  src: url('@/assets/font/NanumSquareNeo-aLt.ttf') format('truetype');
+}
+@font-face {
+  font-family:'nanum-bRg';
+  src: url('@/assets/font/NanumSquareNeo-bRg.ttf') format('truetype');
+}
+@font-face {
+  font-family:'nanum-cBd';
+  src: url('@/assets/font/NanumSquareNeo-cBd.ttf') format('truetype');
+}
+@font-face {
+  font-family:'nanum-dEb';
+  src: url('@/assets/font/NanumSquareNeo-dEb.ttf') format('truetype');
+}
+@font-face {
+  font-family:'nanum-eHv';
+  src: url('@/assets/font/NanumSquareNeo-eHv.ttf') format('truetype');
 }
 
 

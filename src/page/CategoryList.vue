@@ -25,7 +25,7 @@ defineExpose({
 </script>
 
 <template>
-<div>
+<div class="categorySheet">
   <button @click="toggleAddCategoryModal">카태고리 편집하기</button>
   <ul class="category-list">
     <li>
@@ -56,5 +56,7 @@ defineExpose({
 </template>
 
 <style scoped>
+.categorySheet {
 
+}
 </style>

@@ -2,7 +2,7 @@
 
 import BottomNavBar from '@/components/BottomNavBar.vue'
 
-import BottomSheetContainer from '@/layout/BottomSheetContainer.vue'
+import BottomSheetContainer from '@/components/bottomNav/BottomSheetContainer.vue'
 
 
 </script>

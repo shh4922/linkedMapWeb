@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import BottomCategory from '@/bottomNav/BottomCategory.vue'
+import HomeSheetView from '@/components/bottomNav/views/HomeSheetView.vue'
 import { pageType, usePageStore } from '@/store/usePageStore.ts'
-import CategoryList from '@/page/CategoryList.vue'
-import CreateCategory from '@/page/CreateCategory.vue'
+import CreateCategory from '@/components/bottomNav/views/CreateCategory.vue'
 
 const pageStore = usePageStore()
 
@@ -72,7 +71,7 @@ watch( isPageOpen, (newValue)=> {
     @touchmove="onDrag"
     @touchend="endDrag">
 
-    <BottomCategory v-if="pageStore.getCurrentPage === pageType.HOME" />
+    <HomeSheetView v-if="pageStore.getCurrentPage === pageType.HOME" />
     <CreateCategory v-else-if="pageStore.getCurrentPage === pageType.CATEGORY"/>
   </div>
 
@@ -81,7 +80,7 @@ watch( isPageOpen, (newValue)=> {
 <style scoped lang="scss">
 .bottom-sheet {
   height: 80vh;
-  background-color: green;
+  background-color: white;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;

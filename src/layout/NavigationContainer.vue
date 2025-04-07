@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 
+const router =useRouter()
 </script>
 
 <template>
   <div class="navigation-container">
-    <div class="back">
+    <div class="back" @click="router.go(-1)">
       <i class="pi pi-arrow-left"></i>
       <p>뒤로가기</p>
     </div>
@@ -27,6 +29,11 @@
     align-items: center;
     padding: 0 1rem;
     margin-bottom: 1rem;
+    color: gray;
+
+    i {
+      margin-right: 0.5rem;
+    }
   }
 }
 
