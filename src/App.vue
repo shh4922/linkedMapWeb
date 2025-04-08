@@ -50,23 +50,23 @@ ul {
 }
 
 @font-face {
-  font-family:'nanum-aLt';
+  font-family:'nanum-1';
   src: url('@/assets/font/NanumSquareNeo-aLt.ttf') format('truetype');
 }
 @font-face {
-  font-family:'nanum-bRg';
+  font-family:'nanum-2';
   src: url('@/assets/font/NanumSquareNeo-bRg.ttf') format('truetype');
 }
 @font-face {
-  font-family:'nanum-cBd';
+  font-family:'nanum-3';
   src: url('@/assets/font/NanumSquareNeo-cBd.ttf') format('truetype');
 }
 @font-face {
-  font-family:'nanum-dEb';
+  font-family:'nanum-4';
   src: url('@/assets/font/NanumSquareNeo-dEb.ttf') format('truetype');
 }
 @font-face {
-  font-family:'nanum-eHv';
+  font-family:'nanum-5';
   src: url('@/assets/font/NanumSquareNeo-eHv.ttf') format('truetype');
 }
 

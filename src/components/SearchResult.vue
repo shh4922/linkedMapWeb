@@ -16,8 +16,8 @@ const moveTo = () => {
     <p class="distanc" v-if="result.distance !== '' ">{{result.distance}} km</p>
     <div class="search-info">
       <div class="store-info">
-        <p>{{result.place_name}}</p>
-        <p>{{result.category_group_name}}</p>
+        <p class="placeName">{{result.place_name}}</p>
+        <p class="groupName">{{result.category_group_name}}</p>
       </div>
       <p>{{result.road_address_name}}</p>
     </div>
@@ -46,6 +46,15 @@ const moveTo = () => {
       display: flex;
       align-items: center;
       gap: 1rem;
+      .placeName {
+        font-family: 'nanum-5';
+        font-size: 1.2rem;
+      }
+      .groupName {
+        font-family: 'nanum-3';
+        font-size: 1rem;
+        color: gray;
+      }
     }
   }
 

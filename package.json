@@ -20,6 +20,7 @@
     "vue": "^3.5.13",
     "vue-debounce": "^5.0.1",
     "vue-router": "^4.5.0",
+    "vue3-spinners": "^1.2.2",
     "vuejs-toggle-switch": "^3.0.6"
   },
   "devDependencies": {
