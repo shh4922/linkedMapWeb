@@ -9,6 +9,7 @@ import MyPateView from '@/page/MyPateView.vue'
 import NavigationContainer from '@/layout/NavigationContainer.vue'
 import EditCategoryView from '@/page/EditCategoryView.vue'
 import CategoryDetail from '@/page/CategoryDetail.vue'
+import EditCategoryMarkerView from '@/page/EditCategoryMarkerView.vue'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
 const routes = [
@@ -41,14 +42,19 @@ const routes = [
     component: NavigationContainer,
     children: [
       {
+        path: 'categoryDetail',
+        name: 'categoryDetail',
+        component: CategoryDetail,
+      },
+      {
         path: 'editCategory',
         name: 'editCategory',
         component: EditCategoryView
       },
       {
-        path: 'categoryDetail',
-        name: 'categoryDetail',
-        component: CategoryDetail,
+        path: 'editCategoryMarker',
+        name: 'editCategoryMarker',
+        component: EditCategoryMarkerView
       }
     ]
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import { onMounted, type Ref, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { type Ref, ref } from 'vue'
+
 const isChecked : Ref<boolean> = ref(false)
 
 </script>
@@ -12,7 +12,7 @@ const isChecked : Ref<boolean> = ref(false)
     <ul class="category-list">
       <li>
         <div class="category-item">
-          <p>A</p>
+          <p>빵맛도리 카테고리임</p>
           <input
             type="checkbox"
             id="toggleSwitch"
@@ -24,7 +24,7 @@ const isChecked : Ref<boolean> = ref(false)
 
       <li>
         <div class="category-item">
-          <p>A</p>
+          <p>개쩌는 카테고리임</p>
           <input
             type="checkbox"
             id="toggleSwitch"
@@ -33,6 +33,7 @@ const isChecked : Ref<boolean> = ref(false)
           />
         </div>
       </li>
+
     </ul>
   </div>
 </template>
@@ -44,13 +45,14 @@ const isChecked : Ref<boolean> = ref(false)
   align-items: end;
   gap: 1rem;
   padding: 1rem 1rem;
+  font-family: nanum-5;
 
   .edit {
     outline: none;
     border: none;
     padding: 0.5rem 1rem;
-    font-size: 1.5rem;
-    color: black;
+    font-size: 1.3rem;
+    color: coral;
   }
 }
 
@@ -98,5 +100,6 @@ const isChecked : Ref<boolean> = ref(false)
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 1.4rem;
 }
 </style>

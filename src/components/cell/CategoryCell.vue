@@ -33,25 +33,18 @@ li {
 
   .title {
     width: 30%;
-    font-size: 1.5rem;
-
+    font-size: 1.4rem;
   }
   .discription {
     width: 40%;
     font-size: 1rem;
-    font-family: "nanum-4";
+    //font-family: "nanum-5";
     color: gray;
   }
   .category-info {
     width: 30%;
-    font-size: 1.2rem;
-    span {
-      font-family: "nanum-4";
+    font-size: 1rem;
 
-    }
-    p {
-      font-family: "nanum-5";
-    }
   }
 }
 </style>

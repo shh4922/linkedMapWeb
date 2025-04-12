@@ -4,15 +4,18 @@ import type { SearchModel } from '@/api/search.ts'
 
 const props = defineProps<{
   result: SearchModel
+  index: number
 }>()
 
-const moveTo = () => {
-  console.log('moveTo', props.result)
+const emit = defineEmits(['showAddModal'])
+
+const showAddModal = () => {
+  emit('showAddModal',props.index)
 }
 </script>
 
 <template>
-  <li class="search-result" @click="moveTo">
+  <li class="search-result" @click="showAddModal">
     <p class="distanc" v-if="result.distance !== '' ">{{result.distance}} km</p>
     <div class="search-info">
       <div class="store-info">

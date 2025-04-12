@@ -1,10 +1,11 @@
 <script setup lang="ts">
 
-import CategoryCell from '@/components/CategoryCell.vue'
+import CategoryCell from '@/components/cell/CategoryCell.vue'
 </script>
 
 <template>
   <main>
+    <h3>내가 속한 카테고리</h3>
     <ul>
       <CategoryCell/>
       <CategoryCell/>
@@ -23,10 +24,16 @@ import CategoryCell from '@/components/CategoryCell.vue'
 main {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  padding: 0 1rem;
+  h3 {
+    font-family: "nanum-5";
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
   .noCategory {
     margin-top: 1rem;
-    padding: 0 1rem;
     p {
       font-size: 2rem;
       font-family: nanum-5;
@@ -40,7 +47,7 @@ main {
 
 
   ul {
-    padding: 1rem;
+    //padding: 1rem;
     width: 100%;
   }
 

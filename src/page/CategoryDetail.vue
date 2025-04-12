@@ -1,16 +1,16 @@
 <script setup lang="ts">
 
-import Map from '@/components/Map.vue'
+import CategoryUserCell from '@/components/cell/CategoryUserCell.vue'
+const deleteCategory = () => {
+  alert("카테고리 삭제")
+}
 </script>
 
 <template>
   <main>
-<!--    <Map style="width: 100px; height: 100px"/>-->
     <section class="categoryInfo">
-      <h2 class="title">빵 맛집</h2>
-
       <div class="info">
-<!--        <p>설명</p>-->
+        <h2 class="title">빵 맛도리</h2>
         <p class="description">이세상 모든 빵순위를 위한 진짜 찐찐 맛집(description)</p>
       </div>
 
@@ -19,31 +19,35 @@ import Map from '@/components/Map.vue'
           <p class="sub-head">카테고리 생성일</p>
           <p>2024년 12월 03일</p>
         </div>
+
         <div class="subInfo">
-          <p class="sub-head">등록된 유저수</p>
+          <p class="sub-head">가입한 유저수</p>
           <p>5명</p>
         </div>
+
         <div class="subInfo">
           <p class="sub-head">등록된 마커수</p>
           <p>31개</p>
         </div>
       </div>
+      <div class="editCategory">
+        <router-link :to="{name:'editCategoryMarker'}" class="moveEditMarker">마커 관리하러 가기</router-link>
+        <button @click="deleteCategory">삭제하기</button>
+<!--        <button class="getout" @click="deleteCategory">카테고리 나가기</button>-->
+      </div>
 
     </section>
 
-    <p>등록된 유저 리스트</p>
-    <ul>
-      <li>
-        <p>이름: 신현호</p>
-        <p>이메일: gusgh4922@gmail.com</p>
-        <p>권한: 방장</p>
-      </li>
-    </ul>
+    <section class="userContainer">
+      <p class="userListTitle">가입한 유저임</p>
+      <ul>
+        <CategoryUserCell />
+        <CategoryUserCell />
+        <CategoryUserCell />
+      </ul>
+    </section>
 
-<!--    <p>등록된 마커 리스트</p>-->
-<!--    <ul>-->
 
-<!--    </ul>-->
   </main>
 </template>
 
@@ -54,6 +58,7 @@ main {
   align-items: center;
   width: 100%;
   //background-color: red;
+
   padding: 0 1rem;
 
   .categoryInfo {
@@ -61,21 +66,29 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    border-bottom: 2px solid black;
+    margin-bottom: 1rem;
 
-    .title {
-      font-size: 2.5rem;
-      font-family: nanum-5;
-    }
+
 
     .info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
 
-      p {
-        font-size: 1.2rem;
-      }
-      .description {
-        font-size: 1.8rem;
+      .title {
+        font-size: 2rem;
         font-family: nanum-5;
+        width: 40%;
+        word-break: break-word; // 길어진 단어 줄바꿈
+        white-space: normal;    // 줄바꿈 허용
+        text-align: left;       // 왼쪽 정렬이 더 자연스러울 수도 있음
+      }
+
+      .description {
+        font-size: 1.5rem;
+        font-family: nanum-5;
+        color: gray;
+        flex: 1;
       }
     }
 
@@ -84,26 +97,73 @@ main {
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
+
       .subInfo {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        p {
-          font-size: 1.2rem;
-          font-family: nanum-4;
-        }
+        align-items: flex-start;
+        font-family: nanum-5;
+        font-size: 1.3rem;
+
         .sub-head {
-          font-size: 1rem;
-          font-family: nanum-3;
           color: gray;
+          font-size: 1rem;
         }
       }
     }
+
+    .editCategory {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .moveEditMarker {
+        text-align: center;
+        background-color: coral;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        color: #fff;
+        flex: 1;
+        font-size: 1rem;
+        font-family: nanum-5;
+      }
+      button {
+        outline: none;
+        padding: 1.2rem 1rem;
+        color: white;
+        background-color: red;
+        font-size: 1rem;
+        font-family: nanum-5;
+        border-radius: 0.5rem;
+      }
+      .getout {
+        flex: 1;
+      }
+    }
+
   }
 
-  ul {
+  .userContainer {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    background-color: red;
+    //background-color: red;
+    gap: 1rem;
+
+    .userListTitle {
+      font-family: nanum-5;
+      font-size: 1.5rem;
+    }
+    ul {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+
+    }
   }
+
 }
 </style>
