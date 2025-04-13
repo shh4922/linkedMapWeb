@@ -24,33 +24,43 @@ import CategoryCell from '@/components/cell/CategoryCell.vue'
 main {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   padding: 0 1rem;
+
   h3 {
     font-family: "nanum-5";
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.2rem 0 0.8rem;
+    color: #222;
+  }
+
+  ul {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
   }
 
   .noCategory {
-    margin-top: 1rem;
+    margin-top: 2rem;
+    text-align: center;
+
     p {
-      font-size: 2rem;
-      font-family: nanum-5;
+      font-size: 1rem;
+      font-family: "nanum-5";
+      color: #444;
+      margin: 0.2rem 0;
     }
+
     a {
-      font-size: 2.5rem;
-      font-family: nanum-5;
-      color: dodgerblue;
+      font-size: 1rem;
+      font-family: "nanum-5";
+      color: #ff774d;
+      text-decoration: underline;
+      display: inline-block;
+      margin-top: 0.5rem;
     }
   }
-
-
-  ul {
-    //padding: 1rem;
-    width: 100%;
-  }
-
 }
 
 

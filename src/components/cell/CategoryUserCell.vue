@@ -9,48 +9,132 @@ const fireUser = () => {
 </script>
 
 <template>
-  <li>
-    <div>
-      <p>이름: 신현호</p>
-      <p>이메일: gusgh4922@gmail.com</p>
-      <p>권한: 방장</p>
+  <li class="user-card">
+    <div class="info">
+      <p><strong>이름</strong>: 신현호</p>
+      <p><strong>이메일</strong>: gusgh4922@gmail.com</p>
+      <p><strong>권한</strong>: 방장</p>
     </div>
-    <div class="option">
-      <p @click="isShowChangePermision" class="permission">권한변경</p>
-      <p @click="fireUser" class="fire">추방하기</p>
+    <div class="actions">
+      <button @click="isShowChangePermision" class="btn permission">권한변경</button>
+      <button @click="fireUser" class="btn fire">추방하기</button>
     </div>
   </li>
 </template>
-
 <style scoped lang="scss">
-li {
-  font-size: 1rem;
-  font-family: nanum-5;
+$main-color: #ff6f61;
+$text-color: #333;
+$sub-text-color: #888;
+
+.user-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 3px solid black;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  //padding: 0 1rem;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fff;
 
-  .permission {
-    color: white;
-    background-color: coral;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-  }
-  .fire {
-    //color: red;
-    color: white;
-    background-color: red;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-  }
-  .option {
+  .info {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    color: $text-color;
+
+    strong {
+      font-weight: bold;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: 'nanum-5';
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: bold;
+    }
+
+    .permission {
+      background-color: $main-color;
+      color: white;
+      border: none;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .fire {
+      background-color: white;
+      color: $main-color;
+      border: 1px solid $main-color;
+
+      &:hover {
+        background-color: $main-color;
+        color: white;
+      }
+    }
   }
 }
 </style>
+<!--<style scoped lang="scss">-->
+<!--.user-card {-->
+<!--  display: flex;-->
+<!--  justify-content: space-between;-->
+<!--  align-items: center;-->
+<!--  border: 2px solid #ddd;-->
+<!--  border-radius: 10px;-->
+<!--  padding: 1rem;-->
+<!--  margin-bottom: 1rem;-->
+<!--  background: #fff;-->
+<!--  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);-->
+<!--  transition: transform 0.2s;-->
+
+<!--  &:hover {-->
+<!--    transform: scale(1.01);-->
+<!--  }-->
+
+<!--  .info {-->
+<!--    display: flex;-->
+<!--    flex-direction: column;-->
+<!--    gap: 0.3rem;-->
+<!--    font-size: 0.95rem;-->
+<!--    color: #333;-->
+<!--  }-->
+
+<!--  .actions {-->
+<!--    display: flex;-->
+<!--    flex-direction: column;-->
+<!--    gap: 0.5rem;-->
+
+<!--    .btn {-->
+<!--      padding: 0.7rem 1rem;-->
+<!--      border: none;-->
+<!--      border-radius: 6px;-->
+<!--      color: white;-->
+<!--      cursor: pointer;-->
+<!--      font-size: 1rem;-->
+<!--      transition: background-color 0.3s ease;-->
+<!--    }-->
+
+<!--    .permission {-->
+<!--      background-color: #3B82F6; // 파란색-->
+<!--    }-->
+
+<!--    .fire {-->
+<!--      color: #DC2626;-->
+<!--      border: 1px solid #DC2626;-->
+<!--      background-color: white;-->
+<!--    }-->
+<!--  }-->
+<!--}-->
+<!--</style>-->

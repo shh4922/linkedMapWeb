@@ -38,42 +38,60 @@ const isChecked : Ref<boolean> = ref(false)
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .category-container {
   display: flex;
   flex-direction: column;
-  align-items: end;
-  gap: 1rem;
-  padding: 1rem 1rem;
-  font-family: nanum-5;
+  align-items: flex-end;
+  padding: 1.2rem;
+  font-family: "nanum-5";
+  gap: 1.5rem;
 
   .edit {
-    outline: none;
+    padding: 0.4rem 0.8rem;
+    background-color: #ff774d;
+    color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1.3rem;
-    color: coral;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background-color: #ff6335;
+    }
   }
+}
+
+.category-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.category-item {
+  background: #fff8f5;
+  border: 1px solid #ffe1d6;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
 .toggle-input {
   appearance: none;
-  width: 50px;
-  height: 25px;
-  border-radius: 15px;
-  background-color: #ccc;
+  width: 42px;
+  height: 22px;
+  border-radius: 11px;
+  background-color: #ddd;
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-right: 5px;
-}
-
-.toggle-input:checked {
-  background-color: #4caf50;
-}
-
-.toggle-input:checked::before {
-  transform: translateX(25px);
 }
 
 .toggle-input::before {
@@ -81,25 +99,19 @@ const isChecked : Ref<boolean> = ref(false)
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 21px;
-  height: 21px;
-  background-color: white;
+  width: 18px;
+  height: 18px;
+  background-color: #fff;
   border-radius: 50%;
   transition: transform 0.3s;
 }
 
-
-.category-list {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.toggle-input:checked {
+  background-color: #ff774d;
 }
 
-.category-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.4rem;
+.toggle-input:checked::before {
+  transform: translateX(20px);
 }
+
 </style>

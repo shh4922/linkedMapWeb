@@ -5,73 +5,68 @@ const toggleSettingModal = () => {
 </script>
 
 <template>
-  <li>
-    <div class="item" style="width: 20%">
-      <p class="name">이름</p>
-      <p class="two">개쩌는 한식집</p>
-    </div>
-
-    <div class="item" style="width: 25%">
-      <p class="name">설명</p>
-      <p class="three">여기 개 맛도리 한식임..</p>
-    </div>
-
-    <div class="item" style="width: 25%">
-      <p class="name">위치</p>
-      <p class="three">중곡동 41-33</p>
-    </div>
-
-    <div class="item" style="width: 25%">
-      <div class="subInfo">
-        <p class="name">등록일: </p>
-        <p class="one">25.04.02</p>
-      </div>
-      <div class="subInfo">
-        <p class="name">만든사람 </p>
-        <p class="one">신현호</p>
+  <li class="marker-card">
+    <div class="marker-header">
+      <h3>개쩌는 맛집임</h3>
+      <div class="actions">
+<!--        @click="deleteMarker(marker.id)"-->
+        <button >🗑️</button>
+<!--        @click="viewMarker(marker)"-->
+        <button >🔍</button>
       </div>
     </div>
-    <i class="pi pi-search" style="width: 5%;" @click="toggleSettingModal"/>
+    <p class="description">여기 개 맛도리인 한식집임</p>
+    <div class="meta">
+      <span>📍 진월동 791-1번지 44 한신아파트 201동 903호</span>
+      <span>🗓️ 2024-12-13</span>
+      <span>👤 신현호</span>
+    </div>
   </li>
 </template>
 
 <style scoped lang="scss">
-li {
+.marker-card {
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.marker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid lightgray;
-  padding: 1rem 2rem;
-  width: 100%;
-
-
-  .item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-  }
-  p {
-    font-size: 1.2rem;
-    font-family: nanum-5;
-    word-break: break-word; // 길어진 단어 줄바꿈
-    white-space: normal;    // 줄바꿈 허용
-    text-align: left;       // 왼쪽 정렬이 더 자연스러울 수도 있음
-
-  }
-  .subInfo {
-    gap: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-  }
-  .name {
-    color: gray;
-    font-size: 1rem;
-  }
-
-
 
 }
+
+.marker-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-family: nanum-5;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #666;
+  font-family: nanum-5;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
 </style>

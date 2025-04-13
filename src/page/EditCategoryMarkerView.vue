@@ -7,16 +7,20 @@ import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 const map = ref<InstanceType<typeof Map> | null>(null)
 
 onMounted(() => {
-  const marker = new MarkerModel( 126.9780, 37.5665)
+  const marker = new MarkerModel( "1", 126.9780, 37.5665)
   marker.setCustomOverlayMarker("test")
   map.value?.getInstance()?.onCreateMarker(marker)
 })
+const deleteMarker = () => {
+  map.value?.getInstance()?.onDeleteMarker("1")
+}
 
 </script>
 
 <template>
   <main>
     <Map class="map" ref="map" style="height: 50%; width: 100%" />
+    <button @click="deleteMarker">delete</button>
     <ul>
       <CategoryMarkerCell />
       <CategoryMarkerCell />
@@ -45,8 +49,13 @@ main {
   }
 
   ul {
+
+    padding: 16px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
   }
 }
 
