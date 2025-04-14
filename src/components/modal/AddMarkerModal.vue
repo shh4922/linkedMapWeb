@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { SearchModel } from '@/api/search.ts'
 import { onMounted } from 'vue'
-import MapManager from '@/components/map/Map.vue'
+import Map from '@/components/map/Map.vue'
+
 
 const emit =defineEmits(['closeAddModal'])
 const closeAddModal = () => {
@@ -23,7 +24,7 @@ onMounted(()=> {
       <i class="pi pi-times" @click="closeAddModal"></i>
     </section>
 
-    <Map class="map"/>
+    <Map class="map" style="width: 100%; height: 250px"/>
 
     <section class="searchInfo">
       <div class="storeName">

@@ -12,8 +12,11 @@ const deleteCategory = () => {
       <div class="info">
         <div class="info-head">
           <h2 class="title">빵 맛도리</h2>
-          <button @click="deleteCategory">삭제하기</button>
-<!--          <i class="pi pi-trash"></i>-->
+          <div class="info-desc">
+            <button @click="deleteCategory">삭제하기</button>
+            <button class="update">수정하기</button>
+          </div>
+
         </div>
         <p class="description">이세상 모든 빵순위를 위한 진짜 찐찐 맛집(description)</p>
 
@@ -37,8 +40,6 @@ const deleteCategory = () => {
       </div>
       <div class="editCategory">
         <router-link :to="{name:'editCategoryMarker'}" class="moveEditMarker">마커 관리하러 가기</router-link>
-<!--        <button @click="deleteCategory">삭제하기</button>-->
-<!--        <button class="getout" @click="deleteCategory">카테고리 나가기</button>-->
       </div>
 
     </section>
@@ -112,6 +113,19 @@ main {
         font-weight: bold;
         color: $text-color;
         margin-top: 1rem;
+      }
+
+      .info-desc {
+        display: flex;
+        gap: 1rem;
+        .update {
+          color: gray;
+          border: 1px solid gray;
+        }
+        .update:hover {
+          background-color: gray;
+          color: white;
+        }
       }
 
       .description {
