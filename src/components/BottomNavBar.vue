@@ -4,9 +4,9 @@ import { pageType, usePageStore } from '@/store/usePageStore.ts'
 
 const router = useRouter()
 
-const moveToPage = (name: string) => {
-  router.push({ name: name })
-}
+
+
+
 
 const pageStore = usePageStore()
 </script>
@@ -22,7 +22,7 @@ const pageStore = usePageStore()
     <div class="nav-item">
       <p>3</p>
     </div>
-    <div class="nav-item" @click="moveToPage('mypage')">
+    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.MY)">
       <i class="pi pi-user" style="font-size: 2.5rem"></i>
     </div>
   </div>

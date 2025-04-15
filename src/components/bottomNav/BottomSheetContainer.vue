@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import HomeSheetView from '@/components/bottomNav/views/HomeSheetView.vue'
 import { pageType, usePageStore } from '@/store/usePageStore.ts'
 import CreateCategory from '@/components/bottomNav/views/CreateCategory.vue'
+import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
 
 const pageStore = usePageStore()
 
@@ -72,7 +73,9 @@ watch( isPageOpen, (newValue)=> {
     @touchend="endDrag">
 
     <HomeSheetView v-if="pageStore.getCurrentPage === pageType.HOME" />
-    <CreateCategory v-else-if="pageStore.getCurrentPage === pageType.CATEGORY"/>
+    <CreateCategory v-if="pageStore.getCurrentPage === pageType.CATEGORY"/>
+    <MyPageView  v-if="pageStore.getCurrentPage === pageType.MY"/>
+
   </div>
 
 </template>
