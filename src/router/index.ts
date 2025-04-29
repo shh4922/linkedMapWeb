@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw
+} from 'vue-router'
 
 import Home from '@/page/Home.vue'
 import Search from '@/page/Search.vue'
@@ -13,7 +17,7 @@ import LoginView from '@/page/LoginView.vue'
 import RegisterView from '@/page/RegisterView.vue'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
-const routes = [
+const routes:  Readonly<RouteRecordRaw[]> = [
   {
     path: '/',
     component: Mainlayout,
@@ -60,7 +64,16 @@ const routes = [
       {
         path: 'login',
         name: 'login',
-        component: LoginView
+        component: LoginView,
+        beforeEnter: (to, from, next) => {
+          const isAuthenticated = false; // TODO: 실제 로그인 확인 로직으로 변경하기
+
+          if (isAuthenticated) {
+            next({ name: "home" }); // 이미 로그인한 경우 리디렉션
+          } else {
+            next(); // 로그인 안 했으면 그냥 로그인 페이지로
+          }
+        }
       },
       {
         path: 'register',
