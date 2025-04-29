@@ -69,9 +69,9 @@ const routes:  Readonly<RouteRecordRaw[]> = [
           const isAuthenticated = false; // TODO: 실제 로그인 확인 로직으로 변경하기
 
           if (isAuthenticated) {
-            next({ name: "home" }); // 이미 로그인한 경우 리디렉션
+            next({ name: "home" });
           } else {
-            next(); // 로그인 안 했으면 그냥 로그인 페이지로
+            next();
           }
         }
       },
