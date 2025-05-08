@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { RoomMember } from '@/api/category/category.model.ts'
+import { computed } from 'vue'
+import { useMyInfo } from '@/store/myInfoStore.ts'
+
 const isShowChangePermision = () => {
   alert("권한변경 하는 모달 띄우기")
 }
@@ -6,16 +10,25 @@ const isShowChangePermision = () => {
 const fireUser = () => {
   alert("유저 추방하기")
 }
+
+defineProps<{
+  userInfo: RoomMember
+  currentOwnerId: number
+}>()
+
+const myInfo = computed(() => {
+  return useMyInfo().getMyInfo
+})
 </script>
 
 <template>
   <li class="user-card">
     <div class="info">
-      <p><strong>이름</strong>: 신현호</p>
-      <p><strong>이메일</strong>: gusgh4922@gmail.com</p>
-      <p><strong>권한</strong>: 방장</p>
+      <p><strong>이름</strong>: {{userInfo.name}}</p>
+      <p><strong>이메일</strong>: {{userInfo.email}}</p>
+      <p><strong>권한</strong>: {{userInfo.role}}</p>
     </div>
-    <div class="actions">
+    <div class="actions" v-if="myInfo?.memberId === currentOwnerId && userInfo.role !== 'OWNER'">
       <button @click="isShowChangePermision" class="btn permission">권한변경</button>
       <button @click="fireUser" class="btn fire">추방하기</button>
     </div>

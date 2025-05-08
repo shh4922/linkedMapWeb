@@ -53,13 +53,15 @@ onMounted(()=>{
   console.log(pageStore.getCurrentPage)
 })
 
-watch( isPageOpen, (newValue)=> {
-  if(!newValue){
+watch(isPageOpen, (newValue) => {
+  if (!newValue) {
     closeSheet()
   } else {
     openSheet()
+
   }
 })
+
 </script>
 
 <template>
@@ -72,9 +74,11 @@ watch( isPageOpen, (newValue)=> {
     @touchmove="onDrag"
     @touchend="endDrag">
 
-    <HomeSheetView v-if="pageStore.getCurrentPage === pageType.HOME" />
-    <CreateCategory v-if="pageStore.getCurrentPage === pageType.CATEGORY"/>
-    <MyPageView  v-if="pageStore.getCurrentPage === pageType.MY"/>
+    <!-- 페이지 내용은 자유롭게 스크롤 -->
+    <div class="sheet-content">
+      <HomeSheetView v-if="pageStore.getCurrentPage === pageType.HOME" />
+      <MyPageView v-if="pageStore.getCurrentPage === pageType.MY" />
+    </div>
 
   </div>
 
@@ -87,6 +91,11 @@ watch( isPageOpen, (newValue)=> {
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
-  touch-action: none; /* 터치 이벤트 방지 */
+  touch-action: none;
+
 }
+
+
+
+
 </style>

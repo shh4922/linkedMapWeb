@@ -1,19 +1,36 @@
 <script setup lang="ts">
-import type { SearchModel } from '@/api/search.ts'
-import { onMounted } from 'vue'
+import type { SearchModel } from '@/api/auth/search.ts'
+import { onMounted, ref, watch } from 'vue'
 import Map from '@/components/map/Map.vue'
+import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { saveMarker } from '@/api/marker/marker.ts'
 
 
 const emit =defineEmits(['closeAddModal'])
-const closeAddModal = () => {
-  emit('closeAddModal')
-}
+
+const {data:myRoomList} = useFetchMyRoomList()
+
 const props = defineProps<{
   result: SearchModel
 }>()
 
-onMounted(()=> {
-  console.log(props.result)
+const selectRoomId = ref<number | null>(null)
+const closeAddModal = async () => {
+  emit('closeAddModal')
+}
+
+const submit = async() => {
+  if(selectRoomId.value === null) {
+    alert("그룹을 선택해주세요")
+    return
+  }
+  const data = props.result
+
+  const res = await saveMarker(data.place_name, Number(data.x), Number(data.y), "설명", data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
+  emit('closeAddModal')
+}
+watch(myRoomList, (newValue) => {
+  console.log("myRoomList", newValue)
 })
 </script>
 
@@ -53,18 +70,17 @@ onMounted(()=> {
       </div>
 
       <div>
-        <p class="sub">추가할 카테고리</p>
-        <select class="result">
-          <option>카테고리1</option>
-          <option>카테고리1</option>
-          <option>카테고리1</option>
-          <option>카테고리1</option>
-          <option>카테고리1</option>
+        <p class="sub">추가할 그룹명</p>
+        <select class="result" v-model="selectRoomId">
+          <option v-for="(room) in myRoomList?.data"
+                  :key="room.id"
+                  :value="room.roomId"
+          >>{{room.roomName}}</option>
         </select>
       </div>
     </section>
 
-    <button @click="closeAddModal" class="save">저장하기</button>
+    <button @click="submit" class="save">저장하기</button>
   </article>
 </template>
 

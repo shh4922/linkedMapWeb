@@ -1,5 +1,5 @@
 import axios from "axios";
-import { fetchRefreshToken} from "@/api/auth/auth";
+
 import {removeToken, setTokenInLocal} from "@/utils/token";
 
 /**
@@ -14,13 +14,13 @@ const interceptorAxios = axios.create({
 
 interceptorAxios.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("a")
+    const accessToken = localStorage.getItem("accessToken")
 
     if(accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
       config.headers["Content-Type"] = "application/json"
     }
-
+    console.log(config.headers.Authorization)
     return config
   }
 )
@@ -31,32 +31,33 @@ interceptorAxios.interceptors.response.use(
   async (error) => {
     switch (error?.response?.status) {
       case 401:
-        try {
-          const refresh = localStorage.getItem('r')
-
-          const headers :{ "Content-Type": string; refresh: string; "Access-Control-Allow-Origin": string } = {
-            'Content-Type': 'application/json',
-            'refresh': `Bearer ${refresh}`,
-            'Access-Control-Allow-Origin': '*'
-          }
-
-          const res =  await fetchRefreshToken(headers)
-
-          if(res.tokens.access_token !== null) {
-            removeToken()
-            setTokenInLocal(res.tokens.access_token, res.tokens.refresh_token)
-          } else {
-            alert("세션이 만료되었습니다.")
-            return Promise.reject(error)
-          }
-
-          error.config.headers.Authorization = `Bearer ${localStorage.getItem("a")}`
-          return axios.request(error.config);
-
-        } catch (error) {
-          console.error(`token expire!! \n ${error}` )
-          throw error
-        }
+        console.log("401")
+        // try {
+        //   const refresh = localStorage.getItem('r')
+        //
+        //   const headers :{ "Content-Type": string; refresh: string; "Access-Control-Allow-Origin": string } = {
+        //     'Content-Type': 'application/json',
+        //     'refresh': `Bearer ${refresh}`,
+        //     'Access-Control-Allow-Origin': '*'
+        //   }
+        //
+        //   const res =  await fetchRefreshToken(headers)
+        //
+        //   if(res.tokens.access_token !== null) {
+        //     removeToken()
+        //     setTokenInLocal(res.tokens.access_token, res.tokens.refresh_token)
+        //   } else {
+        //     alert("세션이 만료되었습니다.")
+        //     return Promise.reject(error)
+        //   }
+        //
+        //   error.config.headers.Authorization = `Bearer ${localStorage.getItem("a")}`
+        //   return axios.request(error.config);
+        //
+        // } catch (error) {
+        //   console.error(`token expire!! \n ${error}` )
+        //   throw error
+        // }
 
       case 500:
         console.error(error)

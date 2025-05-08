@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import debounce from "lodash.debounce"
-import { kakaoSearch, type SearchModel, type searchResponse } from '@/api/search.ts'
+import { kakaoSearch, type SearchModel, type searchResponse } from '@/api/auth/search.ts'
 import SearchResultCell from '@/components/cell/SearchResultCell.vue'
 import { useRouter } from 'vue-router'
 import { VueSpinner } from 'vue3-spinners'
@@ -72,12 +72,17 @@ const toggleAddModal = (selectedSearchIndex:number) => {
         <span class="back-text">뒤로가기</span>
       </div>
 
-      <input
-        class="search"
-        v-model="keyword"
-        @input="onInput"
-        placeholder="위치를 검색하세요"/>
-      <i class="pi pi-search"/>
+      <div class="search-container">
+        <input
+          ref="searchInput"
+          class="search-input"
+          v-model="keyword"
+          @input="onInput"
+          placeholder="위치를 검색하세요"
+        />
+        <i class="pi pi-search search-icon"/>
+      </div>
+
     </div>
 
 
@@ -129,33 +134,61 @@ main {
 
   .back {
     width: 100%;
-    height: 8%;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 2px 1px;
+    height: 5%;
     display: flex;
     gap: 1rem;
     align-items: center;
     padding: 0 1rem;
     margin-bottom: 1rem;
-    color: gray;
+    //background-color: #fff7f0; // 부드러운 오렌지 톤 배경
+    border-bottom: 1px solid #ffe8cc;
 
     .back-icon {
       display: flex;
       align-items: center;
-    }
-    i {
-      margin-right: 0.5rem;
+      color: #ff922b;
       font-weight: bold;
-      font-size: 1.5rem;
+
+      i {
+        margin-right: 0.3rem;
+        font-size: 1.4rem;
+      }
+
+      span {
+        font-family: 'nanum-5';
+        font-size: 1rem;
+      }
     }
-    span {
-      font-family: nanum-5;
+  }
+  .search-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    //background-color: #fff4e6;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.75rem;
+    height: 70%;
+    border: 1px solid #ffe8cc; // 최소한의 테두리
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    font-family: 'nanum-5';
+    color: #333;
+
+    &::placeholder {
+      color: #ffa94d;
     }
-    .search {
-      width: 100%;
-      height: 100%;
-      flex: 1;
-      outline: none;
-    }
+  }
+
+  .search-icon {
+    color: #ff922b;
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
   }
 
   .result-list {

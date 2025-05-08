@@ -1,28 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { register } from '@/api/user.ts'
+import type { AxiosError } from 'axios'
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
+const registerInput = reactive({
+  name : "",
+  email : "",
+  password : "",
+})
+
 const router = useRouter()
 
-const register = () => {
-  console.log('회원가입 요청', name.value, email.value, password.value)
-  // 실제 회원가입 로직 처리
-  router.push('login')
+const submit = async() => {
+
+  const res = await register(registerInput.email, registerInput.password, registerInput.name)
+  if(!res.error) {
+    alert("회원가입이 완료되었습니다.")
+    router.push('login')
+    return
+  }
+
+  const status = res.error.response?.status
+  if(status === 409) {
+    alert("중복된 이메일입니다.")
+  }
 }
 </script>
 
 <template>
   <div class="auth-container">
     <h1>회원가입</h1>
-    <form @submit.prevent="register">
-      <input type="text" v-model="name" placeholder="이름" required />
-      <input type="email" v-model="email" placeholder="이메일" required />
-      <input type="password" v-model="password" placeholder="비밀번호" required />
-      <button type="submit">회원가입</button>
-    </form>
+    <div class="loginForm">
+      <input type="text" v-model="registerInput.name" placeholder="이름" required />
+      <input type="email" v-model="registerInput.email" placeholder="이메일" required />
+      <input type="password" v-model="registerInput.password" placeholder="비밀번호" required />
+      <button @click="submit">회원가입</button>
+    </div>
 
     <p class="link-text">
       이미 계정이 있으신가요?
@@ -50,7 +64,7 @@ const register = () => {
     margin-bottom: 2rem;
   }
 
-  form {
+  .loginForm {
     display: flex;
     flex-direction: column;
     gap: 1rem;

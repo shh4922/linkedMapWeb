@@ -1,26 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { login } from '@/api/auth/auth.ts'
+import type { DefaultError } from '@/api/DefaultResponse.ts'
+import type { AxiosError } from 'axios'
 
-const email = ref('')
-const password = ref('')
+
+const loginInput = reactive({
+  email: '',
+  password: ''
+})
+
 const router = useRouter()
 
-const login = () => {
-  console.log('로그인 요청', email.value, password.value)
-  // 실제 로그인 로직 처리
-  router.push('/mypage')
+const submit = async () => {
+  const res = await login(loginInput.email, loginInput.password)
+  if(res.error) {
+    if(res.error?.status === 400) {
+      alert("이메일 또는 패스워드가 잘못되었습니다")
+    }
+    if(res.error?.status === 500) {
+      alert("예기치못한 에러가 발생했습니다.")
+    }
+    return
+  }
+  localStorage.setItem('accessToken', res.data?.data?.accessToken ?? "")
+  router.push({name:'home'})
 }
+
 </script>
 
 <template>
   <div class="auth-container">
     <h1>로그인</h1>
-    <form @submit.prevent="login">
-      <input type="email" v-model="email" placeholder="이메일" required />
-      <input type="password" v-model="password" placeholder="비밀번호" required />
-      <button type="submit">로그인</button>
-    </form>
+    <div class="loginForm" >
+      <input type="email" v-model="loginInput.email" placeholder="이메일" required />
+      <input type="password" v-model="loginInput.password" placeholder="비밀번호" required />
+      <button @click="submit">로그인</button>
+    </div>
     <p class="link-text">
       아직 계정이 없으신가요?
       <router-link :to="{name:'register'}">회원가입</router-link>
@@ -44,7 +61,7 @@ const login = () => {
     margin-bottom: 2rem;
   }
 
-  form {
+  .loginForm {
     display: flex;
     flex-direction: column;
     gap: 1rem;

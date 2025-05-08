@@ -6,7 +6,10 @@ const router = useRouter()
 
 
 
-
+const moveToMyPage = () => {
+  pageStore.setTogglePage(false)
+  router.push({name: 'mypage'})
+}
 
 const pageStore = usePageStore()
 </script>
@@ -22,7 +25,7 @@ const pageStore = usePageStore()
     <div class="nav-item">
       <p>3</p>
     </div>
-    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.MY)">
+    <div class="nav-item" @click="moveToMyPage">
       <i class="pi pi-user" style="font-size: 2.5rem"></i>
     </div>
   </div>

@@ -3,3 +3,9 @@ export interface DefaultResponse<T> {
   message: string;
   data:T
 }
+
+export interface DefaultError {
+  status:number;
+  message:string;
+  data:string|null
+}

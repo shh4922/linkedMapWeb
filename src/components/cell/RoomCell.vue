@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import type { Category, Room } from '@/api/category/category.model.ts'
 
 const router = useRouter()
 const moveToDetail = () => {
-  router.push({name: 'categoryDetail', params: {id: 1}})
+  router.push({name: 'categoryDetail', params: {roomId: props.room.roomId}})
 }
+
+const props = defineProps<{
+  room: Room
+}>()
 </script>
 
 <template>
   <li @click="moveToDetail" class="category-card">
-    <div class="title">빵 맛집</div>
-    <div class="description">이세상 모든 빵순이를 위한 진짜 찐찐 맛집</div>
+    <div class="title">{{props.room.roomName }}</div>
+    <div class="description">{{props.room.roomDescription}}</div>
     <div class="category-info">
-      <p><span>방장</span>신현호</p>
-      <p><span>참여인원</span>2명</p>
-      <p><span>마커수</span>31개</p>
+      <p><span>방장</span>{{props.room.currentOwnerName}}</p>
+      <p><span>참여인원</span>{{props.room.memberCount}}</p>
+      <p><span>마커수</span>{{props.room.markerCount}}개</p>
     </div>
   </li>
 </template>

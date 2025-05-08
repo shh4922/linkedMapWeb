@@ -1,44 +1,58 @@
 <script setup lang="ts">
 
-import { type Ref, ref } from 'vue'
+import { onMounted, type Ref, ref } from 'vue'
+import { fetchMyRoomList } from '@/api/category/category.ts'
+import type { Room } from '@/api/category/category.model.ts'
 
 const isChecked : Ref<boolean> = ref(false)
+const categoryList: Ref<Room[]|null> = ref(null);
 
+const getCategoryList = async () => {
+  const res = await fetchMyRoomList()
+  categoryList.value = res.data
+}
+onMounted(()=> {
+  getCategoryList()
+})
+const token = localStorage.getItem('accessToken')
 </script>
 
 <template>
-  <div class="category-container">
-    <router-link :to="{name: 'editCategory'}" class="edit">카테고리 편집</router-link>
-    <ul class="category-list">
-      <li>
-        <div class="category-item">
-          <p>빵맛도리 카테고리임</p>
-          <input
-            type="checkbox"
-            id="toggleSwitch"
-            v-model="isChecked"
-            class="toggle-input"
-          />
-        </div>
-      </li>
-
-      <li>
-        <div class="category-item">
-          <p>개쩌는 카테고리임</p>
-          <input
-            type="checkbox"
-            id="toggleSwitch"
-            v-model="isChecked"
-            class="toggle-input"
-          />
-        </div>
-      </li>
-
-    </ul>
+  <div>
+    <div v-if="!token" class="login">
+      <p>로그인후, 그룹을 만들어보세요!</p>
+    </div>
+    <div v-else class="category-container">
+      <router-link :to="{name: 'editCategory'}" class="edit">그룹 편집</router-link>
+      <div v-if="categoryList?.length === 0">
+        <p>그룹을 만들어보세요~</p>
+      </div>
+      <ul class="category-list">
+        <li v-for="(item, index) in categoryList" :key="index">
+          <div class="category-item">
+            <p>{{item.roomName}}</p>
+            <input
+              type="checkbox"
+              id="toggleSwitch"
+              v-model="isChecked"
+              class="toggle-input"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.login {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  font-family: "nanum-5";
+}
 .category-container {
   display: flex;
   flex-direction: column;

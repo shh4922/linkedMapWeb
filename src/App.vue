@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { fetchMyInfo } from '@/api/user/user.ts'
+import { useMyInfo } from '@/store/myInfoStore.ts'
 
 const search = ref("")
 const router = useRouter()
@@ -8,6 +10,7 @@ const router = useRouter()
 function moveToSearch() {
   router.push("/search")
 }
+
 
 </script>
 

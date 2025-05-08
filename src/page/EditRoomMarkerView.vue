@@ -3,16 +3,25 @@ import Map from '@/components/map/Map.vue'
 import CategoryMarkerCell from '@/components/cell/CategoryMarkerCell.vue'
 import { onMounted, ref } from 'vue'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
+import { fetchMarkerList } from '@/api/marker/marker.ts'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const map = ref<InstanceType<typeof Map> | null>(null)
-
 onMounted(() => {
   const marker = new MarkerModel( "1", 126.9780, 37.5665)
   marker.setCustomOverlayMarker("test")
   map.value?.getInstance()?.onCreateMarker(marker)
+  console.log(route.params.roomId)
+  getMarkerList()
 })
 const deleteMarker = () => {
   map.value?.getInstance()?.onDeleteMarker("1")
+}
+
+const getMarkerList = async () => {
+  const res =  await fetchMarkerList(route.params.roomId as string)
+  console.log("res",res)
 }
 
 </script>

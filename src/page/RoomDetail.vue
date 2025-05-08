@@ -1,9 +1,28 @@
 <script setup lang="ts">
+import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
+import { useFetchCategoryDetail } from '@/api/category/category.query.ts'
+import { computed, onMounted, watch } from 'vue'
+import { useMyInfo } from '@/store/myInfoStore.ts'
 
-import CategoryUserCell from '@/components/cell/CategoryUserCell.vue'
+const props = defineProps<{
+  roomId: string
+}>()
+const { data: roomDetail } = useFetchCategoryDetail(props.roomId)
+
 const deleteCategory = () => {
-  alert("카테고리 삭제")
+  alert('카테고리 삭제')
 }
+const myInfo = computed(() => {
+  return useMyInfo().getMyInfo
+})
+
+watch(roomDetail, ((newValue) => {
+  console.log("roomDetail", newValue)
+}))
+
+
+
+
 </script>
 
 <template>
@@ -11,52 +30,49 @@ const deleteCategory = () => {
     <section class="categoryInfo">
       <div class="info">
         <div class="info-head">
-          <h2 class="title">빵 맛도리</h2>
-          <div class="info-desc">
+          <h2 class="title">{{ roomDetail?.data.roomName }}</h2>
+          <div class="info-desc" v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId">
             <button @click="deleteCategory">삭제하기</button>
             <button class="update">수정하기</button>
           </div>
-
         </div>
-        <p class="description">이세상 모든 빵순위를 위한 진짜 찐찐 맛집(description)</p>
-
+        <p class="description">{{ roomDetail?.data.roomDescription }}</p>
       </div>
 
       <div class="subInfoContainer">
         <div class="subInfo">
           <p class="sub-head">카테고리 생성일</p>
-          <p>2024년 12월 03일</p>
+          <p>{{roomDetail?.data.createdAt}}</p>
         </div>
 
         <div class="subInfo">
           <p class="sub-head">가입한 유저수</p>
-          <p>5명</p>
+          <p>{{roomDetail?.data.memberList.length}}명</p>
         </div>
 
         <div class="subInfo">
           <p class="sub-head">등록된 마커수</p>
-          <p>31개</p>
+          <p>{{roomDetail?.data.markerCount}}개</p>
         </div>
       </div>
       <div class="editCategory">
-        <router-link :to="{name:'editCategoryMarker'}" class="moveEditMarker">마커 관리하러 가기</router-link>
+        <router-link :to="{ name: 'editRoomMarker', params: {roomId: props.roomId} }" class="moveEditMarker"
+          >마커 관리하러 가기</router-link
+        >
       </div>
-
     </section>
 
     <section class="userContainer">
       <p class="userListTitle">가입한 유저임</p>
       <ul>
-        <CategoryUserCell />
-<!--        <CategoryUserCell />-->
-<!--        <CategoryUserCell />-->
+        <RoomMemberCell v-for="(user,index) in roomDetail?.data.memberList"
+                          :key="index"
+                          :user-info="user"
+                          :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0" />
       </ul>
     </section>
-
-
   </main>
 </template>
-
 
 <style scoped lang="scss">
 $main-color: #ff6f61; // 오렌지 계열 메인 색상
@@ -214,5 +230,3 @@ main {
   }
 }
 </style>
-
-
