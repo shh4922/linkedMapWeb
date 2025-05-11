@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import { login } from '@/api/auth/auth.ts'
 import type { DefaultError } from '@/api/DefaultResponse.ts'
 import type { AxiosError } from 'axios'
+import { fetchMyInfo } from '@/api/user/user.ts'
+import { useMyInfo } from '@/store/myInfoStore.ts'
 
-
+const myInfoStore = useMyInfo()
 const loginInput = reactive({
   email: '',
   password: ''
@@ -25,7 +27,14 @@ const submit = async () => {
     return
   }
   localStorage.setItem('accessToken', res.data?.data?.accessToken ?? "")
+  getMyInfo()
   router.push({name:'home'})
+}
+
+const getMyInfo = async () => {
+  if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
+  const res = await fetchMyInfo()
+  myInfoStore.setMyInfo(res.data)
 }
 
 </script>

@@ -25,8 +25,7 @@ const submit = async() => {
     return
   }
   const data = props.result
-
-  const res = await saveMarker(data.place_name, Number(data.x), Number(data.y), "설명", data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
+  await saveMarker(data.place_name, Number(data.y), Number(data.x), "설명", data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
   emit('closeAddModal')
 }
 watch(myRoomList, (newValue) => {

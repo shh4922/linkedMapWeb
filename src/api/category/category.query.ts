@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/vue-query'
 import { fetchRoomDetail, fetchMyRoomList } from '@/api/category/category.ts'
-import type { DefaultResponse } from '@/api/DefaultResponse.ts'
-import type {  Room } from '@/api/category/category.model.ts'
 
 export const useFetchMyRoomList = () => {
   return useQuery({
@@ -13,7 +11,7 @@ export const useFetchMyRoomList = () => {
   })
 }
 
-export const useFetchCategoryDetail = (roomId:string) => {
+export const useFetchRoomDetail = (roomId:string) => {
   return useQuery({
     queryFn: () => fetchRoomDetail(roomId),
     queryKey: ['roomDetail', roomId],

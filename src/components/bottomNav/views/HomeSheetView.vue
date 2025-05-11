@@ -1,20 +1,41 @@
 <script setup lang="ts">
-
-import { onMounted, type Ref, ref } from 'vue'
+import { computed, onMounted, type Ref, ref, watch } from 'vue'
 import { fetchMyRoomList } from '@/api/category/category.ts'
 import type { Room } from '@/api/category/category.model.ts'
+import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 
-const isChecked : Ref<boolean> = ref(false)
-const categoryList: Ref<Room[]|null> = ref(null);
-
-const getCategoryList = async () => {
-  const res = await fetchMyRoomList()
-  categoryList.value = res.data
-}
-onMounted(()=> {
-  getCategoryList()
-})
 const token = localStorage.getItem('accessToken')
+const roomList: Ref<Room[]|null> = ref(null);
+const isCheckedMap = ref<Record<number, boolean>>({})
+const roomStore = useToggleRoomStore()
+
+
+const getRoomList = async () => {
+  const res = await fetchMyRoomList()
+  roomList.value = res.data
+
+  res.data.forEach((room) => {
+    roomStore.setCheckedMap(room.roomId)
+  })
+}
+
+
+const getRoomCheckRef = (roomId: number) => {
+  return computed(() => {
+    return roomStore.isCheckedMap[roomId] ?? false
+  })
+
+}
+
+const onToggleChange = (event: Event, roomId: number) => {
+  const target = event.target as HTMLInputElement
+  roomStore.setRoomChecked(roomId, target.checked)
+}
+
+onMounted(()=> {
+  getRoomList()
+})
+
 </script>
 
 <template>
@@ -24,18 +45,19 @@ const token = localStorage.getItem('accessToken')
     </div>
     <div v-else class="category-container">
       <router-link :to="{name: 'editCategory'}" class="edit">그룹 편집</router-link>
-      <div v-if="categoryList?.length === 0">
+      <div v-if="roomList?.length === 0">
         <p>그룹을 만들어보세요~</p>
       </div>
       <ul class="category-list">
-        <li v-for="(item, index) in categoryList" :key="index">
+        <li v-for="(room, index) in roomList" :key="index">
           <div class="category-item">
-            <p>{{item.roomName}}</p>
+            <p>{{room.roomName}}</p>
             <input
               type="checkbox"
               id="toggleSwitch"
-              v-model="isChecked"
               class="toggle-input"
+              :checked="getRoomCheckRef(room.roomId).value"
+              @change="(e) => onToggleChange(e,room.roomId)"
             />
           </div>
         </li>

@@ -1,16 +1,23 @@
 <script setup lang="ts">
 
-  import router from '@/router'
-  import { ref } from 'vue'
+import router from '@/router'
+  import { ref, watch } from 'vue'
   import Map from '@/components/map/Map.vue'
-  const isAnimating = ref(false)
+  import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
+const isAnimating = ref(false)
 
-  const moveToSearch = () => {
-    isAnimating.value = true
-    setTimeout(() => {
-      router.push({ name: 'search' })
-    }, 300) // 애니메이션 시간 후 이동
-  }
+const roomStore = useToggleRoomStore()
+
+watch(() => roomStore.isCheckedMap, (newVal) => {
+  console.log('체크 상태 변경 감지됨:', newVal)
+}, { deep: true })
+
+const moveToSearch = () => {
+  isAnimating.value = true
+  setTimeout(() => {
+    router.push({ name: 'search' })
+  }, 300) // 애니메이션 시간 후 이동
+}
 </script>
 
 <template>
@@ -18,7 +25,7 @@
   <div class="input-box" :class="{ animate: isAnimating }">
     <input class="search-container" placeholder="위치를 검색하세요" @click="moveToSearch"/>
   </div>
-  <Map class="map" style="width: 100%; height: 100vh"/>
+<!--  <Map class="map" style="width: 100%; height: 100vh"/>-->
 </main>
 
 

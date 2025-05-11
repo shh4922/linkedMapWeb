@@ -4,13 +4,22 @@ import { useRouter } from 'vue-router'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 
-const search = ref("")
-const router = useRouter()
+const myInfoStore = useMyInfo()
 
-function moveToSearch() {
-  router.push("/search")
+
+onMounted(()=> {
+  getMyInfo()
+})
+
+/**
+ * 내정보 패치후 스토어에 저장
+ * 새로고침시, 스토어 초기화 되서 이렇게해둠.
+ */
+const getMyInfo = async () => {
+  if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
+  const res = await fetchMyInfo()
+  myInfoStore.setMyInfo(res.data)
 }
-
 
 </script>
 

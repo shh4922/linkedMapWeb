@@ -11,8 +11,8 @@ export default class kakaoMap implements MapInterface {
 
   constructor(container: HTMLElement) {
     this.map = new kakao.maps.Map(container, {
-      center: new kakao.maps.LatLng(37.5665, 126.9780),
-      level: 3,
+      center: new kakao.maps.LatLng(36.0665, 127.8780),
+      level: 13,
     });
   }
 

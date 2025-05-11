@@ -1,25 +1,32 @@
 <script setup lang="ts">
-const toggleSettingModal = () => {
-  alert("settingModal toggle")
-}
+// import type { RoomMember } from '@/api/category/category.model.ts'
+import type { Marker } from '@/api/marker/marker.model.ts'
+
+// const toggleSettingModal = () => {
+//   alert('settingModal toggle')
+// }
+
+defineProps<{
+  marker: Marker
+}>()
 </script>
 
 <template>
   <li class="marker-card">
     <div class="marker-header">
-      <h3>개쩌는 맛집임</h3>
+      <h3>{{ marker.title }}</h3>
       <div class="actions">
-<!--        @click="deleteMarker(marker.id)"-->
-        <button >🗑️</button>
-<!--        @click="viewMarker(marker)"-->
-        <button >🔍</button>
+        <!--        @click="deleteMarker(marker.id)"-->
+        <button>🗑️</button>
+        <!--        @click="viewMarker(marker)"-->
+        <button>🔍</button>
       </div>
     </div>
-    <p class="description">여기 개 맛도리인 한식집임</p>
+    <p class="description">{{ marker.description }}</p>
     <div class="meta">
-      <span>📍 진월동 791-1번지 44 한신아파트 201동 903호</span>
-      <span>🗓️ 2024-12-13</span>
-      <span>👤 신현호</span>
+      <span>📍 {{ marker.address }}</span>
+      <span>🗓️ {{ marker.createdAt }}</span>
+      <span>👤 {{ marker.creatorName }}</span>
     </div>
   </li>
 </template>
@@ -27,7 +34,7 @@ const toggleSettingModal = () => {
 <style scoped lang="scss">
 .marker-card {
   border-radius: 1.2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 1.6rem;
   display: flex;
   flex-direction: column;
@@ -38,7 +45,6 @@ const toggleSettingModal = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .marker-header h3 {
@@ -68,5 +74,4 @@ const toggleSettingModal = () => {
   font-size: 0.8rem;
   color: #888;
 }
-
 </style>

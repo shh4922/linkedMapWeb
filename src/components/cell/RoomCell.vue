@@ -4,7 +4,7 @@ import type { Category, Room } from '@/api/category/category.model.ts'
 
 const router = useRouter()
 const moveToDetail = () => {
-  router.push({name: 'categoryDetail', params: {roomId: props.room.roomId}})
+  router.push({name: 'roomDetail', params: {roomId: props.room.roomId}})
 }
 
 const props = defineProps<{

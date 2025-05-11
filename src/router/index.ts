@@ -12,7 +12,7 @@ import EditRoomMarkerView from '@/page/EditRoomMarkerView.vue'
 import LoginView from '@/page/LoginView.vue'
 import RegisterView from '@/page/RegisterView.vue'
 import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
-import CreateCategory from '@/components/bottomNav/views/CreateCategory.vue'
+import CreateRoom from '@/components/bottomNav/views/CreateRoom.vue'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
 const routes = [
@@ -40,8 +40,8 @@ const routes = [
     component: NavigationContainer,
     children: [
       {
-        path: 'categoryDetail/:roomId',
-        name: 'categoryDetail',
+        path: 'roomDetail/:roomId',
+        name: 'roomDetail',
         component: RoomDetail,
         props: true
       },
@@ -53,7 +53,7 @@ const routes = [
       {
         path: 'createCategory',
         name: 'createCategory',
-        component: CreateCategory
+        component: CreateRoom
       },
       {
         path: 'editRoomMarker/:roomId',
@@ -80,7 +80,7 @@ const routes = [
   // {
   //   path: '/createCategory',
   //   name: 'createCategory',
-  //   component: CreateCategory,
+  //   component: CreateRoom,
   // },
   // {
   //   path: '/auth/kakao',

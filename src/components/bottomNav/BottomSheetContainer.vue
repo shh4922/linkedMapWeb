@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import HomeSheetView from '@/components/bottomNav/views/HomeSheetView.vue'
 import { pageType, usePageStore } from '@/store/usePageStore.ts'
-import CreateCategory from '@/components/bottomNav/views/CreateCategory.vue'
+import CreateRoom from '@/components/bottomNav/views/CreateRoom.vue'
 import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
 
 const pageStore = usePageStore()

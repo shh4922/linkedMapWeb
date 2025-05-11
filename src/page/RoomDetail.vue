@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
-import { useFetchCategoryDetail } from '@/api/category/category.query.ts'
+import { useFetchRoomDetail } from '@/api/category/category.query.ts'
 import { computed, onMounted, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 
 const props = defineProps<{
   roomId: string
 }>()
-const { data: roomDetail } = useFetchCategoryDetail(props.roomId)
+const { data: roomDetail } = useFetchRoomDetail(props.roomId)
 
 const deleteCategory = () => {
   alert('카테고리 삭제')
@@ -18,6 +18,9 @@ const myInfo = computed(() => {
 
 watch(roomDetail, ((newValue) => {
   console.log("roomDetail", newValue)
+}))
+watch(myInfo.value?.memberId, ((newValue) => {
+  console.log("myInfo", newValue)
 }))
 
 
