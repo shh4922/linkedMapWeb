@@ -2,7 +2,8 @@ import type { MapInterface } from '@/components/map/interface/MapInterface.ts'
 import  MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { createApp } from 'vue'
 import CustomOverlayMarker from '@/components/map/marker/CustomOverlayMarker.vue'
-import app from '@/App.vue'
+import type { LatLng } from '@/components/map/LatLng.ts'
+
 
 
 export default class kakaoMap implements MapInterface {
@@ -38,4 +39,7 @@ export default class kakaoMap implements MapInterface {
     // console.log("delteMarker In kakaoMap", id)
   }
 
+  setPosition(latlng: LatLng): void {
+    this.map.setCenter(new kakao.maps.LatLng(latlng.lat, latlng.lng));
+  }
 }

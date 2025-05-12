@@ -25,7 +25,7 @@ const moveToSearch = () => {
   <div class="input-box" :class="{ animate: isAnimating }">
     <input class="search-container" placeholder="위치를 검색하세요" @click="moveToSearch"/>
   </div>
-<!--  <Map class="map" style="width: 100%; height: 100vh"/>-->
+  <Map class="map" style="width: 100%; height: 100vh"/>
 </main>
 
 

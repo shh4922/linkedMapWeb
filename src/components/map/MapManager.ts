@@ -2,6 +2,7 @@
 import type { MapInterface } from '@/components/map/interface/MapInterface.ts'
 import kakaoMap from '@/components/map/mapType/kakaoMap.ts'
 import type MarkerModel from '@/components/map/marker/MarkerModel.ts'
+import type { LatLng } from '@/components/map/LatLng.ts'
 
 export default class MapManager {
   dom: HTMLElement
@@ -31,6 +32,10 @@ export default class MapManager {
     }
 
     this.mapInterface?.onDeleteMaerker(this.markerList[findIndex])
+  }
+
+  onSetPosition = (latlng:LatLng) => {
+    this.mapInterface?.setPosition(latlng)
   }
 
   getInstance = () => {

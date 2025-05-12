@@ -15,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const selectRoomId = ref<number | null>(null)
+const description = ref<string>("")
 const closeAddModal = async () => {
   emit('closeAddModal')
 }
@@ -25,7 +26,7 @@ const submit = async() => {
     return
   }
   const data = props.result
-  await saveMarker(data.place_name, Number(data.y), Number(data.x), "설명", data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
+  await saveMarker(data.place_name, Number(data.y), Number(data.x), description.value, data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
   emit('closeAddModal')
 }
 watch(myRoomList, (newValue) => {
@@ -76,6 +77,11 @@ watch(myRoomList, (newValue) => {
                   :value="room.roomId"
           >>{{room.roomName}}</option>
         </select>
+      </div>
+
+      <div>
+        <p class="sub">설명</p>
+        <input class="result" v-model="description" placeholder="해당 장소에 대한 설명을 작성해보세요"/>
       </div>
     </section>
 
