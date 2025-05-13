@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { fetchMarkerList } from '@/api/marker/marker.ts'
 
+
 export const useFetchMarkerList = (roomId:string) => {
   return useQuery({
     queryFn: () => fetchMarkerList(roomId),

@@ -7,14 +7,20 @@ const props = defineProps<{
   marker: Marker
   selectedMarker: number|null
 }>()
-const emit = defineEmits(['selectMarker'])
+const emit = defineEmits(['selectMarker', 'deleteMarker'])
 const markerSelect = () => {
   emit('selectMarker', props.marker)
 }
 
 const deleteMarker = async () => {
-  // props.marker.
-  // const res = await deleteMarkerByMarkerId(props.marker.id.toString())
+  const res = await deleteMarkerByMarkerId(props.marker.id.toString())
+  if (res.error?.response?.status === 400) {
+    alert("권한이 없습니다.")
+  }
+  if(res.data) {
+    alert("마커 삭제가 완료되었습니다.")
+    emit('deleteMarker', props.marker.id)
+  }
 }
 
 watch(()=> props.selectedMarker, (newValue) => {
@@ -32,7 +38,7 @@ const isSelected = computed(() => props.selectedMarker === props.marker.id)
       <h3>{{ marker.title }}</h3>
       <div class="actions">
 
-        <button>🗑️</button>
+        <button @click="deleteMarker">🗑️</button>
 
         <button>🔍</button>
       </div>

@@ -40,7 +40,12 @@ export const postWithToken = async <T>(url: string, data?: object, config?: Axio
   const response = await interceptorAxios.post<T>(url, data, config);
   return response.data
 };
-export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-  const response = await interceptorAxios.delete<T>(url, config);
-  return response.data
+export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfig): Promise<Result<T>> => {
+  try {
+    const response = await interceptorAxios.delete<T>(url, config);
+    return { data: response.data };
+  } catch (error) {
+    const err = error as AxiosError<DefaultError>
+    return  { error:err }
+  }
 };

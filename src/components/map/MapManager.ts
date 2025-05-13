@@ -34,6 +34,14 @@ export default class MapManager {
     this.mapInterface?.onDeleteMaerker(this.markerList[findIndex])
   }
 
+  onFindMarker = (id:string):MarkerModel|null => {
+    const findIndex = this.markerList.findIndex((marker) => {
+      return marker.id === id
+    })
+    if(findIndex === -1) return null
+    return this.markerList[findIndex]
+  }
+
   onSetPosition = (latlng:LatLng) => {
     this.mapInterface?.setPosition(latlng)
   }

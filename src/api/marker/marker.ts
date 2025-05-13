@@ -1,7 +1,7 @@
 import { deleteWithToken, getWithToken, postWithToken } from '@/api/http.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import type { DefaultResponse } from '@/api/DefaultResponse.ts'
-import type { Room } from '@/api/category/category.model.ts'
+
 
 
 export const fetchMarkerList = (roomId:string):Promise<DefaultResponse<Marker[]>> => {

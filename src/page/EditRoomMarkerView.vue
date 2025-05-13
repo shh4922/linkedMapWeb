@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Map from '@/components/map/Map.vue'
-import CategoryMarkerCell from '@/components/cell/CategoryMarkerCell.vue'
+import RoomMarkerCell from '@/components/cell/RoomMarkerCell.vue'
 import { onMounted, ref, watch } from 'vue'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { fetchMarkerList } from '@/api/marker/marker.ts'
@@ -12,16 +12,19 @@ import type { LatLng } from '@/components/map/LatLng.ts'
 const route = useRoute()
 const map = ref<InstanceType<typeof Map> | null>(null)
 
-const {data: markerList} = useFetchMarkerList(route.params.roomId as string)
+const {data: markerListResponse} = useFetchMarkerList(route.params.roomId as string)
+const markerList = ref<Marker[]|null>(null)
 const selectMarker = ref<number | null>(null)
 
-watch(() => markerList?.value?.data, (newMarkers) => {
-  if (!newMarkers || !map.value) return
-  newMarkers.forEach((marker) => {
-    const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat)
-    markerModel.setCustomOverlayMarker(marker.title)
-    map.value?.getInstance()?.onCreateMarker(markerModel)
-  })
+watch(() => markerListResponse?.value?.data, (newValue) => {
+  // if(markerList?.value?.data !== null) return
+  if (!newValue || !map.value) return
+    markerList.value = newValue
+    newValue.forEach((marker) => {
+      const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat)
+      markerModel.setCustomOverlayMarker(marker.title)
+      map.value?.getInstance()?.onCreateMarker(markerModel)
+    })
   },
   { immediate: true }  // 이미 로딩되어 있으면 즉시 실행
 )
@@ -42,19 +45,33 @@ const onSelectMarker = (marker: Marker) => {
   map.value?.getInstance()?.onSetPosition(latlng)
 }
 
+const onDeleteMarker = (markerId: number) => {
+
+  if(markerList.value === null) { return }
+
+  const findMarkerIndex = markerList?.value?.findIndex((marker)=> marker.id === markerId)
+  if(findMarkerIndex === -1 || findMarkerIndex === undefined) return
+
+  markerList.value = markerList.value.filter(m => m.id !== markerId)
+  map.value?.getInstance()?.onDeleteMarker(markerId.toString())
+  selectMarker.value = null
+}
+
 </script>
 
 <template>
   <main>
     <Map class="map" ref="map" style="height: 40%; width: 100%" />
-    <p v-if="markerList?.data.length ===0">마커가 없습니다.</p>
+    <p v-if="markerList?.length ===0 || markerList === null">마커가 없습니다.</p>
 
     <ul>
-      <CategoryMarkerCell v-for="(marker) in markerList?.data"
-                          :key="marker.id"
-                          :marker="marker"
-                          :selected-marker="selectMarker"
-                          @select-marker="onSelectMarker" />
+      <RoomMarkerCell v-for="(marker) in markerList"
+                      :key="marker.id"
+                      :marker="marker"
+                      :selected-marker="selectMarker"
+                      @select-marker="onSelectMarker"
+                      @deleteMarker="onDeleteMarker"
+      />
     </ul>
   </main>
 </template>
