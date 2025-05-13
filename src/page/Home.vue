@@ -4,8 +4,9 @@ import router from '@/router'
   import { ref, watch } from 'vue'
   import Map from '@/components/map/Map.vue'
   import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
-const isAnimating = ref(false)
 
+const map = ref<InstanceType<typeof Map> | null>(null)
+const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()
 
 watch(() => roomStore.isCheckedMap, (newVal) => {
@@ -25,7 +26,7 @@ const moveToSearch = () => {
   <div class="input-box" :class="{ animate: isAnimating }">
     <input class="search-container" placeholder="위치를 검색하세요" @click="moveToSearch"/>
   </div>
-  <Map class="map" style="width: 100%; height: 100vh"/>
+  <Map class="map" ref="map" style="width: 100%; height: 100vh"/>
 </main>
 
 

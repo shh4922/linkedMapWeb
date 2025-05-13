@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { SearchModel } from '@/api/auth/search.ts'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import Map from '@/components/map/Map.vue'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 import { saveMarker } from '@/api/marker/marker.ts'
+import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 
-
+const map = ref<InstanceType<typeof Map> | null>(null)
 const emit =defineEmits(['closeAddModal'])
 
 const {data:myRoomList} = useFetchMyRoomList()
@@ -29,8 +30,21 @@ const submit = async() => {
   await saveMarker(data.place_name, Number(data.y), Number(data.x), description.value, data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
   emit('closeAddModal')
 }
-watch(myRoomList, (newValue) => {
-  console.log("myRoomList", newValue)
+
+onMounted(() => {
+  const latlng = {
+    lat: Number(props.result.y),
+    lng: Number(props.result.x)
+  }
+  const markerModel = new MarkerModel("0", latlng.lng, latlng.lat)
+  markerModel.setCustomOverlayMarker(props.result.place_name)
+
+  map.value?.getInstance()?.onCreateMarker(markerModel)
+  map.value?.getInstance()?.onSetPosition(latlng)
+})
+
+onUnmounted(()=> {
+  map.value?.getInstance()?.onDeleteMarker("0")
 })
 </script>
 
@@ -41,7 +55,7 @@ watch(myRoomList, (newValue) => {
       <i class="pi pi-times" @click="closeAddModal"></i>
     </section>
 
-    <Map class="map" style="width: 100%; height: 250px"/>
+    <Map class="map" ref="map" style="width: 100%; height: 250px"/>
 
     <section class="searchInfo">
       <div class="storeName">
