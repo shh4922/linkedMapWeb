@@ -4,14 +4,38 @@ import router from '@/router'
   import { ref, watch } from 'vue'
   import Map from '@/components/map/Map.vue'
   import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
+import { useFetchMarkerList } from '@/api/marker/marker.query.ts'
+import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()
 
-watch(() => roomStore.isCheckedMap, (newVal) => {
-  console.log('체크 상태 변경 감지됨:', newVal)
-}, { deep: true })
+const checkedRoomId = ref<string | null>(null)
+const {data: markerListRes, refetch} = useFetchMarkerList(checkedRoomId)
+
+watch(()=> roomStore.changedRoomId, (newValue)=> {
+  if(newValue?.checked) {
+    checkedRoomId.value = newValue.roomId.toString()
+    refetch()
+  } else {
+    if(newValue?.roomId === undefined) return
+    map.value?.getInstance()?.onDeleteMarkerListByRoomId(newValue.roomId)
+  }
+})
+
+
+
+watch(()=> markerListRes?.value?.data, (newValue) => {
+  if (!newValue) return
+  newValue.forEach((marker) => {
+    const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(checkedRoomId.value))
+    markerModel.setCustomOverlayMarker(marker.title)
+    map.value?.getInstance()?.onCreateMarker(markerModel)
+  })
+
+}, { immediate: true })
+
 
 const moveToSearch = () => {
   isAnimating.value = true
@@ -19,6 +43,7 @@ const moveToSearch = () => {
     router.push({ name: 'search' })
   }, 300) // 애니메이션 시간 후 이동
 }
+
 </script>
 
 <template>

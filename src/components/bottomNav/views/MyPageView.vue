@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 import { fetchMyInfo } from '@/api/user/user.ts'
+import { forrmatDate } from '../../../utils/common.ts'
 
 const router = useRouter()
 const {data:roomList, isError, isLoading, error} = useFetchMyRoomList()
@@ -48,7 +49,7 @@ onMounted(() => {
         </div>
         <div class="info-item">
           <span class="label">가입일</span>
-          <span>{{ myInfo.createdAt }}</span>
+          <span>{{ forrmatDate(myInfo.createdAt) }}</span>
         </div>
       </div>
 
@@ -64,7 +65,7 @@ onMounted(() => {
           <li v-for="(room, index) in roomList?.data" :key="index">
             <div class="category-name">{{ room.roomName }}</div>
             <div class="category-description">{{ room.roomDescription }}</div>
-            <div class="category-meta">초대일: {{ room.inviteDate }}</div>
+            <div class="category-meta">가입일: {{ forrmatDate(room.inviteDate) }}</div>
           </li>
         </ul>
       </div>

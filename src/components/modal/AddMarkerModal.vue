@@ -36,7 +36,7 @@ onMounted(() => {
     lat: Number(props.result.y),
     lng: Number(props.result.x)
   }
-  const markerModel = new MarkerModel("0", latlng.lng, latlng.lat)
+  const markerModel = new MarkerModel("0", latlng.lng, latlng.lat,1)
   markerModel.setCustomOverlayMarker(props.result.place_name)
 
   map.value?.getInstance()?.onCreateMarker(markerModel)

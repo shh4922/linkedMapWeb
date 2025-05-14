@@ -3,6 +3,7 @@ import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
 import { useFetchRoomDetail } from '@/api/category/category.query.ts'
 import { computed, onMounted, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
+import { forrmatDate } from '@/utils/common.ts'
 
 const props = defineProps<{
   roomId: string
@@ -45,7 +46,7 @@ watch(myInfo.value?.memberId, ((newValue) => {
       <div class="subInfoContainer">
         <div class="subInfo">
           <p class="sub-head">카테고리 생성일</p>
-          <p>{{roomDetail?.data.createdAt}}</p>
+          <p>{{forrmatDate(roomDetail?.data.createdAt ?? "")}}</p>
         </div>
 
         <div class="subInfo">

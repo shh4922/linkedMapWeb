@@ -18,8 +18,26 @@ export default class MapManager {
   }
 
   onCreateMarker = (markerModel:MarkerModel) => {
+    // 마커가 이미 존재하는지 확인
+    const findIndex = this.markerList.findIndex(marker => marker.id === markerModel.id)
+    if(findIndex !== -1) return
+
     this.markerList.push(markerModel)
     this.mapInterface?.onCreateMaerker(markerModel)
+  }
+
+  onDeleteMarkerListByRoomId = (roomId:number) => {
+    const filterMarkerList = this.markerList.filter((marker) => {
+      return marker.roomId === roomId
+    })
+
+    filterMarkerList.forEach((marker) => {
+      this.onDeleteMarker(marker.id)
+    })
+
+    this.markerList = this.markerList.filter((marker) => {
+      return marker.roomId !== roomId
+    })
   }
 
   onDeleteMarker = (id:string) => {
@@ -32,6 +50,9 @@ export default class MapManager {
     }
 
     this.mapInterface?.onDeleteMaerker(this.markerList[findIndex])
+    this.markerList = this.markerList.filter((marker) => {
+      return marker.id !== id
+    })
   }
 
   onFindMarker = (id:string):MarkerModel|null => {

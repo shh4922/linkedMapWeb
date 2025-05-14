@@ -2,6 +2,7 @@
 import type { Marker } from '@/api/marker/marker.model.ts'
 import { computed, watch } from 'vue'
 import { deleteMarkerByMarkerId } from '@/api/marker/marker.ts'
+import { forrmatDate } from '../../utils/common.ts'
 
 const props = defineProps<{
   marker: Marker
@@ -46,7 +47,7 @@ const isSelected = computed(() => props.selectedMarker === props.marker.id)
     <p class="description">{{ marker.description }}</p>
     <div class="meta">
       <span>📍 {{ marker.address }}</span>
-      <span>🗓️ {{ marker.createdAt }}</span>
+      <span>🗓️ {{ forrmatDate(marker.createdAt)}}</span>
       <span>👤 {{ marker.creatorName }}</span>
       <span>✉️ {{ marker.creatorEmail }}</span>
     </div>
