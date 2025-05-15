@@ -4,7 +4,7 @@ import type { DefaultResponse } from '@/api/DefaultResponse.ts'
 
 
 
-export const fetchMarkerList = (roomId:string):Promise<DefaultResponse<Marker[]>> => {
+export const fetchMarkerList = (roomId:string|null):Promise<DefaultResponse<Marker[]>> => {
   return getWithToken<Marker[]>(`/markers/${roomId}`)
 }
 

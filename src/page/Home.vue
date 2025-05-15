@@ -1,41 +1,78 @@
 <script setup lang="ts">
 
 import router from '@/router'
-  import { ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
   import Map from '@/components/map/Map.vue'
   import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
-import { useFetchMarkerList } from '@/api/marker/marker.query.ts'
+import { useFetchMarkerList, useFetchMarkerListByRoomList } from '@/api/marker/marker.query.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
+import type { Marker } from '@/api/marker/marker.model.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()
 
-const checkedRoomId = ref<string | null>(null)
-const {data: markerListRes, refetch} = useFetchMarkerList(checkedRoomId)
+const prevRoomId = ref<string|null>(null)
 
-watch(()=> roomStore.changedRoomId, (newValue)=> {
-  if(newValue?.checked) {
-    checkedRoomId.value = newValue.roomId.toString()
-    refetch()
-  } else {
-    if(newValue?.roomId === undefined) return
-    map.value?.getInstance()?.onDeleteMarkerListByRoomId(newValue.roomId)
-  }
+// const {data: markerListRes} = useFetchMarkerList(prevRoomId)
+
+
+
+const checkedRoomList = computed<string[]>(() =>
+  Object.entries(roomStore.isCheckedMap)
+    .filter(([_, checked]) => checked)  // 1) filter: [id, checked] 형태의 각 항목에서 checked === true 만
+    .map(([id]) => id)                  // 2) map: 앞에 있던 [id, checked] 중 id(문자열)만 꺼내 배열로!
+)
+
+const queryList = useFetchMarkerListByRoomList(checkedRoomList)
+queryList.value.forEach((query)=> {
+  watch(()=> query?.data?.data, (newValue) => {
+    if(!newValue) return
+    newValue.forEach((marker) => {
+      createMarker(marker)
+    })
+
+  })
 })
 
+// watch(()=> roomStore.changedRoomId, (newValue)=> {
+//   if(newValue?.checked) {
+//     if(prevRoomId.value === newValue.roomId.toString() && markerListRes.value !== undefined && markerListRes.value.data !== undefined ) {
+//       markerListRes.value.data.forEach((marker)=> {
+//         createMarker(marker)
+//         // prevRoomId.value = null
+//       })
+//     }
+//     prevRoomId.value = newValue.roomId.toString()
+//   } else {
+//     if(newValue?.roomId === undefined) return
+//     map.value?.getInstance()?.onDeleteMarkerListByRoomId(newValue.roomId)
+//   }
+// })
+
+watch(checkedRoomList,(newIds, oldIds = []) => {
+    const removed = oldIds.filter(id => !newIds.includes(id))
+    removed.forEach(id => {
+      map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(id))
+    })
+  }
+)
 
 
-watch(()=> markerListRes?.value?.data, (newValue) => {
-  if (!newValue) return
-  newValue.forEach((marker) => {
-    const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(checkedRoomId.value))
-    markerModel.setCustomOverlayMarker(marker.title)
-    map.value?.getInstance()?.onCreateMarker(markerModel)
-  })
+// watch(()=> markerListRes?.value?.data, (newValue) => {
+//   if (!newValue) return
+//   newValue.forEach((marker) => {
+//     createMarker(marker)
+//   })
+//
+// }, { immediate: true })
 
-}, { immediate: true })
 
+const createMarker = (marker:Marker) => {
+  const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(prevRoomId.value))
+  markerModel.setCustomOverlayMarker(marker.title)
+  map.value?.getInstance()?.onCreateMarker(markerModel)
+}
 
 const moveToSearch = () => {
   isAnimating.value = true

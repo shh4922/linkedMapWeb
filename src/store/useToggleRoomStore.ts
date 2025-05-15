@@ -38,8 +38,6 @@ export const useToggleRoomStore = defineStore('toggleRoomState', ()=> {
         checked: false
       }
     }
-
-
   }
 
 
