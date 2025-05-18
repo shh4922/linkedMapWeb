@@ -19,11 +19,16 @@ export default class MapManager {
 
   onCreateMarker = (markerModel:MarkerModel) => {
     // 마커가 이미 존재하는지 확인
+    console.log(markerModel)
     const findIndex = this.markerList.findIndex(marker => marker.id === markerModel.id)
-    if(findIndex !== -1) return
+    if(findIndex !== -1) {
+      console.log("이미 있어서 안그리고 리턴")
+      return
+    }
 
     this.markerList.push(markerModel)
     this.mapInterface?.onCreateMaerker(markerModel)
+    console.log("마커추가 완료", this.markerList)
   }
 
   onDeleteMarkerListByRoomId = (roomId:number) => {
@@ -38,6 +43,7 @@ export default class MapManager {
     this.markerList = this.markerList.filter((marker) => {
       return marker.roomId !== roomId
     })
+    console.log("특정방 마커 삭제후", this.markerList)
   }
 
   onDeleteMarker = (id:string) => {

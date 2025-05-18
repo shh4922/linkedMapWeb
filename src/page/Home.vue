@@ -2,21 +2,17 @@
 
 import router from '@/router'
 import { computed, onMounted, ref, watch } from 'vue'
-  import Map from '@/components/map/Map.vue'
-  import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
-import { useFetchMarkerList, useFetchMarkerListByRoomList } from '@/api/marker/marker.query.ts'
+import Map from '@/components/map/Map.vue'
+import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
+import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()
 
-const prevRoomId = ref<string|null>(null)
-
-// const {data: markerListRes} = useFetchMarkerList(prevRoomId)
-
-
+const markerListStore = useMarkserListStore()
 
 const checkedRoomList = computed<string[]>(() =>
   Object.entries(roomStore.isCheckedMap)
@@ -24,52 +20,53 @@ const checkedRoomList = computed<string[]>(() =>
     .map(([id]) => id)                  // 2) map: 앞에 있던 [id, checked] 중 id(문자열)만 꺼내 배열로!
 )
 
-const queryList = useFetchMarkerListByRoomList(checkedRoomList)
-queryList.value.forEach((query)=> {
-  watch(()=> query?.data?.data, (newValue) => {
-    if(!newValue) return
-    newValue.forEach((marker) => {
-      createMarker(marker)
-    })
+watch(checkedRoomList,async (newValue,oldValue) => {
+  // 기존에 있던거에서 제거할 방 id
+  const clear = oldValue.filter((roomId) => !newValue.includes(roomId))
+  const add = newValue.filter((roomId) => !oldValue.includes(roomId))
 
+  // 마커 삭제
+  clear.forEach((roomId)=> {
+    map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(roomId))
   })
+
+
+  for (const roomId of add) {
+    // fetchOnce: 캐시 없으면 API 호출, 있으면 바로 반환
+    const markers = await markerListStore.fetchOnce(roomId)
+
+    // 지도에 그리기
+    // map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(roomId))
+    createMarkerList(markers)
+  }
 })
 
-// watch(()=> roomStore.changedRoomId, (newValue)=> {
-//   if(newValue?.checked) {
-//     if(prevRoomId.value === newValue.roomId.toString() && markerListRes.value !== undefined && markerListRes.value.data !== undefined ) {
-//       markerListRes.value.data.forEach((marker)=> {
-//         createMarker(marker)
-//         // prevRoomId.value = null
-//       })
-//     }
-//     prevRoomId.value = newValue.roomId.toString()
-//   } else {
-//     if(newValue?.roomId === undefined) return
-//     map.value?.getInstance()?.onDeleteMarkerListByRoomId(newValue.roomId)
-//   }
-// })
+const init = async () => {
+  for (const roomId of checkedRoomList.value) {
+    // fetchOnce: 캐시 없으면 API 호출, 있으면 바로 반환
+    const markers = await markerListStore.fetchOnce(roomId)
 
-watch(checkedRoomList,(newIds, oldIds = []) => {
-    const removed = oldIds.filter(id => !newIds.includes(id))
-    removed.forEach(id => {
-      map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(id))
-    })
+    // 지도에 그리기
+    // map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(roomId))
+    createMarkerList(markers)
   }
-)
+}
+
+onMounted(()=> {
+  init()
+})
 
 
-// watch(()=> markerListRes?.value?.data, (newValue) => {
-//   if (!newValue) return
-//   newValue.forEach((marker) => {
-//     createMarker(marker)
-//   })
-//
-// }, { immediate: true })
 
+const createMarkerList = (markerList:Marker[]) => {
+  markerList.forEach((marker)=> {
+    createMarker(marker)
+  })
+}
 
 const createMarker = (marker:Marker) => {
-  const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(prevRoomId.value))
+
+  const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(marker.roomId))
   markerModel.setCustomOverlayMarker(marker.title)
   map.value?.getInstance()?.onCreateMarker(markerModel)
 }
@@ -90,8 +87,6 @@ const moveToSearch = () => {
   </div>
   <Map class="map" ref="map" style="width: 100%; height: 100vh"/>
 </main>
-
-
 </template>
 
 <style lang="scss" scoped>

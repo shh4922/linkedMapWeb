@@ -3,7 +3,7 @@
 import RoomCell from '@/components/cell/RoomCell.vue'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 
-const {data:roomList, isError} = useFetchMyRoomList()
+const {data:roomList} = useFetchMyRoomList()
 
 </script>
 
@@ -21,8 +21,6 @@ const {data:roomList, isError} = useFetchMyRoomList()
     <ul v-else>
       <RoomCell v-for="(room, index) in roomList?.data" :key="index" :room="room"/>
     </ul>
-
-
   </main>
 </template>
 

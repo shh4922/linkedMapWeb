@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
 import { useFetchRoomDetail } from '@/api/category/category.query.ts'
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { forrmatDate } from '@/utils/common.ts'
+import AddInviteLink from '@/components/modal/AddInviteLink.vue'
 
 const props = defineProps<{
   roomId: string
 }>()
 const { data: roomDetail } = useFetchRoomDetail(props.roomId)
-
+const isShowModal = ref(false)
 const deleteCategory = () => {
   alert('카테고리 삭제')
 }
@@ -17,14 +18,9 @@ const myInfo = computed(() => {
   return useMyInfo().getMyInfo
 })
 
-watch(roomDetail, ((newValue) => {
-  console.log("roomDetail", newValue)
-}))
-watch(myInfo.value?.memberId, ((newValue) => {
-  console.log("myInfo", newValue)
-}))
-
-
+const toggleModal = (isShow:boolean) => {
+  isShowModal.value = isShow
+}
 
 
 </script>
@@ -67,7 +63,13 @@ watch(myInfo.value?.memberId, ((newValue) => {
     </section>
 
     <section class="userContainer">
-      <p class="userListTitle">가입한 유저임</p>
+      <div class="userHeader">
+        <p class="userListTitle">가입한 유저임</p>
+        <p class="createLink"
+           v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId"
+           @click="toggleModal(true)">초대링크 만들기</p>
+      </div>
+
       <ul>
         <RoomMemberCell v-for="(user,index) in roomDetail?.data.memberList"
                           :key="index"
@@ -75,6 +77,10 @@ watch(myInfo.value?.memberId, ((newValue) => {
                           :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0" />
       </ul>
     </section>
+
+    <AddInviteLink v-if="isShowModal "
+
+                   :room-id="props.roomId"/>
   </main>
 </template>
 
@@ -219,12 +225,23 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: 1rem;
 
-    .userListTitle {
-      font-family: nanum-5;
-      font-size: 1.4rem;
-      color: $text-color;
+    .userHeader {
+      display: flex;
+      justify-content: space-between;
+      .userListTitle {
+        font-family: nanum-5;
+        font-size: 1.4rem;
+        color: $text-color;
+      }
+      .createLink {
+        font-family: nanum-5;
+        font-size: 1rem;
+        color: $main-color;
+      }
     }
+
 
     ul {
       display: flex;

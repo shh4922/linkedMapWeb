@@ -7,7 +7,7 @@ import { fetchMyInfo } from '@/api/user/user.ts'
 import { forrmatDate } from '../../../utils/common.ts'
 
 const router = useRouter()
-const {data:roomList, isError, isLoading, error} = useFetchMyRoomList()
+const { data:roomList } = useFetchMyRoomList()
 const myInfoStore = useMyInfo()
 
 const goToLogin = () => {
@@ -59,10 +59,10 @@ onMounted(() => {
       </div>
 
       <div class="category-section">
-        <h2>내 카테고리</h2>
+        <h2>내 그룹</h2>
         <!-- 여기만 스크롤 가능 -->
         <ul class="category-list">
-          <li v-for="(room, index) in roomList?.data" :key="index">
+          <li v-for="(room, index) in roomList?.data" :key="index" @click="router.push({name:'roomDetail', params:{roomId: room.roomId}})">
             <div class="category-name">{{ room.roomName }}</div>
             <div class="category-description">{{ room.roomDescription }}</div>
             <div class="category-meta">가입일: {{ forrmatDate(room.inviteDate) }}</div>

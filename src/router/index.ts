@@ -13,6 +13,7 @@ import LoginView from '@/page/LoginView.vue'
 import RegisterView from '@/page/RegisterView.vue'
 import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
 import CreateRoom from '@/components/bottomNav/views/CreateRoom.vue'
+import Invite from '@/page/Invite.vue'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
 const routes = [
@@ -33,6 +34,11 @@ const routes = [
     path: '/search',
     name: 'search',
     component: Search,
+  },
+  {
+    path: '/invite/:roomId/:key',
+    name: 'invite',
+    component: Invite
   },
   {
     path: '/navigationView',
@@ -77,16 +83,7 @@ const routes = [
       },
     ]
   }
-  // {
-  //   path: '/createCategory',
-  //   name: 'createCategory',
-  //   component: CreateRoom,
-  // },
-  // {
-  //   path: '/auth/kakao',
-  //   name: 'kakaoLogin',
-  //   component: KakaoLogin,
-  // },
+
 ];
 const router = createRouter({
   history: createWebHistory('/'),

@@ -36,8 +36,8 @@ export const getWithToken = async <T>(url: string, config?: AxiosRequestConfig):
   return res.data
 };
 
-export const postWithToken = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
-  const response = await interceptorAxios.post<T>(url, data, config);
+export const postWithToken = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<DefaultResponse<T>> => {
+  const response = await interceptorAxios.post<DefaultResponse<T>>(url, data, config);
   return response.data
 };
 export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfig): Promise<Result<T>> => {

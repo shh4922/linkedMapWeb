@@ -7,8 +7,10 @@ import RoomMarkerCell from '@/components/cell/RoomMarkerCell.vue'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import type { LatLng } from '@/components/map/LatLng.ts'
+import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 
 const route = useRoute()
+const markerListStore = useMarkserListStore()
 const map = ref<InstanceType<typeof Map> | null>(null)
 
 const {data: markerListResponse, refetch} = useFetchMarkerList(route.params.roomId as string)

@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { SearchModel } from '@/api/auth/search.ts'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import Map from '@/components/map/Map.vue'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 import { saveMarker } from '@/api/marker/marker.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
+import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const emit =defineEmits(['closeAddModal'])
 
+const markerListStore = useMarkserListStore()
 const {data:myRoomList} = useFetchMyRoomList()
 
 const props = defineProps<{
@@ -28,6 +30,7 @@ const submit = async() => {
   }
   const data = props.result
   await saveMarker(data.place_name, Number(data.y), Number(data.x), description.value, data.category_name, data.address_name, data.road_address_name, selectRoomId.value,"")
+  markerListStore.deleteRoom(selectRoomId.value.toString())
   emit('closeAddModal')
 }
 
@@ -43,9 +46,9 @@ onMounted(() => {
   map.value?.getInstance()?.onSetPosition(latlng)
 })
 
-onUnmounted(()=> {
-  map.value?.getInstance()?.onDeleteMarker("0")
-})
+// onUnmounted(()=> {
+//   map.value?.getInstance()?.onDeleteMarker("0")
+// })
 </script>
 
 <template>

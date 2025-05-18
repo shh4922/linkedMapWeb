@@ -6,7 +6,7 @@ export const useFetchMyRoomList = () => {
     queryFn: () => fetchMyRoomList(),
     queryKey: ['myRoomList'],
     gcTime: 1000*60*5,
-    staleTime: 1000*60*3,
+    // staleTime: 1000*60*3,
     enabled: !!localStorage.getItem("accessToken")
   })
 }
