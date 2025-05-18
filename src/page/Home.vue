@@ -7,12 +7,14 @@ import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
+import RoomListModal from '@/components/modal/RoomListModal.vue'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()
 
 const markerListStore = useMarkserListStore()
+const isShowRoomModal = ref(false)
 
 const checkedRoomList = computed<string[]>(() =>
   Object.entries(roomStore.isCheckedMap)
@@ -78,6 +80,9 @@ const moveToSearch = () => {
   }, 300) // 애니메이션 시간 후 이동
 }
 
+const toggleRoomModal = (isShow:boolean) => {
+  isShowRoomModal.value = isShow
+}
 </script>
 
 <template>
@@ -85,6 +90,10 @@ const moveToSearch = () => {
   <div class="input-box" :class="{ animate: isAnimating }">
     <input class="search-container" placeholder="위치를 검색하세요" @click="moveToSearch"/>
   </div>
+  <i class="pi pi-users" @click="toggleRoomModal(true)"></i>
+  <i class="pi pi-map-marker"></i>
+
+  <RoomListModal v-if="isShowRoomModal" class="roomListModal"/>
   <Map class="map" ref="map" style="width: 100%; height: 100vh"/>
 </main>
 </template>
@@ -94,6 +103,27 @@ const moveToSearch = () => {
   width: 100%;
   height: 100vh;
 }
+i {
+  z-index: 10;
+  position: absolute;
+  top: 130px;
+  right: 20px;
+  background-color: white;
+  font-size: 1.5rem;
+  padding: 1rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  color: coral;  /* 아이콘 색은 메인 톤으로 */
+}
+.pi-map-marker {
+  top: 140px;
+}
+.pi-users {
+  top: 200px;
+}
+
 .input-box {
   position: absolute; /* 지도 위에 고정 */
   top: 5%; /* 상단 여백 */
@@ -121,6 +151,14 @@ const moveToSearch = () => {
     font-size: 1.2rem;
     border-radius: 8px;
   }
+}
+
+.roomListModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
 }
 </style>
 

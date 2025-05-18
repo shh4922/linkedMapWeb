@@ -7,3 +7,12 @@ export const postInviteLink = async (roomId:string) => {
   }
   return postWithToken<InviteResponse>('/invite/create',data)
 }
+
+
+export const joinRoom = (roomId:string, key:string) => {
+  const data = {
+    roomId: roomId,
+    inviteKey: key
+  }
+  return postWithToken("/invite/join", data)
+}

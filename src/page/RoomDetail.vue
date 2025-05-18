@@ -9,6 +9,7 @@ import AddInviteLink from '@/components/modal/AddInviteLink.vue'
 const props = defineProps<{
   roomId: string
 }>()
+
 const { data: roomDetail } = useFetchRoomDetail(props.roomId)
 const isShowModal = ref(false)
 const deleteCategory = () => {
@@ -23,10 +24,11 @@ const toggleModal = (isShow:boolean) => {
 }
 
 
+
 </script>
 
 <template>
-  <main>
+  <main :class="isShowModal ? 'gray' : '' ">
     <section class="categoryInfo">
       <div class="info">
         <div class="info-head">
@@ -78,9 +80,11 @@ const toggleModal = (isShow:boolean) => {
       </ul>
     </section>
 
-    <AddInviteLink v-if="isShowModal "
-
-                   :room-id="props.roomId"/>
+    <div v-if="isShowModal" class="overlay" @click="toggleModal(false)"></div>
+    <AddInviteLink v-if="isShowModal"
+                   :room-id="props.roomId"
+                   class="modal"
+                   @close="toggleModal(false)" />
   </main>
 </template>
 
@@ -93,10 +97,10 @@ main {
   background-color: #ffffff;
   padding: 0 1rem;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-
   .categoryInfo {
     width: 100%;
     display: flex;
@@ -249,5 +253,22 @@ main {
       gap: 0.8rem;
     }
   }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(2px);
+    z-index: 900;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 901;
+    /* 나머지 모달 스타일 */
+  }
 }
+
 </style>

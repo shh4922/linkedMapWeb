@@ -7,6 +7,7 @@ import {removeToken, setTokenInLocal} from "@/utils/token";
  * 브라우저 상태코드로 401이 나온다면, 서버로 refreshToken 재발급을 요청합니다.
  * 차후에 서버에서 데이터를 받는법을 익히면 다시 설명드리겠습니다.
  */
+// import.meta.env.VITE_BASEURL+import.meta.env.VITE_API_VERSION,
 const interceptorAxios = axios.create({
   baseURL: import.meta.env.VITE_BASEURL+import.meta.env.VITE_API_VERSION,
   timeout: 5000,

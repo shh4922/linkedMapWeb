@@ -19,12 +19,12 @@ const pageStore = usePageStore()
     <div class="nav-item" @click="pageStore.setCurrentPage(pageType.HOME)">
       <i class="pi pi-map" style="font-size: 2.5rem"></i>
     </div>
-    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.CATEGORY)">
-      <i class="pi pi-list" style="font-size: 2.5rem"></i>
-    </div>
-    <div class="nav-item">
-      <p>3</p>
-    </div>
+<!--    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.CATEGORY)">-->
+<!--      <i class="pi pi-list" style="font-size: 2.5rem"></i>-->
+<!--    </div>-->
+<!--    <div class="nav-item">-->
+<!--      <p>3</p>-->
+<!--    </div>-->
     <div class="nav-item" @click="moveToMyPage">
       <i class="pi pi-user" style="font-size: 2.5rem"></i>
     </div>
