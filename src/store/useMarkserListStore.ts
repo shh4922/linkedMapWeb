@@ -3,26 +3,24 @@ import { ref } from 'vue'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import { fetchMarkerList } from '@/api/marker/marker.ts'
 
-interface markerListByRoomId {
-  roomId: Marker[]
-}
+
+
 export const useMarkserListStore = defineStore('markerListStore', ()=> {
   const markerListByRoomId = ref<Record<string, Marker[]|null>>({})
+  const selectedMarker = ref<Marker|null>(null)
 
   const setMarkerList = (roomId:string, markerList:Marker[]) => {
     markerListByRoomId.value[roomId] = markerList
   }
 
-  const getMarkerList = (roomIdList: string[]) => {
-    // for(let i=0; i<roomIdList.length; i++) {
-    //   if(markerListByRoomId.value[roomIdList[i]] === undefined) {
-    //     // TODO: fetch 하는 함수 작성
-    //     // const res = await fetchMarkerList(roomIdList[i])
-    //     // setMarkerList(roomIdList[i], res.data)
-    //   }
-    // }
-    return markerListByRoomId
+  const selectMarker = (marker:Marker) => {
+    if (selectedMarker.value?.id === marker.id) {
+      selectedMarker.value = null
+    } else {
+      selectedMarker.value = marker
+    }
   }
+
 
   const getFilteredMarkerList = (roomIdList: string[]) => {
     const filteredMarkerList:Record<string, Marker[]|null> = {}
@@ -47,18 +45,19 @@ export const useMarkserListStore = defineStore('markerListStore', ()=> {
     return markerListByRoomId.value[roomId]
   }
 
+  /** 특정 roomId 의 value 삭제 */
   const deleteRoom = (roomId:string) => {
     delete markerListByRoomId.value[roomId]
-    console.log(markerListByRoomId)
   }
 
   return {
     markerListByRoomId,
+    selectedMarker,
     setMarkerList,
-    getMarkerList,
     getFilteredMarkerList,
     fetchOnce,
-    deleteRoom
+    deleteRoom,
+    selectMarker
   }
 
 })

@@ -3,7 +3,8 @@ class MarkerModel {
   lng: number;
   lat: number;
   roomId: number
-  name: string|null = null
+  name: string|null = null      // 커스텀 마커에 표시될 이름
+  rotate: number|null = null    // 내가 기기가 보는 방향
 
   mapMarkerInfo: any|null = null;
 
@@ -21,6 +22,10 @@ class MarkerModel {
 
   setCustomOverlayMarker(name:string):void {
     this.name = name;
+  }
+
+  setCurrentMyPosition(rotate:number):void {
+    this.rotate = rotate
   }
 }
 

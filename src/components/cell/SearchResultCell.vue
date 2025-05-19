@@ -1,22 +1,34 @@
 <script setup lang="ts">
 
 import type { SearchModel } from '@/api/auth/search.ts'
+import { useCurrentPosition } from '@/store/useCurrentPosition.ts'
+import { getDistanceKm } from '../../utils/common.ts'
+import type { LatLng } from '@/components/map/LatLng.ts'
+import { onMounted } from 'vue'
 
 const props = defineProps<{
   result: SearchModel
   index: number
 }>()
+const storeLatLng: LatLng = {
+  lat: Number(props.result.y),
+  lng: Number(props.result.x)
+}
 
 const emit = defineEmits(['showAddModal'])
+
 
 const showAddModal = () => {
   emit('showAddModal',props.index)
 }
+
+const useCurrentPositionStore = useCurrentPosition()
+
 </script>
 
 <template>
   <li class="search-result" @click="showAddModal">
-    <p class="distanc" v-if="result.distance !== '' ">{{result.distance}} km</p>
+
     <div class="search-info">
       <div class="store-info">
         <p class="placeName">{{result.place_name}}</p>
@@ -24,7 +36,8 @@ const showAddModal = () => {
       </div>
       <p>{{result.road_address_name}}</p>
     </div>
-    <p class="distanc" v-if="result.distance === ''">위치를 공유하고 거리를 확인하세요!</p>
+    <p class="distanc" v-if="useCurrentPositionStore.position !== null ">{{getDistanceKm(useCurrentPositionStore.position,storeLatLng).toFixed(2)}} km</p>
+    <p v-if="useCurrentPositionStore.position === null" class="distanc" >위치를 공유하고 거리를 확인하세요!</p>
   </li>
 </template>
 

@@ -3,6 +3,8 @@ import  MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { createApp } from 'vue'
 import CustomOverlayMarker from '@/components/map/marker/CustomOverlayMarker.vue'
 import type { LatLng } from '@/components/map/LatLng.ts'
+import app from '@/App.vue'
+import MyMarker from '@/components/map/marker/MyMarker.vue'
 
 
 
@@ -21,7 +23,7 @@ export default class kakaoMap implements MapInterface {
     const position = new kakao.maps.LatLng(marker.lat, marker.lng)
 
     const container = document.createElement('div')
-    const app = createApp(CustomOverlayMarker, { name: marker.name })
+    const app = this.getCustomMarker(marker)
     app.mount(container)
 
     const overlayMarker = new kakao.maps.CustomOverlay({
@@ -31,7 +33,6 @@ export default class kakaoMap implements MapInterface {
     })
 
     marker.mapMarkerInfo = overlayMarker
-    // marker.kakaoOverlay = customOverlay
   }
 
   onDeleteMaerker(marker: MarkerModel): void {
@@ -41,5 +42,17 @@ export default class kakaoMap implements MapInterface {
 
   setPosition(latlng: LatLng): void {
     this.map.setCenter(new kakao.maps.LatLng(latlng.lat, latlng.lng));
+  }
+
+  onUpdateMarker(markerModel: MarkerModel): void {
+    markerModel.mapMarkerInfo.setPosition(new kakao.maps.LatLng(markerModel.lat, markerModel.lng))
+  }
+
+  private getCustomMarker(markerModel:MarkerModel) {
+    if(markerModel.id === 'my') {
+      return createApp(MyMarker)
+
+    }
+    return createApp(CustomOverlayMarker, { name: markerModel.name })
   }
 }

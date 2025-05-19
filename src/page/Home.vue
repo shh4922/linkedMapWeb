@@ -8,6 +8,8 @@ import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import RoomListModal from '@/components/modal/RoomListModal.vue'
+import { useCurrentPosition } from '@/store/useCurrentPosition.ts'
+
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
@@ -16,11 +18,32 @@ const roomStore = useToggleRoomStore()
 const markerListStore = useMarkserListStore()
 const isShowRoomModal = ref(false)
 
+const currentPositionStore = useCurrentPosition()
+
+
 const checkedRoomList = computed<string[]>(() =>
   Object.entries(roomStore.isCheckedMap)
     .filter(([_, checked]) => checked)  // 1) filter: [id, checked] 형태의 각 항목에서 checked === true 만
     .map(([id]) => id)                  // 2) map: 앞에 있던 [id, checked] 중 id(문자열)만 꺼내 배열로!
 )
+
+onMounted(()=> {
+  init()
+  // currentPositionStore.start()
+  if(currentPositionStore.position !== null) {
+    onChangeMyPosition(currentPositionStore.position)
+  }
+
+})
+
+watch(() => currentPositionStore.position, (newPosition) => {
+  onChangeMyPosition(newPosition)
+  console.log("newPos",newPosition)
+})
+
+watch(() => currentPositionStore.heading, (h) => {
+  console.log("방향변경",h, typeof h)
+})
 
 watch(checkedRoomList,async (newValue,oldValue) => {
   // 기존에 있던거에서 제거할 방 id
@@ -37,41 +60,44 @@ watch(checkedRoomList,async (newValue,oldValue) => {
     // fetchOnce: 캐시 없으면 API 호출, 있으면 바로 반환
     const markers = await markerListStore.fetchOnce(roomId)
 
-    // 지도에 그리기
-    // map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(roomId))
     createMarkerList(markers)
   }
 })
 
+
 const init = async () => {
   for (const roomId of checkedRoomList.value) {
-    // fetchOnce: 캐시 없으면 API 호출, 있으면 바로 반환
     const markers = await markerListStore.fetchOnce(roomId)
-
-    // 지도에 그리기
-    // map.value?.getInstance()?.onDeleteMarkerListByRoomId(Number(roomId))
     createMarkerList(markers)
   }
 }
 
-onMounted(()=> {
-  init()
-})
+const onChangeMyPosition = (position:any) => {
+  const myMarker = map.value?.getInstance()?.onFindMarker('my')
+  if(myMarker === null) {
+    const my = new MarkerModel("my",position.lng, position.lat, -1)
+    my.setCurrentMyPosition(90)
+    map.value?.getInstance()?.onCreateMarker(my)
+  } else {
+    if(myMarker === undefined) return
+    myMarker.lng = position.lng
+    myMarker.lat = position.lat
+
+    map.value?.getInstance()?.onUpdateMarker(myMarker)
+  }
+}
+
 
 
 
 const createMarkerList = (markerList:Marker[]) => {
   markerList.forEach((marker)=> {
-    createMarker(marker)
+    const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(marker.roomId))
+    markerModel.setCustomOverlayMarker(marker.title)
+    map.value?.getInstance()?.onCreateMarker(markerModel)
   })
 }
 
-const createMarker = (marker:Marker) => {
-
-  const markerModel = new MarkerModel(marker.id.toString(), marker.lng, marker.lat, Number(marker.roomId))
-  markerModel.setCustomOverlayMarker(marker.title)
-  map.value?.getInstance()?.onCreateMarker(markerModel)
-}
 
 const moveToSearch = () => {
   isAnimating.value = true
@@ -80,8 +106,9 @@ const moveToSearch = () => {
   }, 300) // 애니메이션 시간 후 이동
 }
 
-const toggleRoomModal = (isShow:boolean) => {
-  isShowRoomModal.value = isShow
+
+const toggleRoomModal = () => {
+  isShowRoomModal.value = !isShowRoomModal.value
 }
 </script>
 
@@ -90,10 +117,12 @@ const toggleRoomModal = (isShow:boolean) => {
   <div class="input-box" :class="{ animate: isAnimating }">
     <input class="search-container" placeholder="위치를 검색하세요" @click="moveToSearch"/>
   </div>
-  <i class="pi pi-users" @click="toggleRoomModal(true)"></i>
-  <i class="pi pi-map-marker"></i>
+  <i class="pi pi-users" :class="isShowRoomModal ? 'active' : '' " @click="toggleRoomModal" ></i>
+  <i class="pi pi-map-marker" @click="currentPositionStore.start()"></i>
+
 
   <RoomListModal v-if="isShowRoomModal" class="roomListModal"/>
+
   <Map class="map" ref="map" style="width: 100%; height: 100vh"/>
 </main>
 </template>
@@ -103,6 +132,7 @@ const toggleRoomModal = (isShow:boolean) => {
   width: 100%;
   height: 100vh;
 }
+
 i {
   z-index: 10;
   position: absolute;
@@ -122,6 +152,10 @@ i {
 }
 .pi-users {
   top: 200px;
+}
+.pi-users.active {
+  color: blue;
+  font-weight: bold;
 }
 
 .input-box {
@@ -157,7 +191,7 @@ i {
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 2;
+  z-index: 3;
   transform: translate(-50%, -50%);
 }
 </style>

@@ -1,8 +1,9 @@
 
 import type { MapInterface } from '@/components/map/interface/MapInterface.ts'
 import kakaoMap from '@/components/map/mapType/kakaoMap.ts'
-import type MarkerModel from '@/components/map/marker/MarkerModel.ts'
+import  MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { LatLng } from '@/components/map/LatLng.ts'
+import markerModel from '@/components/map/marker/MarkerModel.ts'
 
 export default class MapManager {
   dom: HTMLElement
@@ -18,17 +19,19 @@ export default class MapManager {
   }
 
   onCreateMarker = (markerModel:MarkerModel) => {
-    // 마커가 이미 존재하는지 확인
-    console.log(markerModel)
     const findIndex = this.markerList.findIndex(marker => marker.id === markerModel.id)
-    if(findIndex !== -1) {
-      console.log("이미 있어서 안그리고 리턴")
-      return
-    }
+    if(findIndex !== -1) {return}
 
     this.markerList.push(markerModel)
     this.mapInterface?.onCreateMaerker(markerModel)
-    console.log("마커추가 완료", this.markerList)
+  }
+
+  onUpdateMarker = (markerModel:MarkerModel) => {
+    const findIndex = this.markerList.findIndex((marker) => marker.id === markerModel.id)
+    if(findIndex === -1) return
+
+    this.mapInterface?.onUpdateMarker(markerModel)
+    this.markerList[findIndex] = markerModel
   }
 
   onDeleteMarkerListByRoomId = (roomId:number) => {

@@ -3,6 +3,7 @@ import { computed, onMounted, type Ref, ref, watch } from 'vue'
 import { fetchMyRoomList } from '@/api/category/category.ts'
 import type { Room } from '@/api/category/category.model.ts'
 import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
+import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 
 const token = localStorage.getItem('accessToken')
 const roomList: Ref<Room[]|null> = ref(null);
@@ -10,14 +11,15 @@ const isCheckedMap = ref<Record<number, boolean>>({})
 const roomStore = useToggleRoomStore()
 
 
-const getRoomList = async () => {
-  const res = await fetchMyRoomList()
-  roomList.value = res.data
-
-  res.data.forEach((room) => {
-    roomStore.setCheckedMap(room.roomId)
-  })
-}
+// const getRoomList = async () => {
+//   const res = await fetchMyRoomList()
+//   roomList.value = res.data
+//
+//   res.data.forEach((room) => {
+//     roomStore.setCheckedMap(room.roomId)
+//   })
+// }
+const {data:roomList2} = useFetchMyRoomList()
 
 
 const getRoomCheckRef = (roomId: number) => {
@@ -32,9 +34,9 @@ const onToggleChange = (event: Event, roomId: number) => {
   roomStore.setRoomChecked(roomId, target.checked)
 }
 
-onMounted(()=> {
-  getRoomList()
-})
+// onMounted(()=> {
+//   getRoomList()
+// })
 
 </script>
 
@@ -45,12 +47,17 @@ onMounted(()=> {
     </div>
 
     <div v-else class="category-container">
-      <router-link :to="{name: 'editCategory'}" class="edit">그룹 편집</router-link>
       <div v-if="roomList?.length === 0">
         <p>그룹을 만들어보세요~</p>
       </div>
+
+      <div class="roomListHeader">
+        <p>내가 속한 그룹</p>
+        <router-link :to="{name: 'editCategory'}" class="edit">그룹 편집</router-link>
+      </div>
+
       <ul class="category-list">
-        <li v-for="(room, index) in roomList" :key="index">
+        <li v-for="(room, index) in roomList2?.data" :key="index">
           <div class="category-item">
             <p>{{room.roomName}}</p>
             <input
@@ -85,8 +92,20 @@ onMounted(()=> {
   font-family: "nanum-5";
   gap: 1.5rem;
   background-color: white;
-  min-width: 200px;
+  min-width: 300px;
+  min-height: 40rem;
+  max-height: 50rem;
+  height: 400px;
+
+  overflow: hidden;
   border-radius: 1rem;
+
+  .roomListHeader {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .edit {
     padding: 0.4rem 0.8rem;
@@ -106,9 +125,27 @@ onMounted(()=> {
 
 .category-list {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  height: 100%;
+  overflow-y: auto;
+
+  /* 선택 사항: 깔끔한 스크롤바 스타일 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 .category-item {

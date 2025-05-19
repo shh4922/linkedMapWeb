@@ -1,0 +1,28 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 36 36">
+    <defs>
+        <radialGradient id="pgpvt7k0ta" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#ff3500"/>
+            <stop offset=".335" stop-color="#ff3500"/>
+            <stop offset=".683" stop-color="#ff977c"/>
+            <stop offset="1" stop-color="#fd977c"/>
+        </radialGradient>
+        <filter id="lmbqt8jdlb" x="4.5" y="4.5" width="27" height="27" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#0048c2"/>
+            <feComposite operator="in" in2="blur"/>
+        </filter>
+    </defs>
+    <g transform="translate(8366 2223)">
+        <circle cx="18" cy="18" r="18" transform="translate(-8366 -2223)" style="opacity:.5;fill:url(#pgpvt7k0ta)"/>
+        <g style="filter:url(#lmbqt8jdlb)">
+            <circle  cx="9" cy="9" r="9" transform="translate(-8357 -2214)" style="fill:#fff"/>
+        </g>
+        <g>
+            <circle  cx="9" cy="9" r="9" transform="translate(-8357 -2214)" style="fill:#fff"/>
+        </g>
+        <circle cx="6" cy="6" r="6" transform="translate(-8354 -2211)" style="fill:#f22a2a"/>
+        <path d="m3 0 3 6H0z" transform="translate(-8351 -2222)" style="fill:#f22a2a"/>
+    </g>
+</svg>
