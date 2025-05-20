@@ -10,7 +10,6 @@ import type { LatLng } from '@/components/map/LatLng.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 
 const route = useRoute()
-const markerListStore = useMarkserListStore()
 const map = ref<InstanceType<typeof Map> | null>(null)
 
 const {data: markerListResponse, refetch} = useFetchMarkerList(route.params.roomId as string)
@@ -20,7 +19,6 @@ const selectMarker = ref<number | null>(null)
 watch(() => markerListResponse?.value?.data, (newValue) => {
   if (!newValue) return
     markerList.value = newValue
-
   },
   { immediate: true }  // 이미 로딩되어 있으면 즉시 실행
 )
@@ -42,6 +40,8 @@ watch(
 const onSelectMarker = (marker: Marker) => {
   if(selectMarker.value === marker.id) {
     selectMarker.value = null
+    map.value?.getInstance()?.onSetZoomLevel(13)
+    return
   } else {
     selectMarker.value = marker.id
   }
@@ -50,6 +50,7 @@ const onSelectMarker = (marker: Marker) => {
     lat: marker.lat,
     lng: marker.lng
   }
+  map.value?.getInstance()?.onSetZoomLevel(3)
   map.value?.getInstance()?.onSetPosition(latlng)
 }
 

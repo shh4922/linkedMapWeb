@@ -46,9 +46,6 @@ onMounted(() => {
   map.value?.getInstance()?.onSetPosition(latlng)
 })
 
-// onUnmounted(()=> {
-//   map.value?.getInstance()?.onDeleteMarker("0")
-// })
 </script>
 
 <template>
@@ -58,7 +55,7 @@ onMounted(() => {
       <i class="pi pi-times" @click="closeAddModal"></i>
     </section>
 
-<!--    <Map class="map" ref="map" style="width: 100%; height: 250px"/>-->
+    <Map class="map" ref="map" style="width: 100%; height: 250px"/>
 
     <section class="searchInfo">
       <div class="storeName">
@@ -92,7 +89,7 @@ onMounted(() => {
           <option v-for="(room) in myRoomList?.data"
                   :key="room.id"
                   :value="room.roomId"
-          >>{{room.roomName}}</option>
+          >{{room.roomName}}</option>
         </select>
       </div>
 

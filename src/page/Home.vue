@@ -9,6 +9,7 @@ import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import RoomListModal from '@/components/modal/RoomListModal.vue'
 import { useCurrentPosition } from '@/store/useCurrentPosition.ts'
+import type { LatLng } from '@/components/map/LatLng.ts'
 
 
 const map = ref<InstanceType<typeof Map> | null>(null)
@@ -29,18 +30,17 @@ const checkedRoomList = computed<string[]>(() =>
 
 onMounted(()=> {
   init()
-  // currentPositionStore.start()
   if(currentPositionStore.position !== null) {
     onChangeMyPosition(currentPositionStore.position)
   }
-
 })
 
+/** 새로운 lat, lng 받아오면 위치 업데이트*/
 watch(() => currentPositionStore.position, (newPosition) => {
   onChangeMyPosition(newPosition)
-  console.log("newPos",newPosition)
 })
 
+/** 사용자 보는 방향 변경시 위치 업데이트. 그런데 기능완성 안됌. 테스트를 못함*/
 watch(() => currentPositionStore.heading, (h) => {
   console.log("방향변경",h, typeof h)
 })
@@ -64,6 +64,18 @@ watch(checkedRoomList,async (newValue,oldValue) => {
   }
 })
 
+watch(() => markerListStore.selectedMarker, (newValue)=> {
+  if(newValue === null)  {
+    map.value?.getInstance()?.onSetZoomLevel(13)
+    return
+  }
+  const latlng: LatLng = {
+    lat: newValue?.lat ?? 0,
+    lng: newValue?.lng ?? 0
+  }
+  map.value?.getInstance()?.onSetZoomLevel(3)
+  map.value?.getInstance()?.onSetPosition(latlng)
+})
 
 const init = async () => {
   for (const roomId of checkedRoomList.value) {

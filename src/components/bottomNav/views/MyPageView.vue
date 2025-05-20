@@ -5,10 +5,13 @@ import { useMyInfo } from '@/store/myInfoStore.ts'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { forrmatDate } from '../../../utils/common.ts'
+import { logout } from '@/api/auth/auth.ts'
+import { useQueryClient } from '@tanstack/vue-query'
 
 const router = useRouter()
 const { data:roomList } = useFetchMyRoomList()
 const myInfoStore = useMyInfo()
+const queryClient = useQueryClient()
 
 const goToLogin = () => {
   router.push({name:'login'})
@@ -23,8 +26,17 @@ const myInfo = computed(() => {
   return useMyInfo().getMyInfo
 })
 
-onMounted(() => {
+const logout2 = async () => {
+  const res = await logout()
+  if(res.data === '0') {
+    localStorage.removeItem('accessToken')
+    queryClient.removeQueries()
+    window.location.replace('/')
+    // myInfoStore.setMyInfo(null)
+  }
+}
 
+onMounted(() => {
   getMyInfo()
 })
 
@@ -54,7 +66,7 @@ onMounted(() => {
       </div>
 
       <div class="actions">
-        <button class="btn logout-btn">로그아웃</button>
+        <button class="btn logout-btn" @click="logout2">로그아웃</button>
         <button class="btn withdraw-btn">회원탈퇴</button>
       </div>
 

@@ -3,7 +3,6 @@ import  MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { createApp } from 'vue'
 import CustomOverlayMarker from '@/components/map/marker/CustomOverlayMarker.vue'
 import type { LatLng } from '@/components/map/LatLng.ts'
-import app from '@/App.vue'
 import MyMarker from '@/components/map/marker/MyMarker.vue'
 
 
@@ -48,11 +47,16 @@ export default class kakaoMap implements MapInterface {
     markerModel.mapMarkerInfo.setPosition(new kakao.maps.LatLng(markerModel.lat, markerModel.lng))
   }
 
+  setZoomLevel(zoomLevel: number): void {
+    this.map.setLevel(zoomLevel)
+  }
+
   private getCustomMarker(markerModel:MarkerModel) {
     if(markerModel.id === 'my') {
       return createApp(MyMarker)
-
     }
     return createApp(CustomOverlayMarker, { name: markerModel.name })
   }
+
+
 }

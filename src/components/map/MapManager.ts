@@ -76,6 +76,10 @@ export default class MapManager {
     this.mapInterface?.setPosition(latlng)
   }
 
+  onSetZoomLevel = (zoomLevel:number) => {
+    this.mapInterface?.setZoomLevel(zoomLevel)
+  }
+
   getInstance = () => {
     return this.mapInterface
   }

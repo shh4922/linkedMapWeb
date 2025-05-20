@@ -17,7 +17,7 @@ export const useMyInfo = defineStore('myInfo', {
   },
 
   actions: {
-    setMyInfo(myInfo:myInfo)  {
+    setMyInfo(myInfo:myInfo|null)  {
       this.myInfo = myInfo
     }
   }
