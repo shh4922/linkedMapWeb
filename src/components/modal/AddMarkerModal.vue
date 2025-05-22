@@ -2,7 +2,7 @@
 import type { SearchModel } from '@/api/auth/search.ts'
 import { onMounted, onUnmounted, ref } from 'vue'
 import Map from '@/components/map/Map.vue'
-import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 import { saveMarker } from '@/api/marker/marker.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'

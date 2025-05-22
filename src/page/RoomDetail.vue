@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
-import { useFetchRoomDetail } from '@/api/category/category.query.ts'
+import { useFetchRoomDetail } from '@/api/room/room.query.ts'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { forrmatDate } from '@/utils/common.ts'
 import AddInviteLink from '@/components/modal/AddInviteLink.vue'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
-import type { RoomMember } from '@/api/category/category.model.ts'
+import type { RoomMember } from '@/api/room/room.model.ts'
+import RoomEditModal from '@/components/modal/RoomEditModal.vue'
 
 const props = defineProps<{
   roomId: string
@@ -38,7 +39,7 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
 </script>
 
 <template>
-  <main :class="isShowModal ? 'gray' : '' ">
+  <main :class="isShowPermissionModal||isShowModal ? 'gray' : '' ">
     <section class="categoryInfo">
       <div class="info">
         <div class="info-head">
@@ -92,13 +93,15 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
       <ul>
         <RoomMemberCell v-for="(user,index) in roomDetail?.data.memberList"
                         :key="index"
+
                         :user-info="user"
+                        :roomId="roomId"
                         :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0"
                         @togglePermissionModal="emitTogglePermissionModal" />
       </ul>
     </section>
 
-    <div v-if="isShowModal" class="overlay" @click="toggleModal(false)"></div>
+    <div v-if="isShowModal||isShowPermissionModal" class="overlay" @click="toggleModal(false)"></div>
     <AddInviteLink v-if="isShowModal"
                    :room-id="props.roomId"
                    class="modal"
@@ -106,8 +109,12 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
 
     <EditPermissionModal v-if="isShowPermissionModal"
                          :roomId="props.roomId"
+                         class="modal"
                          :room-member="selectedRoomMember"
                          @togglePermissionModal="emitTogglePermissionModal" />
+
+    <RoomEditModal v-if="roomDetail !== undefined"
+                   :room-detail-info="roomDetail.data"/>
   </main>
 </template>
 

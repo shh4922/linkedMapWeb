@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import RoomCell from '@/components/cell/RoomCell.vue'
-import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
 import { ref } from 'vue'
 

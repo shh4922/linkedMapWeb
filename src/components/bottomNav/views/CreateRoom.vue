@@ -1,8 +1,10 @@
 <script setup lang="ts">
 
 import { reactive } from 'vue'
-import { postCreateRoom } from '@/api/category/category.ts'
+import { postCreateRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
+
+
 const inputFiled = reactive({
   title: '',
   description: '',

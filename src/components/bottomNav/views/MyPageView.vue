@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMyInfo } from '@/store/myInfoStore.ts'
-import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { forrmatDate } from '../../../utils/common.ts'
 import { logout } from '@/api/auth/auth.ts'
@@ -28,12 +28,12 @@ const myInfo = computed(() => {
 
 const logout2 = async () => {
   const res = await logout()
-  if(res.data === '0') {
+  // if(res.data === '0') {
     localStorage.removeItem('accessToken')
     queryClient.removeQueries()
     window.location.replace('/')
     // myInfoStore.setMyInfo(null)
-  }
+  // }
 }
 
 onMounted(() => {

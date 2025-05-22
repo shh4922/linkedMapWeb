@@ -1,23 +1,39 @@
 <script setup lang="ts">
-import type { RoomMember } from '@/api/category/category.model.ts'
+import type { RoomMember } from '@/api/room/room.model.ts'
 import { computed, ref } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
+import { expelledRoomMember } from '@/api/room/room.ts'
+import type { AxiosError } from 'axios'
 
 const emit = defineEmits(['togglePermissionModal'])
+
+
+
+
+
+const props = defineProps<{
+  userInfo: RoomMember,
+  roomId: string,
+  currentOwnerId: number
+}>()
+
+const fireUser = async () => {
+  if (confirm(`${props.userInfo.name} 를 추방 하시겠습니까?`)){    //확인
+    try {
+      const res = await expelledRoomMember(props.userInfo.memberId, Number(props.roomId))
+      console.log(res)
+    } catch (e) {
+      console.log(e)
+      alert("권한이 없습니다.")
+    }
+  }
+  return;
+}
 
 const isShowChangePermision = () => {
   emit('togglePermissionModal',true,props.userInfo)
 }
-
-const fireUser = () => {
-  alert("유저 추방하기")
-}
-
-const props = defineProps<{
-  userInfo: RoomMember
-  currentOwnerId: number
-}>()
 
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
@@ -35,8 +51,6 @@ const myInfo = computed(() => {
       <button @click="isShowChangePermision" class="btn permission">권한변경</button>
       <button @click="fireUser" class="btn fire">추방하기</button>
     </div>
-
-
   </li>
 </template>
 <style scoped lang="scss">

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/vue-query'
-import { fetchRoomDetail, fetchMyRoomList } from '@/api/category/category.ts'
+import { fetchRoomDetail, fetchMyRoomList } from '@/api/room/room.ts'
 
 export const useFetchMyRoomList = () => {
   return useQuery({

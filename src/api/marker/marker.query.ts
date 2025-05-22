@@ -1,7 +1,7 @@
 import { type QueryFunctionContext, useQueries, useQuery } from '@tanstack/vue-query'
 import { fetchMarkerList } from '@/api/marker/marker.ts'
 import { computed, type Ref } from 'vue'
-import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 
 
 export const useFetchMarkerList = (roomId: string) => {

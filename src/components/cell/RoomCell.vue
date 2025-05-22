@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import type { Category, Room } from '@/api/category/category.model.ts'
+import type { Category, Room } from '@/api/room/room.model.ts'
 
 const router = useRouter()
 const moveToDetail = () => {

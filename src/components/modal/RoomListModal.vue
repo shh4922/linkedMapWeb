@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, type Ref, ref, watch } from 'vue'
-import { fetchMyRoomList } from '@/api/category/category.ts'
-import type { Room } from '@/api/category/category.model.ts'
+import { fetchMyRoomList } from '@/api/room/room.ts'
+import type { Room } from '@/api/room/room.model.ts'
 import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
-import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 
 const token = localStorage.getItem('accessToken')
 const roomList: Ref<Room[]|null> = ref(null);

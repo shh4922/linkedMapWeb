@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import { onMounted } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
-import { useFetchRoomDetail } from '@/api/category/category.query.ts'
+import { useFetchRoomDetail } from '@/api/room/room.query.ts'
 import { forrmatDate } from '../utils/common.ts'
 import { joinRoom } from '@/api/invite/invite.ts'
 import router from '@/router'

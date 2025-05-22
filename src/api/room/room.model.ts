@@ -35,7 +35,12 @@ export interface RoomDetail {
   markerCount: number;
 }
 
+/**
+ *  특정방에 속한 유저의 정보를 수정할때는 왠만하면 roomMemberId 가 필요
+ *  그냥 방 자체, 또는 유저 자체를 변경할때는 memberId, roomId 등이 필요.
+ * */
 export interface RoomMember {
+  roomMemberId: number;
   memberId: number;
   email: string;
   name: string;
