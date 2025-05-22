@@ -2,8 +2,11 @@
 
 import RoomCell from '@/components/cell/RoomCell.vue'
 import { useFetchMyRoomList } from '@/api/category/category.query.ts'
+import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
+import { ref } from 'vue'
 
 const {data:roomList} = useFetchMyRoomList()
+
 
 </script>
 
@@ -19,8 +22,12 @@ const {data:roomList} = useFetchMyRoomList()
       <router-link to="add">그룹 만들기 버튼임 눌러보셈</router-link>
     </div>
     <ul v-else>
-      <RoomCell v-for="(room, index) in roomList?.data" :key="index" :room="room"/>
+      <RoomCell v-for="(room, index) in roomList?.data"
+                :key="index"
+                :room="room" />
     </ul>
+
+
   </main>
 </template>
 

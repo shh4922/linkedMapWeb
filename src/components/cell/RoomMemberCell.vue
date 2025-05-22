@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import type { RoomMember } from '@/api/category/category.model.ts'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
+import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
+
+const emit = defineEmits(['togglePermissionModal'])
 
 const isShowChangePermision = () => {
-  alert("권한변경 하는 모달 띄우기")
+  emit('togglePermissionModal',true,props.userInfo)
 }
 
 const fireUser = () => {
   alert("유저 추방하기")
 }
 
-defineProps<{
+const props = defineProps<{
   userInfo: RoomMember
   currentOwnerId: number
 }>()
@@ -32,6 +35,8 @@ const myInfo = computed(() => {
       <button @click="isShowChangePermision" class="btn permission">권한변경</button>
       <button @click="fireUser" class="btn fire">추방하기</button>
     </div>
+
+
   </li>
 </template>
 <style scoped lang="scss">

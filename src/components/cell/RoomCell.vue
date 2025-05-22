@@ -13,14 +13,19 @@ const props = defineProps<{
 </script>
 
 <template>
-  <li @click="moveToDetail" class="category-card">
-    <div class="title">{{props.room.roomName }}</div>
-    <div class="description">{{props.room.roomDescription}}</div>
-    <div class="category-info">
-      <p><span>방장</span>{{props.room.currentOwnerName}}</p>
-      <p><span>참여인원</span>{{props.room.memberCount}}</p>
-      <p><span>마커수</span>{{props.room.markerCount}}개</p>
+  <li @click="moveToDetail" class="container">
+    <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>
+
+    <div class="category-card">
+      <div class="title">{{props.room.roomName }}</div>
+      <div class="description">{{props.room.roomDescription}}</div>
+      <div class="category-info">
+        <p><span>방장</span>{{props.room.currentOwnerName}}</p>
+        <p><span>참여인원</span>{{props.room.memberCount}}</p>
+        <p><span>마커수</span>{{props.room.markerCount}}개</p>
+      </div>
     </div>
+
   </li>
 </template>
 
@@ -31,9 +36,9 @@ $text-main: #1e1e1e;
 $text-muted: #999;
 $border-color: #ffe1d6;
 
-.category-card {
+.container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   padding: 1rem 1.2rem;
   border: 1px solid $border-color;
   border-radius: 12px;
@@ -41,11 +46,26 @@ $border-color: #ffe1d6;
   cursor: pointer;
   transition: background 0.2s ease;
   font-family: "nanum-5";
-  gap: 0.6rem;
+  gap: 2rem;
 
   &:hover {
     background: $light-orange;
   }
+
+  .roomImage {
+    width: 50px;
+    height: 50px;
+    object-fit: fill;
+    border-radius: 50%;
+  }
+}
+
+.category-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
 
   .title {
     font-size: 1rem;

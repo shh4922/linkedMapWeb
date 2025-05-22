@@ -36,6 +36,7 @@ export interface RoomDetail {
 }
 
 export interface RoomMember {
+  memberId: number;
   email: string;
   name: string;
   role: string;

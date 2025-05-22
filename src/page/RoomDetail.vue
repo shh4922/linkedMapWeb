@@ -5,13 +5,18 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { forrmatDate } from '@/utils/common.ts'
 import AddInviteLink from '@/components/modal/AddInviteLink.vue'
+import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
+import type { RoomMember } from '@/api/category/category.model.ts'
 
 const props = defineProps<{
   roomId: string
 }>()
 
 const { data: roomDetail } = useFetchRoomDetail(props.roomId)
+const selectedRoomMember = ref<RoomMember|null>(null)
 const isShowModal = ref(false)
+const isShowPermissionModal = ref(false)
+
 const deleteCategory = () => {
   alert('카테고리 삭제')
 }
@@ -24,6 +29,11 @@ const toggleModal = (isShow:boolean) => {
 }
 
 
+const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=null) => {
+  selectedRoomMember.value = roomMember
+  isShowPermissionModal.value = isShow
+}
+
 
 </script>
 
@@ -32,13 +42,20 @@ const toggleModal = (isShow:boolean) => {
     <section class="categoryInfo">
       <div class="info">
         <div class="info-head">
-          <h2 class="title">{{ roomDetail?.data.roomName }}</h2>
+          <div class="groupTitle">
+            <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>
+            <div class="roomInfo">
+              <h2 class="title">{{ roomDetail?.data.roomName }}</h2>
+              <p class="description">{{ roomDetail?.data.roomDescription }}</p>
+            </div>
+          </div>
+
           <div class="info-desc" v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId">
             <button @click="deleteCategory">삭제하기</button>
             <button class="update">수정하기</button>
           </div>
         </div>
-        <p class="description">{{ roomDetail?.data.roomDescription }}</p>
+
       </div>
 
       <div class="subInfoContainer">
@@ -74,9 +91,10 @@ const toggleModal = (isShow:boolean) => {
 
       <ul>
         <RoomMemberCell v-for="(user,index) in roomDetail?.data.memberList"
-                          :key="index"
-                          :user-info="user"
-                          :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0" />
+                        :key="index"
+                        :user-info="user"
+                        :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0"
+                        @togglePermissionModal="emitTogglePermissionModal" />
       </ul>
     </section>
 
@@ -85,6 +103,11 @@ const toggleModal = (isShow:boolean) => {
                    :room-id="props.roomId"
                    class="modal"
                    @close="toggleModal(false)" />
+
+    <EditPermissionModal v-if="isShowPermissionModal"
+                         :roomId="props.roomId"
+                         :room-member="selectedRoomMember"
+                         @togglePermissionModal="emitTogglePermissionModal" />
   </main>
 </template>
 
@@ -119,6 +142,45 @@ main {
         justify-content: space-between;
         align-items: center;
 
+        .groupTitle {
+          display: flex;
+          align-items: center;
+          gap: 2rem;
+
+          .roomImage {
+            width: 60px;
+            height: 60px;
+            object-fit: fill;
+            border-radius: 50%;
+          }
+
+          .roomInfo {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            .title {
+              font-size: 1.8rem;
+              font-family: nanum-5;
+              font-weight: bold;
+              color: $text-color;
+              margin-top: 1rem;
+            }
+
+            .description {
+              font-size: 1rem;
+              font-family: nanum-5;
+              color: $sub-text-color;
+              margin-top: 0.3rem;
+            }
+          }
+        }
+      }
+
+      .info-desc {
+        display: flex;
+        gap: 1rem;
+
         button {
           font-size: 1rem;
           color: $main-color;
@@ -135,19 +197,7 @@ main {
             color: white;
           }
         }
-      }
 
-      .title {
-        font-size: 1.8rem;
-        font-family: nanum-5;
-        font-weight: bold;
-        color: $text-color;
-        margin-top: 1rem;
-      }
-
-      .info-desc {
-        display: flex;
-        gap: 1rem;
         .update {
           color: gray;
           border: 1px solid gray;
@@ -156,13 +206,6 @@ main {
           background-color: gray;
           color: white;
         }
-      }
-
-      .description {
-        font-size: 1rem;
-        font-family: nanum-5;
-        color: $sub-text-color;
-        margin-top: 0.3rem;
       }
     }
 

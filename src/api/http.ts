@@ -31,6 +31,7 @@ export const post = async <T>(url: string, data?: object, config?: AxiosRequestC
   }
 };
 
+
 export const getWithToken = async <T>(url: string, config?: AxiosRequestConfig): Promise<DefaultResponse<T>> => {
   const res = await interceptorAxios.get<DefaultResponse<T>>(url, config);
   return res.data
@@ -40,6 +41,7 @@ export const postWithToken = async <T>(url: string, data?: object, config?: Axio
   const response = await interceptorAxios.post<DefaultResponse<T>>(url, data, config);
   return response.data
 };
+
 export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfig): Promise<Result<T>> => {
   try {
     const response = await interceptorAxios.delete<T>(url, config);
@@ -48,4 +50,9 @@ export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfi
     const err = error as AxiosError<DefaultError>
     return  { error:err }
   }
+};
+
+export const pathWithToken = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<DefaultResponse<T>> => {
+  const response = await interceptorAxios.patch<DefaultResponse<T>>(url, data, config);
+  return response.data
 };
