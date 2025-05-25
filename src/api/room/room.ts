@@ -1,4 +1,4 @@
-import { getWithToken, postWithToken } from '@/api/http.ts'
+import { getWithToken, postWithToken, putWithToken } from '@/api/http.ts'
 import type { RoomDetail, Room } from '@/api/room/room.model.ts'
 import type { DefaultResponse } from '@/api/DefaultResponse.ts'
 
@@ -24,4 +24,14 @@ export const expelledRoomMember = async (roomMemberId:number, roomId:number) => 
     roomId: roomId
   }
   return postWithToken("/roommember/expelled",data)
+}
+
+export const updateRoom = (roomId: number, roomName:string, description:string, imageUrl:string|null) => {
+  const data = {
+    roomId:roomId,
+    roomName: roomName,
+    description:description,
+    imageUrl: imageUrl
+  }
+  return putWithToken('/room/update', data)
 }

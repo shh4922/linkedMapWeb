@@ -84,6 +84,11 @@ onMounted(() => {
       </div>
 
       <div>
+        <p class="sub">설명</p>
+        <input class="result" v-model="description" placeholder="해당 장소에 대한 설명을 작성해보세요"/>
+      </div>
+
+      <div>
         <p class="sub">추가할 그룹명</p>
         <select class="result" v-model="selectRoomId">
           <option v-for="(room) in myRoomList?.data"
@@ -93,12 +98,7 @@ onMounted(() => {
         </select>
       </div>
 
-      <div>
-        <p class="sub">설명</p>
-        <input class="result" v-model="description" placeholder="해당 장소에 대한 설명을 작성해보세요"/>
-      </div>
     </section>
-
     <button @click="submit" class="save">저장하기</button>
   </article>
 </template>

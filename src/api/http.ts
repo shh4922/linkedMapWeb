@@ -56,3 +56,8 @@ export const pathWithToken = async <T>(url: string, data?: object, config?: Axio
   const response = await interceptorAxios.patch<DefaultResponse<T>>(url, data, config);
   return response.data
 };
+
+export const putWithToken = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<DefaultResponse<T>> => {
+  const response = await interceptorAxios.put<DefaultResponse<T>>(url, data, config);
+  return response.data
+};

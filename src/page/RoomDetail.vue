@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
 import { useFetchRoomDetail } from '@/api/room/room.query.ts'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { forrmatDate } from '@/utils/common.ts'
 import AddInviteLink from '@/components/modal/AddInviteLink.vue'
@@ -15,8 +15,12 @@ const props = defineProps<{
 
 const { data: roomDetail } = useFetchRoomDetail(props.roomId)
 const selectedRoomMember = ref<RoomMember|null>(null)
-const isShowModal = ref(false)
-const isShowPermissionModal = ref(false)
+const modal = reactive({
+  isShowInviteModal: false,
+  isShowPermissionModal: false,
+  isShowEditGroupModal : false
+})
+
 
 const deleteCategory = () => {
   alert('카테고리 삭제')
@@ -26,20 +30,25 @@ const myInfo = computed(() => {
 })
 
 const toggleModal = (isShow:boolean) => {
-  isShowModal.value = isShow
+  modal.isShowInviteModal = isShow
 }
 
 
 const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=null) => {
   selectedRoomMember.value = roomMember
-  isShowPermissionModal.value = isShow
+  modal.isShowPermissionModal = isShow
 }
 
+const offModal = () => {
+  modal.isShowEditGroupModal = false
+  modal.isShowInviteModal = false
+  modal.isShowPermissionModal = false
+}
 
 </script>
 
 <template>
-  <main :class="isShowPermissionModal||isShowModal ? 'gray' : '' ">
+  <main :class="modal.isShowPermissionModal||modal.isShowInviteModal||modal.isShowEditGroupModal ? 'gray' : '' ">
     <section class="categoryInfo">
       <div class="info">
         <div class="info-head">
@@ -53,7 +62,7 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
 
           <div class="info-desc" v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId">
             <button @click="deleteCategory">삭제하기</button>
-            <button class="update">수정하기</button>
+            <button @click="()=>{modal.isShowEditGroupModal=true}" class="update">수정하기</button>
           </div>
         </div>
 
@@ -101,19 +110,20 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
       </ul>
     </section>
 
-    <div v-if="isShowModal||isShowPermissionModal" class="overlay" @click="toggleModal(false)"></div>
-    <AddInviteLink v-if="isShowModal"
+    <div v-if="modal.isShowInviteModal||modal.isShowPermissionModal||modal.isShowEditGroupModal" class="overlay" @click="toggleModal(false)"></div>
+    <AddInviteLink v-if="modal.isShowInviteModal"
                    :room-id="props.roomId"
                    class="modal"
                    @close="toggleModal(false)" />
 
-    <EditPermissionModal v-if="isShowPermissionModal"
+    <EditPermissionModal v-if="modal.isShowPermissionModal"
                          :roomId="props.roomId"
                          class="modal"
                          :room-member="selectedRoomMember"
                          @togglePermissionModal="emitTogglePermissionModal" />
 
-    <RoomEditModal v-if="roomDetail !== undefined"
+    <RoomEditModal v-if="roomDetail !== undefined && modal.isShowEditGroupModal"
+                   class="modal"
                    :room-detail-info="roomDetail.data"/>
   </main>
 </template>
@@ -322,3 +332,4 @@ main {
 }
 
 </style>
+

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 
 import type { RoomDetail } from '@/api/room/room.model.ts'
-import { reactive } from 'vue'
-import { postCreateRoom } from '@/api/room/room.ts'
+import { reactive, ref } from 'vue'
+import { postCreateRoom, updateRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
+import { fetchPreSigned, uploadFile } from '@/api/aws/s3.ts'
 
 const props = defineProps<{
   roomDetailInfo: RoomDetail
@@ -11,6 +12,8 @@ const props = defineProps<{
 
 const router = useRouter()
 
+const preSignedUrl = ref<string|null>(null)
+const myFile = ref<File|null>(null)
 const inputFiled = reactive({
   title: props.roomDetailInfo.roomName,
   description: props.roomDetailInfo.roomDescription,
@@ -23,9 +26,8 @@ const uploadImage = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (!file) return;
-
-  // inputFiled.imageFile = file;
   inputFiled.imageUrl = URL.createObjectURL(file); // 미리보기 URL 설정
+  myFile.value = file
 }
 
 const checkInput = () => {
@@ -41,19 +43,38 @@ const checkInput = () => {
 }
 
 /** post 요청 */
-const submit = async () => {
+const update = async () => {
   if(!checkInput()) { return }
-  const res = await postCreateRoom(inputFiled.title, inputFiled.description)
-  if(res.status === 200) {
-    alert("그룹 생성 완료")
-    router.go(-1)
+  let fileUrl2 : string|null = null;
+
+  try {
+    if(myFile.value !== null) {
+      const res = await fetchPreSigned('rooms',myFile.value)
+      console.log(res.data)
+
+      const uploadUrl = res.data.uploadUrl
+      fileUrl2 = res.data.fileUrl
+
+      const res2 = await uploadFile(uploadUrl, myFile.value)
+      console.log(res2)
+    }
+
+    const res3 = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, fileUrl2)
+    console.log(res3)
+  } catch (e){
+    console.error(e)
   }
+  // const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, inputFiled.imageUrl)
+  // if(res.status === 200) {
+  //   alert("업데이트가 완료되었ㅅ습니다.")
+  //   router.go(-1)
+  // }
 }
 </script>
 
 <template>
   <div class="createRoomContainer">
-    <h1 class="title">그룹 생성</h1>
+    <h1 class="title">그룹 편집</h1>
 
     <div class="image-upload-wrapper">
       <div v-if="!inputFiled.imageUrl" class="image-placeholder">
@@ -74,7 +95,7 @@ const submit = async () => {
     <input type="text" placeholder="그룹 명을 입력하세요" v-model="inputFiled.title" class="inputField" />
     <textarea placeholder="그룹 설명을 입력하세요" v-model="inputFiled.description" class="inputField descField" />
 
-    <button class="save" @click="submit">저장</button>
+    <button class="save" @click="update">저장</button>
   </div>
 </template>
 
@@ -85,6 +106,11 @@ const submit = async () => {
   gap: 1.5rem;
   padding: 2rem;
   font-family: nanum-4;
+  width: 320px;
+  max-width: 90%;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);;
 
   .title {
     font-size: 2rem;
