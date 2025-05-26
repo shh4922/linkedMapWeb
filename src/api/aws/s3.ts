@@ -30,12 +30,10 @@ export const fetchPreSigned = (folder:string, file:File) => {
 }
 
 export const uploadFile = (url:string, file:File) => {
-  console.log("uploading to:", url);
-  console.log("Content-Type:", file.type);
   return axios.put(url, file, {
     headers: {
       'Content-Type' : file.type,
-      'x-amz-acl': 'public-read'
+      // 'x-amz-acl': 'bucket-owner-full-control' // 이 줄 추가
     }
   })
 }

@@ -50,19 +50,22 @@ const update = async () => {
   try {
     if(myFile.value !== null) {
       const res = await fetchPreSigned('rooms',myFile.value)
-      console.log(res.data)
 
       const uploadUrl = res.data.uploadUrl
       fileUrl2 = res.data.fileUrl
 
       const res2 = await uploadFile(uploadUrl, myFile.value)
-      console.log(res2)
     }
 
     const res3 = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, fileUrl2)
-    console.log(res3)
+    if(res3.status === 200) {
+      alert("업데이트가 완료되었습니다.")
+      router.go(-1)
+    } else {
+      alert("업데이트에 실패했습니다. 다시 시도해주세요.")
+    }
   } catch (e){
-    console.error(e)
+    console.error(e.message)
   }
   // const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, inputFiled.imageUrl)
   // if(res.status === 200) {

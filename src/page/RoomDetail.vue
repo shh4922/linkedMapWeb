@@ -53,7 +53,8 @@ const offModal = () => {
       <div class="info">
         <div class="info-head">
           <div class="groupTitle">
-            <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>
+<!--            <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>-->
+            <img class="roomImage" :src="roomDetail?.data.imageUrl"/>
             <div class="roomInfo">
               <h2 class="title">{{ roomDetail?.data.roomName }}</h2>
               <p class="description">{{ roomDetail?.data.roomDescription }}</p>
