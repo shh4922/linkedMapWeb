@@ -1,16 +1,18 @@
 <script setup lang="ts">
 
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { postCreateRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
+import { fetchPreSigned, uploadFile } from '@/api/aws/s3.ts'
 
 
 const inputFiled = reactive({
   title: '',
   description: '',
-  imageFile: '',
   imageUrl: '', // 미리보기 URL 저장용
 })
+const imageFile = ref<File|null>(null)
+
 const router = useRouter()
 
 /** 그룹명, 그룹설명 조건 체크*/
@@ -32,14 +34,15 @@ const uploadImage = (event: Event) => {
   const file = target.files?.[0];
   if (!file) return;
 
-  // inputFiled.imageFile = file;
+  imageFile.value = file;
   inputFiled.imageUrl = URL.createObjectURL(file); // 미리보기 URL 설정
 }
 
 /** post 요청 */
 const submit = async () => {
   if(!checkInput()) { return }
-  const res = await postCreateRoom(inputFiled.title, inputFiled.description)
+
+  const res = await postCreateRoom(inputFiled.title, inputFiled.description, imageFile.value)
   if(res.status === 200) {
     alert("그룹 생성 완료")
     router.go(-1)

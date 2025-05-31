@@ -6,19 +6,9 @@ import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 
 const token = localStorage.getItem('accessToken')
-const roomList: Ref<Room[]|null> = ref(null);
-const isCheckedMap = ref<Record<number, boolean>>({})
 const roomStore = useToggleRoomStore()
 
 
-// const getRoomList = async () => {
-//   const res = await fetchMyRoomList()
-//   roomList.value = res.data
-//
-//   res.data.forEach((room) => {
-//     roomStore.setCheckedMap(room.roomId)
-//   })
-// }
 const {data:roomList2} = useFetchMyRoomList()
 
 
@@ -34,43 +24,52 @@ const onToggleChange = (event: Event, roomId: number) => {
   roomStore.setRoomChecked(roomId, target.checked)
 }
 
-// onMounted(()=> {
-//   getRoomList()
-// })
 
 </script>
 
 <template>
-  <div>
+  <div class="category-container">
     <div v-if="!token" class="login">
       <p>로그인후, 그룹을 만들어보세요!</p>
     </div>
 
-    <div v-else class="category-container">
-      <div v-if="roomList?.length === 0">
-        <p>그룹을 만들어보세요~</p>
-      </div>
-
+    <template v-else>
       <div class="roomListHeader">
         <p>내가 속한 그룹</p>
-        <router-link :to="{name: 'editCategory'}" class="edit">그룹 편집</router-link>
+        <router-link :to="{ name: 'editCategory' }" class="edit">
+          그룹 편집
+        </router-link>
       </div>
 
-      <ul class="category-list">
-        <li v-for="(room, index) in roomList2?.data" :key="index">
+      <div v-if="roomList2?.data.length === 0" class="empty-state">
+        <p class="empty-message">
+          아직 속해있는 그룹이 없습니다.
+        </p>
+        <router-link
+          :to="{ name: 'createRoom' }"
+          class="empty-action"
+        >
+          그룹 생성하러 가기
+        </router-link>
+      </div>
+      <ul v-else class="category-list">
+        <li
+          v-for="(room, index) in roomList2?.data"
+          :key="index"
+        >
           <div class="category-item">
-            <p>{{room.roomName}}</p>
+            <p>{{ room.roomName }}</p>
             <input
               type="checkbox"
               id="toggleSwitch"
               class="toggle-input"
               :checked="getRoomCheckRef(room.roomId).value"
-              @change="(e) => onToggleChange(e,room.roomId)"
+              @change="(e) => onToggleChange(e, room.roomId)"
             />
           </div>
         </li>
       </ul>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -96,7 +95,6 @@ const onToggleChange = (event: Event, roomId: number) => {
   min-height: 40rem;
   max-height: 50rem;
   height: 400px;
-
   overflow: hidden;
   border-radius: 1rem;
 
@@ -105,6 +103,13 @@ const onToggleChange = (event: Event, roomId: number) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    p {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+    }
   }
 
   .edit {
@@ -121,30 +126,61 @@ const onToggleChange = (event: Event, roomId: number) => {
       background-color: #ff6335;
     }
   }
-}
 
-.category-list {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  height: 100%;
-  overflow-y: auto;
+  /* ● 빈 상태 스타일 ● */
+  .empty-state {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background-color: #faf9f7;
+    border: 1px solid #f0eae4;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
 
-  /* 선택 사항: 깔끔한 스크롤바 스타일 */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
+    .empty-message {
+      margin: 0;
+      font-size: 1rem;
+      color: #666;
+      font-style: italic;
+      text-align: center;
+    }
 
-  &::-webkit-scrollbar {
-    width: 6px;
+    .empty-action {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      color:  #ff774d;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+    }
   }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
+
+  .category-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    overflow-y: auto;
+
+    /* 깔끔한 스크롤바 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 }
 
@@ -170,26 +206,25 @@ const onToggleChange = (event: Event, roomId: number) => {
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
-}
 
-.toggle-input::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  background-color: #fff;
-  border-radius: 50%;
-  transition: transform 0.3s;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
 
-.toggle-input:checked {
-  background-color: #ff774d;
-}
+  &:checked {
+    background-color: #ff774d;
+  }
 
-.toggle-input:checked::before {
-  transform: translateX(20px);
+  &:checked::before {
+    transform: translateX(20px);
+  }
 }
-
 </style>

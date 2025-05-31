@@ -57,8 +57,8 @@ const routes = [
         component: EditRoomView
       },
       {
-        path: 'createCategory',
-        name: 'createCategory',
+        path: 'createRoom',
+        name: 'createRoom',
         component: CreateRoom
       },
       {

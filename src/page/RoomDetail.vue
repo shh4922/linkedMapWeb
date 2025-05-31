@@ -8,11 +8,14 @@ import AddInviteLink from '@/components/modal/AddInviteLink.vue'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
 import type { RoomMember } from '@/api/room/room.model.ts'
 import RoomEditModal from '@/components/modal/RoomEditModal.vue'
+import { deleteRoom, expelledRoomMember } from '@/api/room/room.ts'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   roomId: string
 }>()
 
+const router = useRouter()
 const { data: roomDetail } = useFetchRoomDetail(props.roomId)
 const selectedRoomMember = ref<RoomMember|null>(null)
 const modal = reactive({
@@ -22,8 +25,19 @@ const modal = reactive({
 })
 
 
-const deleteCategory = () => {
-  alert('카테고리 삭제')
+const deleteRoom_ = async () => {
+  if (confirm(`${roomDetail?.value?.data.roomName} 을 삭제하시겠습니까?`)){    //확인
+    try {
+      const res = await deleteRoom(Number(props.roomId))
+
+      console.log(res)
+      router.go(-1)
+    } catch (e) {
+      console.log(e)
+      alert("권한이 없습니다.")
+    }
+  }
+  return;
 }
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
@@ -53,8 +67,8 @@ const offModal = () => {
       <div class="info">
         <div class="info-head">
           <div class="groupTitle">
-<!--            <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>-->
-            <img class="roomImage" :src="roomDetail?.data.imageUrl"/>
+
+            <img v-if="roomDetail?.data.imageUrl" class="roomImage" :src="roomDetail?.data.imageUrl"/>
             <div class="roomInfo">
               <h2 class="title">{{ roomDetail?.data.roomName }}</h2>
               <p class="description">{{ roomDetail?.data.roomDescription }}</p>
@@ -62,7 +76,7 @@ const offModal = () => {
           </div>
 
           <div class="info-desc" v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId">
-            <button @click="deleteCategory">삭제하기</button>
+            <button @click="deleteRoom_">삭제하기</button>
             <button @click="()=>{modal.isShowEditGroupModal=true}" class="update">수정하기</button>
           </div>
         </div>

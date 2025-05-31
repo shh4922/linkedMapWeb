@@ -14,12 +14,13 @@ const {data:roomList} = useFetchMyRoomList()
   <main>
     <div class="head">
       <h3>내가 속한 그룹</h3>
-      <router-link :to="{name:'createCategory'}">그룹 추가하기</router-link>
+
+      <router-link :to="{name:'createRoom'}">그룹 추가하기</router-link>
     </div>
     <div class="noCategory" v-if="roomList?.data.length === 0">
       <p>님 그룹이 없는듯</p>
       <p>추가하고 좀 만들어보셈</p>
-      <router-link to="add">그룹 만들기 버튼임 눌러보셈</router-link>
+      <router-link to="createRoom">그룹 만들기 버튼임 눌러보셈</router-link>
     </div>
     <ul v-else>
       <RoomCell v-for="(room, index) in roomList?.data"

@@ -45,33 +45,19 @@ const checkInput = () => {
 /** post 요청 */
 const update = async () => {
   if(!checkInput()) { return }
-  let fileUrl2 : string|null = null;
-
   try {
-    if(myFile.value !== null) {
-      const res = await fetchPreSigned('rooms',myFile.value)
+    const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, myFile.value)
 
-      const uploadUrl = res.data.uploadUrl
-      fileUrl2 = res.data.fileUrl
-
-      const res2 = await uploadFile(uploadUrl, myFile.value)
-    }
-
-    const res3 = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, fileUrl2)
-    if(res3.status === 200) {
+    if(res.status === 200) {
       alert("업데이트가 완료되었습니다.")
       router.go(-1)
     } else {
       alert("업데이트에 실패했습니다. 다시 시도해주세요.")
     }
+
   } catch (e){
     console.error(e.message)
   }
-  // const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, inputFiled.imageUrl)
-  // if(res.status === 200) {
-  //   alert("업데이트가 완료되었ㅅ습니다.")
-  //   router.go(-1)
-  // }
 }
 </script>
 

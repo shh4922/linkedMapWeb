@@ -72,7 +72,12 @@ onMounted(() => {
 
       <div class="category-section">
         <h2>내 그룹</h2>
-        <!-- 여기만 스크롤 가능 -->
+
+        <div class="noCategory" v-if="roomList?.data.length === 0">
+          <p>속해있는 그룹이 없습니다</p>
+          <router-link :to="{name:'createRoom'}">그룹 생성하기</router-link>
+        </div>
+
         <ul class="category-list">
           <li v-for="(room, index) in roomList?.data" :key="index" @click="router.push({name:'roomDetail', params:{roomId: room.roomId}})">
             <div class="category-name">{{ room.roomName }}</div>
@@ -216,6 +221,43 @@ h1 {
       }
     }
   }
+  .noCategory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #faf9f7;
+    border: 1px solid #f0eae4;
+    border-radius: 0.75rem;
+
+    p {
+      margin: 0;
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 1rem;
+      color: #666;
+      font-style: italic;
+      text-align: center;
+    }
+
+    a {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      background-color: #ff914d;
+      color: #fff;
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #e47d39;
+      }
+    }
+  }
 }
 
 .login-required {
@@ -252,4 +294,6 @@ h1 {
     }
   }
 }
+
+
 </style>

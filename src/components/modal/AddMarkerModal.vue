@@ -19,6 +19,9 @@ const props = defineProps<{
 
 const selectRoomId = ref<number | null>(null)
 const description = ref<string>("")
+const imageFile = ref<File|null>(null)
+const previewImageUrl = ref<string>("")
+
 const closeAddModal = async () => {
   emit('closeAddModal')
 }
@@ -45,6 +48,16 @@ onMounted(() => {
   map.value?.getInstance()?.onCreateMarker(markerModel)
   map.value?.getInstance()?.onSetPosition(latlng)
 })
+
+/** 이미지 업로드  */
+const uploadImage = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (!file) return;
+
+  imageFile.value = file;
+  previewImageUrl.value = URL.createObjectURL(file); // 미리보기 URL 설정
+}
 
 </script>
 
@@ -98,6 +111,23 @@ onMounted(() => {
         </select>
       </div>
 
+      <!--   이미지 넣는곳   -->
+      <div class="image-upload-wrapper">
+        <div v-if="!previewImageUrl" class="image-placeholder">
+          <label class="custom-upload-label">
+            이미지를 넣을 수 있습니다!
+            <input type="file" accept=".jpg,.png" @change="uploadImage" hidden />
+          </label>
+        </div>
+
+        <div v-else class="image-preview" :style="{ backgroundImage: 'url(' + previewImageUrl + ')' }">
+          <label class="change-label">
+            이미지 변경하기
+            <input type="file" accept=".jpg,.png" @change="uploadImage" hidden />
+          </label>
+        </div>
+      </div>
+
     </section>
     <button @click="submit" class="save">저장하기</button>
   </article>
@@ -107,11 +137,8 @@ onMounted(() => {
 article {
   font-family: nanum-5;
 }
-.map {
-  width: 100%;
-  height: 250px;
-  margin-bottom: 2rem;
-}
+
+/* 마커 추가 헤더 */
 .head {
   display: flex;
   align-items: center;
@@ -121,48 +148,200 @@ article {
 
   p {
     font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
   }
 
+  .pi-times {
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: coral;
+    }
+  }
 }
 
+/* 맵 영역 */
+.map {
+  width: 100%;
+  height: 250px;
+  margin-bottom: 2rem;
+  border: 1px solid #eee;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* 검색 정보 섹션 */
 .searchInfo {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
+  width: 100%;
 
   div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    font-size: 1.2rem;
+    font-size: 1rem;
 
     .sub {
-      color: gray;
+      color: #666;
       width: 30%;
-      //background-color: chartreuse;
+      font-weight: 600;
     }
     .result {
       flex: 1;
+      color: #333;
+      font-size: 0.95rem;
+      word-break: break-all;
+    }
+    a.result {
+      color: coral;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    input.result {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      width: 100%;
+
+      &::placeholder {
+        color: #aaa;
+      }
+      &:focus {
+        outline: none;
+        border-color: coral;
+      }
+    }
+    select.result {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      color: #333;
+      background: #fff;
+
+      &:focus {
+        outline: none;
+        border-color: coral;
+      }
     }
   }
 }
 
-select {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+/* 이미지 업로드 영역 */
+.image-upload-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border: 2px dashed #ddd;
+  border-radius: 0.75rem;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  /* 파일 input 숨기기 */
+  input[type="file"] {
+    display: none;
+  }
+
+  /* 이미지가 없을 때 표시되는 플레이스홀더 */
+  .image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 0.95rem;
+    text-align: center;
+    gap: 0.5rem;
+
+    .custom-upload-label {
+      padding: 0.6rem 1rem;
+      background-color: coral;
+      color: #fff;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: opacity 0.2s, background-color 0.2s;
+      font-size: 0.9rem;
+      font-family: nanum-4;
+
+      &:hover {
+        background-color: darken(coral, 10%);
+      }
+    }
+  }
+
+  /* 이미지가 있을 때 보여지는 미리보기 */
+  .image-preview {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0.75rem;
+
+    /* 어두운 오버레이 + 변경 버튼 */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.15);
+    }
+    .change-label {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      padding: 0.5rem 0.8rem;
+      background-color: rgba(255, 255, 255, 0.85);
+      color: coral;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: nanum-4;
+      transition: background-color 0.2s, color 0.2s;
+
+      &:hover {
+        background-color: #fff;
+        color: darken(coral, 10%);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+    }
+  }
 }
+
+/* 저장 버튼 */
 .save {
   width: 100%;
   outline: none;
   border: none;
   background-color: coral;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-family: nanum-4;
   padding: 1rem 0.5rem;
-  border-radius: 0.4rem;
-}
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
 
+  &:hover {
+    opacity: 0.9;
+  }
+}
 </style>
