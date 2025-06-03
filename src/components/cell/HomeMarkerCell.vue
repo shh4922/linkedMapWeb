@@ -4,7 +4,7 @@ import { forrmatDate } from '@/utils/common.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import { computed } from 'vue'
-
+import noImage from "@/assets/image/placeholder_no_image.png"
 
 const props = defineProps<{
   marker: Marker
@@ -26,8 +26,9 @@ const selectedMarker = computed(()=> {
     @click="markerSelect"
     :class="{ selected: selectedMarker }"
   >
+<!--    src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20241004_92%2F17280304380000bFN4_JPEG%2F4517746122367149_762170218.jpg&type=a340"-->
     <img
-      src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20241004_92%2F17280304380000bFN4_JPEG%2F4517746122367149_762170218.jpg&type=a340"
+      :src="marker.imageUrl ?? noImage"
       alt="마커 이미지"
     />
     <div class="card-content">

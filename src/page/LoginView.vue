@@ -26,14 +26,20 @@ const submit = async () => {
     }
     return
   }
-  localStorage.setItem('accessToken', res.data?.data?.accessToken ?? "")
-  getMyInfo()
+  console.log('login res', res.data)
+  localStorage.setItem('accessToken', res.data?.accessToken ?? "")
+  await getMyInfo()
   router.push({name:'home'})
 }
 
 const getMyInfo = async () => {
   if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
   const res = await fetchMyInfo()
+  if(res.error) {
+    console.log(res.error)
+    return
+  }
+  console.log("login getmyinfo",res)
   myInfoStore.setMyInfo(res.data)
 }
 

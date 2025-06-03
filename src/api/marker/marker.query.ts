@@ -1,7 +1,9 @@
-import { type QueryFunctionContext, useQueries, useQuery } from '@tanstack/vue-query'
-import { fetchMarkerList } from '@/api/marker/marker.ts'
+import { type QueryFunctionContext, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { fetchMarkerList, updateMarker } from '@/api/marker/marker.ts'
 import { computed, type Ref } from 'vue'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
+import type { Result } from '@/api/DefaultResponse.ts'
+import { AxiosError } from 'axios'
 
 
 export const useFetchMarkerList = (roomId: string) => {
@@ -16,21 +18,30 @@ export const useFetchMarkerList = (roomId: string) => {
   })
 }
 
-export function useFetchMarkerListByRoomList(roomList: Ref<string[]|null>) {
-  console.log("roomList", roomList.value)
-  return useQueries({
-    queries: (roomList.value ?? []).map(roomId => ({
-      // 1) queryKey: 이 쿼리의 식별자
-      queryKey: ['markerList', roomId],
-      // 2) queryFn: 실제 데이터를 가져오는 함수
-      queryFn: () => fetchMarkerList(roomId),
-      // 3) enabled: 항상 활성화
-      enabled: true,
-      // 4) 캐시 전략
-      staleTime: Infinity,
-      cacheTime: 1000 * 60 * 60,
-      // refetchOnMount: false,
-      // refetchOnWindowFocus: false,
-    })),
+
+// roomId:string, markerId:string, title:string, description:string, storeType:string, imageBlob:Blob|null=null
+export const useUpdateMarker = () => {
+  const queryClient = useQueryClient()
+  return useMutation<
+    Result<string>,
+    AxiosError,
+    {
+      roomId:string
+      markerId:string
+      title:string
+      description:string
+      storeType:string
+      imageBlob:Blob|null
+    }
+  >({
+    mutationFn: ({roomId,markerId,title,description,storeType,imageBlob}) => {
+      return updateMarker(markerId, title, description, storeType, imageBlob)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({queryKey:['markerList', variables.roomId]})
+    },
+    onError: (error, variables) => {
+      console.error('Marker update failed:', error)
+    }
   })
 }

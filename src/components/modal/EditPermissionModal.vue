@@ -21,11 +21,8 @@ const changePermission = async () => {
   }
 
   const res = await updatePermission(props.roomMember.memberId, Number(props.roomId), permission.value)
-  if(res.data === '-1') {
-    alert("권한이 없습니다.")
-  }
-  if (res.data === '0') {
-    alert("성공")
+  if (res.data) {
+    alert("권한 변경이 완료되었습니다.")
   }
 
 }

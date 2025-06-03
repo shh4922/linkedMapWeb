@@ -1,65 +1,79 @@
 <script setup lang="ts">
-import type { SearchModel } from '@/api/auth/search.ts'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import Map from '@/components/map/Map.vue'
-import { useFetchMyRoomList } from '@/api/room/room.query.ts'
-import { saveMarker } from '@/api/marker/marker.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
-import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import ImageCropModal from '@/components/modal/ImageCropModal.vue'
+import type { Marker } from '@/api/marker/marker.model.ts'
+import { updateMarker } from '@/api/marker/marker.ts'
+import { useUpdateMarker } from '@/api/marker/marker.query.ts'
+
 
 const map = ref<InstanceType<typeof Map> | null>(null)
-const emit =defineEmits(['closeAddModal'])
+const emit =defineEmits(['closeEditMarkerModal'])
 const props = defineProps<{
-  result: SearchModel
+  markerInfo: Marker
 }>()
 
-
-const markerListStore = useMarkserListStore()
-const {data:myRoomList} = useFetchMyRoomList()
-
 const isShowCropModal = ref<boolean>(false)
-const selectRoomId = ref<number | null>(null)
-const description = ref<string>("")
 
-
-const previewCroppedUrl = ref<string|null>(null)
 const originalImageUrl = ref<string | null>(null)
+const previewCroppedUrl = ref<string|null>(null)
 const croppedBlob = ref<Blob | null>(null)
 
+const {mutate:updateMarker2 } = useUpdateMarker()
+
+
+const inputFiled = ref({
+  title: props.markerInfo.title,
+  storeType: props.markerInfo.storeType,
+  address: props.markerInfo.address,
+  roadAddress: props.markerInfo.roadAddress,
+  description: props.markerInfo.description,
+})
+
 onMounted(() => {
+  previewCroppedUrl.value = props.markerInfo.imageUrl ?? null
   const latlng = {
-    lat: Number(props.result.y),
-    lng: Number(props.result.x)
+    lat: Number(props.markerInfo.lat),
+    lng: Number(props.markerInfo.lng)
   }
   const markerModel = new MarkerModel("0", latlng.lng, latlng.lat,1)
-  markerModel.setCustomOverlayMarker(props.result.place_name)
+  markerModel.setCustomOverlayMarker(props.markerInfo.title)
 
   map.value?.getInstance()?.onCreateMarker(markerModel)
   map.value?.getInstance()?.onSetPosition(latlng)
 })
 
-const closeAddModal = () => {
-  emit('closeAddModal')
+
+const closeModal = () => {
+  emit('closeEditMarkerModal', false, null)
 }
 
 
-const submit = async() => {
-  if(selectRoomId.value === null) {
-    alert("그룹을 선택해주세요")
-    return
+const update = () => {
+  const vars = {
+    roomId: props.markerInfo.roomId.toString(),
+    markerId: props.markerInfo.id.toString(),
+    title: inputFiled.value.title,
+    description: inputFiled.value.description,
+    storeType: inputFiled.value.storeType,
+    imageBlob: croppedBlob.value
   }
+  updateMarker2(vars, {
+    onSuccess(data, variables, context) {
+      alert("마커 정보가 업데이트 되었습니다.")
+    },
+    onError(error, variables, context) {
+        console.log("updateMarker error", error)
+    },
+    onSettled(data, error, variables, context) {
+      emit('closeEditMarkerModal', false, null)
+    },
 
-  const data = props.result
-  const res = await saveMarker(data.place_name, Number(data.y), Number(data.x), description.value, data.category_name, data.address_name, data.road_address_name, selectRoomId.value, croppedBlob.value)
+  })
 
-  console.log(res)
 
-  /** 특정 방에 마커추가시, 기존에 저장되어있던 방을 지움. 새로 방을 fetch해서 마커리스트를 다시 조회하기위해 */
-  markerListStore.deleteRoom(selectRoomId.value.toString())
-  closeAddModal()
 }
-
 
 
 
@@ -97,84 +111,67 @@ const saveCropImage = (blob: Blob | null) => {
 <template>
   <article>
     <section class="head">
-      <p>마커를 추가하세염</p>
-      <i class="pi pi-times" @click="closeAddModal"></i>
+      <p>마커 편집</p>
+      <i class="pi pi-times" @click="closeModal"></i>
     </section>
 
-    <Map class="map" ref="map" style="width: 100%; height: 150px"/>
+<!--    <Map class="map" ref="map" style="width: 100%; height: 150px"/>-->
 
     <section class="searchInfo">
       <div class="storeName">
         <p class="sub">상호명</p>
-        <p class="result">{{result.place_name}}</p>
+        <input v-model="inputFiled.title">
       </div>
 
       <div class="storeName">
         <p class="sub">분류</p>
-        <p class="result">{{result.category_name}}</p>
+        <input v-model="inputFiled.storeType">
       </div>
 
       <div>
         <p class="sub">주소</p>
-        <p class="result">{{result.address_name}}</p>
+        <p class="result">{{markerInfo.address}}</p>
       </div>
 
       <div>
         <p class="sub">도로명 주소</p>
-        <p class="result">{{result.road_address_name}}</p>
-      </div>
-
-      <div>
-        <p class="sub">링크</p>
-        <a class="result" :href="result.place_url" target="_blank" rel="noopener noreferrer">카카오맵 리뷰보기</a>
+        <p class="result">{{markerInfo.roadAddress}}</p>
       </div>
 
       <div>
         <p class="sub">설명</p>
-        <input class="result" v-model="description" placeholder="해당 장소에 대한 설명을 작성해보세요"/>
+        <input v-model="inputFiled.description">
       </div>
 
-      <div>
-        <p class="sub">추가할 그룹명</p>
-        <select class="result" v-model="selectRoomId">
-          <option v-for="(room) in myRoomList?.data"
-                  :key="room.id"
-                  :value="room.roomId"
-          >{{room.roomName}}</option>
-        </select>
-      </div>
 
       <!--   이미지 넣는곳   -->
       <div class="uploader-wrapper">
         <!-- 파일 없음 시 -->
-      <div v-if="!originalImageUrl && !previewCroppedUrl" class="placeholder">
-        <label class="upload-label">
-          <i class="pi pi-image"></i>
-          <span>이미지를 선택하세요</span>
-          <input type="file" accept="image/*" @change="onFileChange" hidden />
-        </label>
-      </div>
+        <div v-if="!markerInfo.imageUrl && !previewCroppedUrl" class="placeholder">
+          <label class="upload-label">
+            <i class="pi pi-image"></i>
+            <span>이미지를 선택하세요</span>
+            <input type="file" accept="image/*" @change="onFileChange" hidden />
+          </label>
+        </div>
 
-      <!-- 크롭된 결과 미리보기 -->
-      <div v-if="previewCroppedUrl" class="preview-area">
-        <div
-          class="cropped-preview"
-          :style="{ backgroundImage: `url(${previewCroppedUrl})` }"
-        ></div>
-        <label class="upload-label small">
-          <i class="pi pi-refresh"></i>
-          <span>이미지 변경</span>
-          <input type="file" accept="image/*" @change="onFileChange" hidden />
-        </label>
+        <!-- 크롭된 결과 미리보기 -->
+        <div v-if="previewCroppedUrl" class="preview-area">
+          <div
+            class="cropped-preview"
+            :style="{ backgroundImage: `url(${previewCroppedUrl})` }"
+          ></div>
+          <label class="upload-label small">
+            <i class="pi pi-refresh"></i>
+            <span>이미지 변경</span>
+            <input type="file" accept="image/*" @change="onFileChange" hidden />
+          </label>
+        </div>
       </div>
-      </div>
-
-
     </section>
-    <button @click="submit" class="save">저장하기</button>
-    <div
-      v-if="isShowCropModal"
-      class="modal-overlay"/>
+
+    <button class="save" @click="update">업데이트</button>
+
     <ImageCropModal
       class="cropModal"
       v-if="isShowCropModal"
@@ -185,43 +182,23 @@ const saveCropImage = (blob: Blob | null) => {
   </article>
 </template>
 
+
 <style scoped lang="scss">
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4); // 회색 배경
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9;
-  pointer-events: auto; // 모달 쪽은 이벤트 다시 활성화
-}
 
 .cropModal {
-  position: absolute;
-  /* 화면의 정확히 중간 지점 */
-  top: 50%;
-  left: 50%;
-  /* 너비/높이는 원하는 대로 설정 */
-  width: 450px;
-  height: 60%;
-  max-width: 90%;
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-
-  /* transform을 이용해 자신의 가로/세로 크기의 절반만큼 빼주면 진짜 중앙 정렬 */
-  transform: translate(-50%, -50%);
-  z-index: 14;
+  width: 100%;
+  height: 100%;
 }
 
 article {
   font-family: nanum-5;
-
+  width: 400px;
+  height: 60%;
+  max-width: 80%;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 .map {
   width: 100%;
@@ -242,45 +219,90 @@ article {
 }
 
 .searchInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  width: 100%;
-
-  input.result {
-    padding: 0.6rem 0.8rem;
+  input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
     border: 1px solid #ccc;
     border-radius: 0.5rem;
     font-size: 1rem;
-    transition: border-color 0.2s;
-
-    &::placeholder {
-      color: #aaa;
-    }
+    font-family: nanum-5;
+    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
     &:focus {
       outline: none;
       border-color: coral;
+      box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.2);
     }
   }
 
-  div {
+  /* storeName 섹션에서 label과 input이 동일 라인에 위치 */
+  .storeName {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    font-size: 1.2rem;
+    gap: 0.5rem;
 
     .sub {
-      color: gray;
       width: 30%;
-      //background-color: chartreuse;
+      color: gray;
+      font-weight: 600;
+      font-size: 0.95rem;
     }
-    .result {
+    input {
       flex: 1;
     }
   }
+
+  /* 설명 필드도 같은 스타일 적용 */
+  div:not(.storeName) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .sub {
+      width: 30%;
+      color: gray;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    input {
+      flex: 1;
+    }
+  }
+}
+
+/* 선택 박스(select) 디자인도 통일감 있게 업데이트 */
+.searchInfo select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: nanum-5;
+  color: #333;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: coral;
+    box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.2);
+  }
+}
+
+/* 파일 입력이 아니라 인풋 전용 디자인 */
+.searchInfo input[type="file"] {
+  display: none;
+}
+
+/* 전반적인 input placeholder 색상 */
+.searchInfo input::placeholder {
+  color: #aaa;
+}
+
+/* 모달 하단 ‘업데이트’ 버튼을 제외한 모든 인풋에 공통 여백 추가 */
+.searchInfo > div {
+  margin-bottom: 1rem;
 }
 
 select {
@@ -297,6 +319,7 @@ select {
   font-family: nanum-4;
   padding: 1rem 0.5rem;
   border-radius: 0.4rem;
+  cursor: pointer;
 }
 
 .uploader-wrapper {

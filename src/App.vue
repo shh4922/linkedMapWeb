@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 
+// CropperJS의 CSS를 전역으로 한 번만 로드
+import 'cropperjs/dist/cropper.css'
+
 const myInfoStore = useMyInfo()
 
 

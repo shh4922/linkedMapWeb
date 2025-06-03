@@ -19,6 +19,10 @@ const goToLogin = () => {
 
 const getMyInfo = async () => {
   const res = await fetchMyInfo()
+
+  if(res.error) { return}
+  if(res.data === undefined) return
+
   myInfoStore.setMyInfo(res.data)
 }
 
@@ -28,12 +32,11 @@ const myInfo = computed(() => {
 
 const logout2 = async () => {
   const res = await logout()
-  // if(res.data === '0') {
-    localStorage.removeItem('accessToken')
-    queryClient.removeQueries()
-    window.location.replace('/')
-    // myInfoStore.setMyInfo(null)
-  // }
+  if(res.error) { return }
+
+  localStorage.removeItem('accessToken')
+  queryClient.removeQueries()
+  window.location.replace('/')
 }
 
 onMounted(() => {

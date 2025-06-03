@@ -1,5 +1,6 @@
 
-import { post, postWithToken, type Result } from '@/api/http.ts'
+import { post, postWithToken} from '@/api/http.ts'
+import type { Result } from '@/api/DefaultResponse.ts'
 export interface Token {
   accessToken: string;
   refreshToken: string;
@@ -9,7 +10,7 @@ export const login = (email:string, password:string) => {
     email: email,
     password: password,
   }
-  return post<Result<Token>>('/login',data)
+  return post<Token>('/login',data)
 }
 
 export const register = (email:string, password:string, userName:string) => {

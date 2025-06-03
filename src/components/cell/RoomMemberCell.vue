@@ -7,11 +7,6 @@ import { expelledRoomMember } from '@/api/room/room.ts'
 import type { AxiosError } from 'axios'
 
 const emit = defineEmits(['togglePermissionModal'])
-
-
-
-
-
 const props = defineProps<{
   userInfo: RoomMember,
   roomId: string,
@@ -19,16 +14,14 @@ const props = defineProps<{
 }>()
 
 const fireUser = async () => {
-  if (confirm(`${props.userInfo.name} 를 추방 하시겠습니까?`)){    //확인
-    try {
-      const res = await expelledRoomMember(props.userInfo.memberId, Number(props.roomId))
-      console.log(res)
-    } catch (e) {
-      console.log(e)
-      alert("권한이 없습니다.")
-    }
+  if (!confirm(`${props.userInfo.name} 를 추방 하시겠습니까?`)){
+    return
   }
-  return;
+
+  const res = await expelledRoomMember(props.userInfo.memberId, Number(props.roomId))
+  if(res.data) {
+    alert("추방이 완료되었습니다.")
+  }
 }
 
 const isShowChangePermision = () => {
@@ -118,55 +111,3 @@ $sub-text-color: #888;
   }
 }
 </style>
-<!--<style scoped lang="scss">-->
-<!--.user-card {-->
-<!--  display: flex;-->
-<!--  justify-content: space-between;-->
-<!--  align-items: center;-->
-<!--  border: 2px solid #ddd;-->
-<!--  border-radius: 10px;-->
-<!--  padding: 1rem;-->
-<!--  margin-bottom: 1rem;-->
-<!--  background: #fff;-->
-<!--  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);-->
-<!--  transition: transform 0.2s;-->
-
-<!--  &:hover {-->
-<!--    transform: scale(1.01);-->
-<!--  }-->
-
-<!--  .info {-->
-<!--    display: flex;-->
-<!--    flex-direction: column;-->
-<!--    gap: 0.3rem;-->
-<!--    font-size: 0.95rem;-->
-<!--    color: #333;-->
-<!--  }-->
-
-<!--  .actions {-->
-<!--    display: flex;-->
-<!--    flex-direction: column;-->
-<!--    gap: 0.5rem;-->
-
-<!--    .btn {-->
-<!--      padding: 0.7rem 1rem;-->
-<!--      border: none;-->
-<!--      border-radius: 6px;-->
-<!--      color: white;-->
-<!--      cursor: pointer;-->
-<!--      font-size: 1rem;-->
-<!--      transition: background-color 0.3s ease;-->
-<!--    }-->
-
-<!--    .permission {-->
-<!--      background-color: #3B82F6; // 파란색-->
-<!--    }-->
-
-<!--    .fire {-->
-<!--      color: #DC2626;-->
-<!--      border: 1px solid #DC2626;-->
-<!--      background-color: white;-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</style>-->

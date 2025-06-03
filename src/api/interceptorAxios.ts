@@ -20,7 +20,7 @@ interceptorAxios.interceptors.request.use(
     if(accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
-    console.log(config.headers.Authorization)
+
     return config
   }
 )
@@ -31,7 +31,8 @@ interceptorAxios.interceptors.response.use(
   async (error) => {
     switch (error?.response?.status) {
       case 401:
-        console.log("401")
+        console.error(401)
+        break
         // try {
         //   const refresh = localStorage.getItem('r')
         //
@@ -59,15 +60,25 @@ interceptorAxios.interceptors.response.use(
         //   throw error
         // }
 
+      case 403:
+        alert("권한이 없습니다")
+        break;
+      case 404:
+        alert("요청하신 페이지를 찾을 수 없습니다.")
+        break;
+
       case 500:
-        console.error(error)
-        throw 500
+        alert("서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.")
+        break
       default:
-        // alert("default에러남.")
-        console.error(`default Error!! \n ${error}` )
-        throw error
+        console.error(`interceptor default Error!! \n ${error}` )
+        break
     }
+    return Promise.reject(error)
   }
 );
+
+
+
 
 export { interceptorAxios }

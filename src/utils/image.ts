@@ -14,3 +14,8 @@ export const compressImage = async (file: File): Promise<File> => {
     return file // 실패 시 원본 전송
   }
 }
+
+export const blobToFile = (blob: Blob, originalName: string):File =>{
+  // Blob 안에 들어있는 type (e.g. "image/jpeg")을 같이 써 줍니다.
+  return new File([blob], originalName, { type: blob.type });
+}

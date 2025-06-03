@@ -1,67 +1,106 @@
 <script setup lang="ts">
 import type { Marker } from '@/api/marker/marker.model.ts'
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { deleteMarkerByMarkerId } from '@/api/marker/marker.ts'
-import { forrmatDate } from '../../utils/common.ts'
+import { forrmatDate } from '@/utils/common.ts'
+import noImage from "@/assets/image/placeholder_no_image.png"
+import EditMarkerModal from '@/components/modal/EditMarkerModal.vue'
 
 const props = defineProps<{
   marker: Marker
   selectedMarker: number|null
 }>()
-const emit = defineEmits(['selectMarker', 'deleteMarker'])
+const emit = defineEmits(['selectMarker', 'deleteMarker', 'toggleEditMarker'])
+
+
+/** 선택 상태를 계산해서 클래스에 바인딩 */
+const isSelected = computed(() => props.selectedMarker === props.marker.id)
+
+
 const markerSelect = () => {
   emit('selectMarker', props.marker)
 }
 
+/** 마커 삭제 */
 const deleteMarker = async () => {
+  if(!confirm(`정말로 ${props.marker.title} 를 마커를 삭제하시겠습니까?`)) return
   const res = await deleteMarkerByMarkerId(props.marker.id.toString())
-  if (res.error?.response?.status === 400) {
-    alert("권한이 없습니다.")
-  }
+
   if(res.data) {
     alert("마커 삭제가 완료되었습니다.")
     emit('deleteMarker', props.marker.id)
   }
 }
 
-watch(()=> props.selectedMarker, (newValue) => {
-  console.log("newValue", newValue)
-})
-
-// **선택 상태를 계산해서 클래스에 바인딩**
-const isSelected = computed(() => props.selectedMarker === props.marker.id)
+/** 마커 편집 모달 토글*/
+const toggle = () => {
+  console.log("toggle")
+  emit("toggleEditMarker", true, props.marker)
+}
 
 </script>
 
 <template>
   <li class="marker-card" @click="markerSelect" :class="{ selected: isSelected }">
-    <div class="marker-header">
-      <h3>{{ marker.title }}</h3>
-      <div class="actions">
 
-        <button @click="deleteMarker">🗑️</button>
+    <img :src="marker.imageUrl ?? noImage" alt="marker-image" class="markerImage"/>
 
-        <button>🔍</button>
+    <div class="markerInfo">
+      <div class="marker-header">
+        <h3>{{ marker.title }}</h3>
+        <div class="actions">
+
+          <button @click="deleteMarker">🗑️</button>
+
+          <button @click.stop="toggle">🔍</button>
+        </div>
+      </div>
+
+      <p class="description">{{ marker.description }}</p>
+      <div class="meta">
+        <span>📍 {{ marker.address }}</span>
+        <span>🗓️ {{ forrmatDate(marker.createdAt)}}</span>
+        <span>👤 {{ marker.creatorName }}</span>
+        <span>✉️ {{ marker.creatorEmail }}</span>
       </div>
     </div>
-    <p class="description">{{ marker.description }}</p>
-    <div class="meta">
-      <span>📍 {{ marker.address }}</span>
-      <span>🗓️ {{ forrmatDate(marker.createdAt)}}</span>
-      <span>👤 {{ marker.creatorName }}</span>
-      <span>✉️ {{ marker.creatorEmail }}</span>
-    </div>
+
+
   </li>
 </template>
 
 <style scoped lang="scss">
+.editMarkerModal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
 .marker-card {
   border-radius: 1.2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 1.6rem;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 1.5rem;
+
+  .markerImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.8rem;
+    object-fit: cover;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .markerInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }
 
 .marker-card.selected {

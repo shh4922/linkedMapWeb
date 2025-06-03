@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
-import { useMyInfo } from '@/store/myInfoStore.ts'
+import { useRoute, useRouter } from 'vue-router'
+
 import { useFetchRoomDetail } from '@/api/room/room.query.ts'
 import { forrmatDate } from '../utils/common.ts'
 import { joinRoom } from '@/api/invite/invite.ts'
-import router from '@/router'
+
 
 const route = useRoute()
-const myInfo = useMyInfo()
+// const myInfo = useMyInfo()
+const router = useRouter()
 
 const { data: roomDetail } = useFetchRoomDetail(route.params.roomId as string)
 
@@ -16,7 +16,10 @@ const join = async () => {
   const roomId = route.params.roomId as string
   const key = route.params.key as string
   const res = await joinRoom(roomId, key)
-  console.log(res)
+  if(res.status === 200) {
+    alert("가입에 완료되었습니다.")
+    router.push('')
+  }
 }
 
 

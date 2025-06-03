@@ -2,32 +2,39 @@
 
 import type { RoomDetail } from '@/api/room/room.model.ts'
 import { reactive, ref } from 'vue'
-import { postCreateRoom, updateRoom } from '@/api/room/room.ts'
+import { updateRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
-import { fetchPreSigned, uploadFile } from '@/api/aws/s3.ts'
+import ImageCropModal from '@/components/modal/ImageCropModal.vue'
 
+const router = useRouter()
 const props = defineProps<{
   roomDetailInfo: RoomDetail
 }>()
+const emit = defineEmits(['toggleRoomEditModal'])
 
-const router = useRouter()
 
-const preSignedUrl = ref<string|null>(null)
-const myFile = ref<File|null>(null)
+const imageFile = ref<Blob|null>(null)
 const inputFiled = reactive({
   title: props.roomDetailInfo.roomName,
   description: props.roomDetailInfo.roomDescription,
-  imageFile: props.roomDetailInfo.imageUrl,
-  imageUrl: props.roomDetailInfo.imageUrl, // 미리보기 URL 저장용
+  croppedImageUrl: props.roomDetailInfo.imageUrl, // 미리보기 URL 저장용
+  originalImageUrl: props.roomDetailInfo.imageUrl // 원본 이미지 URL 저장용
 })
+const isShowCropModal = ref<boolean>(false)
 
 /** 이미지 업로드  */
 const uploadImage = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (!file) return;
-  inputFiled.imageUrl = URL.createObjectURL(file); // 미리보기 URL 설정
-  myFile.value = file
+  const input = event.target as HTMLInputElement
+
+  if (input.files && input.files[0]) {
+    const file = input.files[0]
+    const reader = new FileReader()
+    reader.onload = () => {
+      inputFiled.originalImageUrl = reader.result as string
+      isShowCropModal.value = true
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
 const checkInput = () => {
@@ -45,35 +52,42 @@ const checkInput = () => {
 /** post 요청 */
 const update = async () => {
   if(!checkInput()) { return }
-  try {
-    const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, myFile.value)
 
-    if(res.status === 200) {
-      alert("업데이트가 완료되었습니다.")
-      router.go(-1)
-    } else {
-      alert("업데이트에 실패했습니다. 다시 시도해주세요.")
-    }
-
-  } catch (e){
-    console.error(e.message)
-  }
+  const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, imageFile.value)
+  if(res.data) { alert("업데이트가 완료되었습니다.")}
+  router.go(-1)
 }
+
+const saveCropImage = (blob: Blob | null) => {
+  if (blob) {
+    imageFile.value = blob
+    inputFiled.croppedImageUrl = URL.createObjectURL(blob)
+  }
+  inputFiled.originalImageUrl = ""
+  isShowCropModal.value = false
+}
+
+
+
 </script>
 
 <template>
   <div class="createRoomContainer">
-    <h1 class="title">그룹 편집</h1>
+    <div class="header">
+      <h1 class="title">그룹 편집</h1>
+      <i class="pi pi-times" @click="emit('toggleRoomEditModal',false)"></i>
+    </div>
+
 
     <div class="image-upload-wrapper">
-      <div v-if="!inputFiled.imageUrl" class="image-placeholder">
+      <div v-if="!inputFiled.croppedImageUrl" class="image-placeholder">
         <label class="custom-upload-label">
           이미지를 넣을 수 있습니다!
           <input type="file" accept=".jpg,.png" @change="uploadImage" hidden />
         </label>
       </div>
 
-      <div v-else class="image-preview" :style="{ backgroundImage: 'url(' + inputFiled.imageUrl + ')' }">
+      <div v-else class="image-preview" :style="{ backgroundImage: 'url(' + inputFiled.croppedImageUrl + ')' }">
         <label class="change-label">
           이미지 변경하기
           <input type="file" accept=".jpg,.png" @change="uploadImage" hidden />
@@ -85,10 +99,21 @@ const update = async () => {
     <textarea placeholder="그룹 설명을 입력하세요" v-model="inputFiled.description" class="inputField descField" />
 
     <button class="save" @click="update">저장</button>
+
+    <div
+      v-if="isShowCropModal"
+      class="modal-overlay"/>
+    <ImageCropModal
+      class="cropModal"
+      v-if="isShowCropModal"
+      :src="inputFiled.originalImageUrl ?? ''"
+      @emitCropImage="saveCropImage"
+    />
+
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .createRoomContainer {
   display: flex;
   flex-direction: column;
@@ -101,11 +126,21 @@ const update = async () => {
   border-radius: 0.75rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);;
 
-  .title {
-    font-size: 2rem;
-    font-family: nanum-5;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1rem;
+
+    .title {
+      font-size: 1.5rem;
+      font-family: nanum-5;
+    }
+    i {
+      font-size: 1rem;
+    }
   }
+
 
   .image-upload-wrapper {
     width: 100%;

@@ -117,8 +117,8 @@ const toggleAddModal = (selectedSearchIndex:number) => {
   align-items: center;
   z-index: 9;
   pointer-events: auto; // 모달 쪽은 이벤트 다시 활성화
-
 }
+
 main {
   width: 100%;
   height: 100%;

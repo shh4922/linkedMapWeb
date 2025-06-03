@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import RoomMemberCell from '@/components/cell/RoomMemberCell.vue'
 import { useFetchRoomDetail } from '@/api/room/room.query.ts'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { forrmatDate } from '@/utils/common.ts'
 import AddInviteLink from '@/components/modal/AddInviteLink.vue'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
 import type { RoomMember } from '@/api/room/room.model.ts'
 import RoomEditModal from '@/components/modal/RoomEditModal.vue'
-import { deleteRoom, expelledRoomMember } from '@/api/room/room.ts'
+import { deleteRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
-const { data: roomDetail } = useFetchRoomDetail(props.roomId)
+const { data: roomDetail, isError} = useFetchRoomDetail(props.roomId)
 const selectedRoomMember = ref<RoomMember|null>(null)
 const modal = reactive({
   isShowInviteModal: false,
@@ -25,8 +25,9 @@ const modal = reactive({
 })
 
 
+
 const deleteRoom_ = async () => {
-  if (confirm(`${roomDetail?.value?.data.roomName} 을 삭제하시겠습니까?`)){    //확인
+  if (confirm(`${roomDetail?.value?.data.roomName ?? "0"} 을 삭제하시겠습니까?`)){    //확인
     try {
       const res = await deleteRoom(Number(props.roomId))
 
@@ -46,12 +47,16 @@ const myInfo = computed(() => {
 const toggleModal = (isShow:boolean) => {
   modal.isShowInviteModal = isShow
 }
-
+const toggleRoomEditModal = (isShow:boolean) => {
+  modal.isShowEditGroupModal = isShow
+}
 
 const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=null) => {
   selectedRoomMember.value = roomMember
   modal.isShowPermissionModal = isShow
 }
+
+
 
 const offModal = () => {
   modal.isShowEditGroupModal = false
@@ -139,7 +144,8 @@ const offModal = () => {
 
     <RoomEditModal v-if="roomDetail !== undefined && modal.isShowEditGroupModal"
                    class="modal"
-                   :room-detail-info="roomDetail.data"/>
+                   :room-detail-info="roomDetail.data"
+                   @toggleRoomEditModal="toggleRoomEditModal" />
   </main>
 </template>
 
