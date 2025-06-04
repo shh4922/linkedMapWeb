@@ -101,7 +101,7 @@ const saveCropImage = (blob: Blob | null) => {
       <i class="pi pi-times" @click="closeAddModal"></i>
     </section>
 
-    <Map class="map" ref="map" style="width: 100%; height: 150px"/>
+    <Map class="map" ref="map" style="width: 100%; height: 250px"/>
 
     <section class="searchInfo">
       <div class="storeName">

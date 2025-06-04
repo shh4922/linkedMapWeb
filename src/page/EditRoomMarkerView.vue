@@ -89,7 +89,7 @@ const onToggleEditMarker = (isShow:boolean, marker: Marker|null=null) => {
 
 <template>
   <main>
-<!--    <Map class="map" ref="map" style="height: 40%; width: 100%" />-->
+    <Map class="map" ref="map" style="height: 40%; width: 100%" />
 
     <div class="empty-message" v-if="(markerList?.length === 0)">
       <p>“아직 표시된 장소가 없어요. </p>

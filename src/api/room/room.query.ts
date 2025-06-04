@@ -1,5 +1,8 @@
-import { useQuery } from '@tanstack/vue-query'
-import { fetchRoomDetail, fetchMyRoomList } from '@/api/room/room.ts'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { fetchRoomDetail, fetchMyRoomList, expelledRoomMember } from '@/api/room/room.ts'
+import type { Result } from '@/api/DefaultResponse.ts'
+import { AxiosError } from 'axios'
+import { updateMarker } from '@/api/marker/marker.ts'
 
 export const useFetchMyRoomList = () => {
   return useQuery({
@@ -18,5 +21,27 @@ export const useFetchRoomDetail = (roomId:string) => {
     gcTime: 1000*60*5,
     staleTime: 1000*60*3,
     enabled: !!roomId
+  })
+}
+
+export const useExpelledRoomMember = () => {
+  const queryClient = useQueryClient()
+  return useMutation<
+    Result<string>,
+    AxiosError,
+    {
+      roomMemberId: number,
+      roomId: number
+    }
+  >({
+    mutationFn: ({roomMemberId,roomId}) => {
+      return expelledRoomMember(roomMemberId, roomId)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({queryKey:['roomDetail', variables.roomId.toString()]})
+    },
+    onError: (error, variables) => {
+      console.error('Marker update failed:', error)
+    }
   })
 }

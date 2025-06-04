@@ -5,6 +5,7 @@ import { useMyInfo } from '@/store/myInfoStore.ts'
 import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
 import { expelledRoomMember } from '@/api/room/room.ts'
 import type { AxiosError } from 'axios'
+import { useExpelledRoomMember } from '@/api/room/room.query.ts'
 
 const emit = defineEmits(['togglePermissionModal'])
 const props = defineProps<{
@@ -13,15 +14,21 @@ const props = defineProps<{
   currentOwnerId: number
 }>()
 
+const {mutate: expelledMember} = useExpelledRoomMember()
 const fireUser = async () => {
-  if (!confirm(`${props.userInfo.name} 를 추방 하시겠습니까?`)){
+  if (!confirm(`${props.userInfo.name} 를 추방 하시겠습니까? 유저를 추방해도 해당유저가 생성한 마커는 삭제되지 않습니다.`)){
     return
   }
 
-  const res = await expelledRoomMember(props.userInfo.memberId, Number(props.roomId))
-  if(res.data) {
-    alert("추방이 완료되었습니다.")
+  const vars = {
+    roomMemberId: props.userInfo.roomMemberId,
+    roomId: Number(props.roomId)
   }
+  expelledMember(vars,{
+    onSuccess(data, variables, context) {
+      alert("추방이 완료되었습니다.")
+    },
+  })
 }
 
 const isShowChangePermision = () => {

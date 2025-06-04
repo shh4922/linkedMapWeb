@@ -42,7 +42,7 @@ export const expelledRoomMember = async (roomMemberId:number, roomId:number) => 
     roomMemberId: roomMemberId,
     roomId: roomId
   }
-  return postWithToken("/roommember/expelled",data)
+  return postWithToken<string>("/roommember/expelled",data)
 }
 
 

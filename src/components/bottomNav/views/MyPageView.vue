@@ -17,14 +17,14 @@ const goToLogin = () => {
   router.push({name:'login'})
 }
 
-const getMyInfo = async () => {
-  const res = await fetchMyInfo()
-
-  if(res.error) { return}
-  if(res.data === undefined) return
-
-  myInfoStore.setMyInfo(res.data)
-}
+// const getMyInfo = async () => {
+//   const res = await fetchMyInfo()
+//
+//   if(res.error) { return}
+//   if(res.data === undefined) return
+//
+//   myInfoStore.setMyInfo(res.data)
+// }
 
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
@@ -39,9 +39,9 @@ const logout2 = async () => {
   window.location.replace('/')
 }
 
-onMounted(() => {
-  getMyInfo()
-})
+// onMounted(() => {
+//   getMyInfo()
+// })
 
 
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RoomMember } from '@/api/room/room.model.ts'
 import { ref } from 'vue'
-import { updatePermission } from '@/api/permission/permission.ts'
+import { useUpdatePermission } from '@/api/permission/permission.query.ts'
 
 const props = defineProps<{
   roomId: string
@@ -9,10 +9,12 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['togglePermissionModal'])
+const {mutate: changePermission2} = useUpdatePermission()
+const permission = ref<string>(props.roomMember?.role ?? "")
+
 const closeModal = () => {
   emit('togglePermissionModal', false)
 }
-const permission = ref<string>(props.roomMember?.role ?? "")
 
 const changePermission = async () => {
   if(props.roomMember === null) return
@@ -20,11 +22,19 @@ const changePermission = async () => {
     if(!confirm('방장 권한을 위임한경우, 방장은 매니저 권한을 갖게됩니다. 그래도 변경하시겠습니까?')) return
   }
 
-  const res = await updatePermission(props.roomMember.memberId, Number(props.roomId), permission.value)
-  if (res.data) {
-    alert("권한 변경이 완료되었습니다.")
+  const vars = {
+    roomMemberId: props.roomMember.roomMemberId,
+    roomId: Number(props.roomId),
+    permission: permission.value
   }
-
+  changePermission2(vars,{
+    onSuccess(data, variables, context) {
+      alert("권한 변경이 완료되었습니다.")
+    },
+    onSettled(data, error, variables, context) {
+        emit('togglePermissionModal',false)
+    },
+  })
 }
 </script>
 

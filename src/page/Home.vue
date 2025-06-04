@@ -135,7 +135,7 @@ const toggleRoomModal = () => {
 
   <RoomListModal v-if="isShowRoomModal" class="roomListModal"/>
 
-<!--  <Map class="map" ref="map" style="width: 100%; height: 100vh"/>-->
+  <Map class="map" ref="map" style="width: 100%; height: 100vh"/>
 </main>
 </template>
 

@@ -1,6 +1,7 @@
+
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+
+import { onMounted} from 'vue'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 
@@ -21,7 +22,11 @@ onMounted(()=> {
 const getMyInfo = async () => {
   if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
   const res = await fetchMyInfo()
-  myInfoStore.setMyInfo(res.data)
+
+  if(res.data) {
+    myInfoStore.setMyInfo(res.data)
+  }
+
 }
 
 </script>
