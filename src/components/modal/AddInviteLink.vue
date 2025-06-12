@@ -1,26 +1,27 @@
 <script setup lang="ts">
 
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { postInviteLink } from '@/api/invite/invite.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const props = defineProps<{
   roomId: string
 }>()
 
 const inviteLink = ref<string|null>(null)
-
+const toastStore = useToastStore()
 
 
 const getInviteLink = async () => {
   const res = await postInviteLink(props.roomId)
-  if(res.status !== 200) return
-  inviteLink.value = res.data.url
-
-  try {
-    await navigator.clipboard.writeText(inviteLink.value)
-    alert("복사되었습니다");
-  } catch (err) {
-    prompt("키보드의 ctrl+C 또는 마우스 오른쪽의 복사하기를 이용해주세요.");
+  if(res.data) {
+    inviteLink.value = res.data.url
+    try {
+      await navigator.clipboard.writeText(inviteLink.value)
+      toastStore.show("복사되었습니다",)
+    } catch (err) {
+      toastStore.show("키보드의 ctrl+C 또는 마우스 오른쪽의 복사하기를 이용해주세요.",'error')
+    }
   }
 }
 
@@ -38,11 +39,13 @@ const getInviteLink = async () => {
       <p v-if="inviteLink" class="link-text">{{ inviteLink }}</p>
     </div>
 
-    <footer class="modal-footer">
+    <footer class="modal-footer" v-if="!inviteLink">
       <button class="action-btn" @click="getInviteLink">
         링크 생성 및 복사
       </button>
     </footer>
+
+    <ToastMessage ref="toastMessage"/>
   </article>
 </template>
 

@@ -32,7 +32,7 @@ export const saveMarker = async (title:string, lat:number, lng:number, descripti
     formData.append('image', compressedImage)
   }
 
-  return postWithToken('/marker/create', formData, {
+  return postWithToken<string>('/marker/create', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

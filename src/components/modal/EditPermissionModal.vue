@@ -2,12 +2,14 @@
 import type { RoomMember } from '@/api/room/room.model.ts'
 import { ref } from 'vue'
 import { useUpdatePermission } from '@/api/permission/permission.query.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const props = defineProps<{
   roomId: string
   roomMember: RoomMember|null
 }>()
 
+const toastStore = useToastStore()
 const emit = defineEmits(['togglePermissionModal'])
 const {mutate: changePermission2} = useUpdatePermission()
 const permission = ref<string>(props.roomMember?.role ?? "")
@@ -29,7 +31,7 @@ const changePermission = async () => {
   }
   changePermission2(vars,{
     onSuccess(data, variables, context) {
-      alert("권한 변경이 완료되었습니다.")
+      toastStore.show("권한 변경이 완료되었습니다.")
     },
     onSettled(data, error, variables, context) {
         emit('togglePermissionModal',false)

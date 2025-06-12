@@ -1,5 +1,5 @@
 
-import { post, postWithToken} from '@/api/http.ts'
+import { deleteWithToken, post, postWithToken } from '@/api/http.ts'
 import type { Result } from '@/api/DefaultResponse.ts'
 export interface Token {
   accessToken: string;
@@ -26,4 +26,7 @@ export const logout = () => {
   return postWithToken<string>('/logout')
 }
 
+export const deleteAccount = () => {
+  return deleteWithToken('/user/delete')
+}
 

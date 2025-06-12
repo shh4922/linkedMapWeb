@@ -10,7 +10,7 @@ export const fetchMyRoomList = async () => {
 
 
 /** POST Room Create */
-export const postCreateRoom = async (title:string, description:string, file:File|null=null) => {
+export const postCreateRoom = async (title:string, description:string, imageBlob:Blob|null=null) => {
   const formData = new FormData()
 
   formData.append('dto', new Blob([JSON.stringify({
@@ -18,12 +18,13 @@ export const postCreateRoom = async (title:string, description:string, file:File
     description: description
   })], {type: 'application/json'}))
 
-  if (file) {
-    const compressedFile = await compressImage(file)
-    formData.append('image', compressedFile)
+  if(imageBlob) {
+    const file = blobToFile(imageBlob, "marker.jpeg")
+    const compressedImage = await compressImage(file)
+    formData.append('image', compressedImage)
   }
 
-  return postWithToken('/room/create', formData, {
+  return postWithToken<string>('/room/create', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -33,7 +34,11 @@ export const postCreateRoom = async (title:string, description:string, file:File
 /** GET room Detail */
 export const fetchRoomDetail = async (roomId: string) => {
   return getWithToken<RoomDetail>(`/room/detail/${roomId}`)
+}
 
+/** 참가할 방 조회 */
+export const fetchJoinRoom = async (roomId: string) => {
+  return getWithToken<RoomDetail>(`/room/join/${roomId}`)
 }
 
 /** POST 유저 추방 */

@@ -41,7 +41,7 @@ const onToggleChange = (event: Event, roomId: number) => {
         </router-link>
       </div>
 
-      <div v-if="roomList2?.data.length === 0" class="empty-state">
+      <div v-if="roomList2?.data && roomList2?.data.length === 0" class="empty-state">
         <p class="empty-message">
           아직 속해있는 그룹이 없습니다.
         </p>

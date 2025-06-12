@@ -14,6 +14,7 @@ import RegisterView from '@/page/RegisterView.vue'
 import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
 import CreateRoom from '@/components/bottomNav/views/CreateRoom.vue'
 import Invite from '@/page/Invite.vue'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
 const routes = [
@@ -25,6 +26,11 @@ const routes = [
         path: '',
         name: 'home',
         component: Home,
+      },
+      {
+        path: 'my',
+        name: 'mypage',
+        component: MyPageView,
       },
 
     ]
@@ -76,11 +82,11 @@ const routes = [
         name: 'register',
         component: RegisterView
       },
-      {
-        path: 'my',
-        name: 'mypage',
-        component: MyPageView,
-      },
+      // {
+      //   path: 'my',
+      //   name: 'mypage',
+      //   component: MyPageView,
+      // },
     ]
   }
 
@@ -90,4 +96,10 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from) => {
+  setTimeout(()=> {
+    const toast = useToastStore()
+    toast.clear()
+  },2000)
+})
 export default router;

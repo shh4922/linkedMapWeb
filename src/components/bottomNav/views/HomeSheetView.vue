@@ -4,9 +4,11 @@ import { computed, watch } from 'vue'
 import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import HomeMarkerCell from '@/components/cell/HomeMarkerCell.vue'
+import { useBackgroundBlur } from '@/store/useBackgroundBlur.ts'
 
 const markerListStore = useMarkserListStore()
 const roomStore = useToggleRoomStore()
+const blur = useBackgroundBlur()
 
 const checkedRoomList = computed<string[]>(() =>
   Object.entries(roomStore.isCheckedMap)
@@ -40,17 +42,21 @@ watch(currentMarkers.value, (newMarkers) => {
 
     <div class="header">
       <p>선택한 그룹의 마커 리스트</p>
-      <router-link :to="{name:'createRoom'}">그룹 생성하기</router-link>
+
+      <div class="rightHeader">
+        <router-link :to="{name:'createRoom'}">그룹 생성하기</router-link>
+        <p @click="blur.toggleBlur(true)">그룹리스트 열기</p>
+      </div>
     </div>
 
     <!-- ‘선택된 그룹이 없슴’ 메시지 -->
     <p v-if="checkedRoomList.length === 0" class="empty-message">
-      선택된 그룹이 없습니다.
+      선택된 그룹이 없습니다. <br/>그룹리스트를 눌러 그룹을 선택해보세요!
     </p>
 
     <!-- ‘마커가 없습니다.’ 메시지 -->
     <p v-else-if="currentMarkers.length === 0" class="empty-message">
-      마커가 없습니다.
+      선택한 그룹에 추가된 마커가 없습니다. <br/> <router-link :to="{name:'search'}">여기를 눌러 마커를 추가해보세요</router-link>
     </p>
 
     <!-- 마커 리스트 -->
@@ -97,12 +103,10 @@ watch(currentMarkers.value, (newMarkers) => {
   font-family: nanum-5;
   font-size: 1rem;
   color: #333;
-
   p {
     margin: 0;
     font-weight: bold;
   }
-
   a {
     color: #ff774d; /* 링크 색상 */
     text-decoration: none;
@@ -112,6 +116,18 @@ watch(currentMarkers.value, (newMarkers) => {
       text-decoration: underline; /* 호버 시 밑줄 */
     }
   }
+  .rightHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    p {
+      color: #e8ae98;
+    }
+  }
+
+
+
 }
 
 /* 빈 상태 메시지 공통 스타일 */

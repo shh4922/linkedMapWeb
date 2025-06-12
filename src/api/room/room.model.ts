@@ -24,6 +24,7 @@ export interface RoomDetail {
   roomId: number;
   roomName: string;
   roomDescription: string;
+  myRole:string
   currentRoomOwnerId: number;
   currentRoomOwnerName: string;
   currentRoomOwnerEmail: string;
@@ -31,8 +32,8 @@ export interface RoomDetail {
   createUserName: string;
   createdAt: string; // ISO 8601 형식
   imageUrl: string;
-  memberList: RoomMember[];
   markerCount: number;
+  memberList: RoomMember[];
 }
 
 /**

@@ -10,13 +10,15 @@ import type { RoomMember } from '@/api/room/room.model.ts'
 import RoomEditModal from '@/components/modal/RoomEditModal.vue'
 import { deleteRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const props = defineProps<{
   roomId: string
 }>()
 
 const router = useRouter()
-const { data: roomDetail, isError} = useFetchRoomDetail(props.roomId)
+const toastStore = useToastStore()
+const { data: roomDetail, isError, error} = useFetchRoomDetail(props.roomId)
 const selectedRoomMember = ref<RoomMember|null>(null)
 const modal = reactive({
   isShowInviteModal: false,
@@ -24,22 +26,26 @@ const modal = reactive({
   isShowEditGroupModal : false
 })
 
-
+watch(isError,newValue => {
+  if(newValue) {
+    if(error.value.error.response.status === 400) {
+      router.push({ name: 'home' })
+      toastStore.show("존재하지 않는 방입니다.",'error')
+    }
+  }
+})
 
 const deleteRoom_ = async () => {
-  if (confirm(`${roomDetail?.value?.data.roomName ?? "0"} 을 삭제하시겠습니까?`)){    //확인
-    try {
-      const res = await deleteRoom(Number(props.roomId))
-
-      console.log(res)
+  if (confirm(`${roomDetail.value?.data?.roomName ?? "0"} 을 삭제하시겠습니까?`)){    //확인
+    const res = await deleteRoom(Number(props.roomId))
+    if(res.data) {
+      toastStore.show("삭제되었습니다.",)
       router.go(-1)
-    } catch (e) {
-      console.log(e)
-      alert("권한이 없습니다.")
     }
   }
   return;
 }
+
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
 })
@@ -58,19 +64,14 @@ const emitTogglePermissionModal = (isShow:boolean, roomMember:RoomMember|null=nu
 
 
 
-const offModal = () => {
-  modal.isShowEditGroupModal = false
-  modal.isShowInviteModal = false
-  modal.isShowPermissionModal = false
-}
 
 </script>
 
 <template>
   <main :class="modal.isShowPermissionModal||modal.isShowInviteModal||modal.isShowEditGroupModal ? 'gray' : '' ">
     <section class="categoryInfo">
-      <div class="info">
-        <div class="info-head">
+      <div class="info" v-if="roomDetail?.data">
+        <div class="info-head" >
           <div class="groupTitle">
 
             <img v-if="roomDetail?.data.imageUrl" class="roomImage" :src="roomDetail?.data.imageUrl"/>
@@ -91,17 +92,17 @@ const offModal = () => {
       <div class="subInfoContainer">
         <div class="subInfo">
           <p class="sub-head">카테고리 생성일</p>
-          <p>{{forrmatDate(roomDetail?.data.createdAt ?? "")}}</p>
+          <p>{{forrmatDate(roomDetail?.data?.createdAt ?? "")}}</p>
         </div>
 
         <div class="subInfo">
           <p class="sub-head">가입한 유저수</p>
-          <p>{{roomDetail?.data.memberList.length}}명</p>
+          <p>{{roomDetail?.data?.memberList.length}}명</p>
         </div>
 
         <div class="subInfo">
           <p class="sub-head">등록된 마커수</p>
-          <p>{{roomDetail?.data.markerCount}}개</p>
+          <p>{{roomDetail?.data?.markerCount}}개</p>
         </div>
       </div>
       <div class="editCategory">
@@ -115,17 +116,17 @@ const offModal = () => {
       <div class="userHeader">
         <p class="userListTitle">가입한 유저임</p>
         <p class="createLink"
-           v-if="myInfo?.memberId === roomDetail?.data.currentRoomOwnerId"
+           v-if="myInfo?.memberId === roomDetail?.data?.currentRoomOwnerId"
            @click="toggleModal(true)">초대링크 만들기</p>
       </div>
 
       <ul>
-        <RoomMemberCell v-for="(user,index) in roomDetail?.data.memberList"
+        <RoomMemberCell v-for="(user,index) in roomDetail?.data?.memberList"
                         :key="index"
 
                         :user-info="user"
                         :roomId="roomId"
-                        :current-owner-id="roomDetail?.data.currentRoomOwnerId ?? 0"
+                        :current-owner-id="roomDetail?.data?.currentRoomOwnerId ?? 0"
                         @togglePermissionModal="emitTogglePermissionModal" />
       </ul>
     </section>
@@ -142,10 +143,11 @@ const offModal = () => {
                          :room-member="selectedRoomMember"
                          @togglePermissionModal="emitTogglePermissionModal" />
 
-    <RoomEditModal v-if="roomDetail !== undefined && modal.isShowEditGroupModal"
+    <RoomEditModal v-if="roomDetail?.data && modal.isShowEditGroupModal"
                    class="modal"
                    :room-detail-info="roomDetail.data"
                    @toggleRoomEditModal="toggleRoomEditModal" />
+
   </main>
 </template>
 

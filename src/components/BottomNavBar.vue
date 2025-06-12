@@ -1,30 +1,35 @@
 <script setup lang="ts">
-import {  useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { pageType, usePageStore } from '@/store/usePageStore.ts'
 
 const router = useRouter()
-
-
+const pageStore = usePageStore()
 
 const moveToMyPage = () => {
-  pageStore.setTogglePage(false)
-  router.push({name: 'mypage'})
+  pageStore.setCurrentPage(pageType.MY)
+  pageStore.toggleSheetView(false)
+  router.push({ name: 'mypage' })
 }
 
-const pageStore = usePageStore()
+const moveToHome = () => {
+  if (pageStore.currentPage === pageType.MY) {
+    router.push({ name: 'home' })
+    pageStore.toggleSheetView(true)
+    pageStore.setCurrentPage(pageType.HOME)
+  } else if(pageStore.currentPage === pageType.HOME && pageStore.isOpenSheetView) {
+    pageStore.toggleSheetView(false)
+  } else {
+    pageStore.toggleSheetView(true)
+  }
+}
 </script>
 
 <template>
   <div class="bottom-nav">
-    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.HOME)">
+    <div class="nav-item" @click="moveToHome">
       <i class="pi pi-map" style="font-size: 2.5rem"></i>
     </div>
-<!--    <div class="nav-item" @click="pageStore.setCurrentPage(pageType.CATEGORY)">-->
-<!--      <i class="pi pi-list" style="font-size: 2.5rem"></i>-->
-<!--    </div>-->
-<!--    <div class="nav-item">-->
-<!--      <p>3</p>-->
-<!--    </div>-->
+
     <div class="nav-item" @click="moveToMyPage">
       <i class="pi pi-user" style="font-size: 2.5rem"></i>
     </div>
@@ -35,7 +40,7 @@ const pageStore = usePageStore()
 /* 네비게이션 바 */
 .bottom-nav {
   display: flex;
-  height: 8%; /* 높이 설정 */
+  height: 6%; /* 높이 설정 */
   border-top: 1px solid #ccc; /* 상단 구분선 */
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;

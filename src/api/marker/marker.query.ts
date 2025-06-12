@@ -1,5 +1,5 @@
 import { type QueryFunctionContext, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/vue-query'
-import { fetchMarkerList, updateMarker } from '@/api/marker/marker.ts'
+import { fetchMarkerList, saveMarker, updateMarker } from '@/api/marker/marker.ts'
 import { computed, type Ref } from 'vue'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 import type { Result } from '@/api/DefaultResponse.ts'
@@ -36,6 +36,35 @@ export const useUpdateMarker = () => {
   >({
     mutationFn: ({roomId,markerId,title,description,storeType,imageBlob}) => {
       return updateMarker(markerId, title, description, storeType, imageBlob)
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({queryKey:['markerList', variables.roomId]})
+    },
+    onError: (error, variables) => {
+      console.error('Marker update failed:', error)
+    }
+  })
+}
+
+export const useCreateMarker = () => {
+  const queryClient = useQueryClient()
+  return useMutation<
+    Result<string>,
+    AxiosError,
+    {
+      title:string,
+      lat:number,
+      lng:number,
+      description:string,
+      storeType:string,
+      address:string,
+      roadAddress:string,
+      roomId:number,
+      imageBlob:Blob|null
+    }
+  >({
+    mutationFn: ({title,lat,lng,description,storeType,address,roadAddress,roomId,imageBlob}) => {
+      return saveMarker(title,lat,lng,description,storeType,address,roadAddress,roomId,imageBlob)
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({queryKey:['markerList', variables.roomId]})

@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/api/user.ts'
 import type { AxiosError } from 'axios'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const registerInput = reactive({
   name : "",
@@ -11,19 +12,19 @@ const registerInput = reactive({
 })
 
 const router = useRouter()
-
+const toastStore = useToastStore()
 const submit = async() => {
 
   const res = await register(registerInput.email, registerInput.password, registerInput.name)
   if(!res.error) {
-    alert("회원가입이 완료되었습니다.")
     router.push('login')
+    toastStore.show("회원가입이 완료되었습니다.")
     return
   }
 
   const status = res.error.response?.status
   if(status === 409) {
-    alert("중복된 이메일입니다.")
+    toastStore.show("중복된 이메일입니다.")
   }
 }
 </script>

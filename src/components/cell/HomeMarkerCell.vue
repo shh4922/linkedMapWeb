@@ -5,6 +5,7 @@ import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import { computed } from 'vue'
 import noImage from "@/assets/image/placeholder_no_image.png"
+import { getFormatPermission } from '../../utils/permission.ts'
 
 const props = defineProps<{
   marker: Marker
@@ -26,7 +27,6 @@ const selectedMarker = computed(()=> {
     @click="markerSelect"
     :class="{ selected: selectedMarker }"
   >
-<!--    src="https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20241004_92%2F17280304380000bFN4_JPEG%2F4517746122367149_762170218.jpg&type=a340"-->
     <img
       :src="marker.imageUrl ?? noImage"
       alt="마커 이미지"
@@ -34,7 +34,6 @@ const selectedMarker = computed(()=> {
     <div class="card-content">
       <div class="card-header">
         <h3 class="title">{{ marker.title }}</h3>
-        <button class="action-btn" aria-label="상세 보기">🔍</button>
       </div>
 
       <p class="description">{{ marker.description }}</p>
@@ -42,7 +41,13 @@ const selectedMarker = computed(()=> {
       <div class="card-footer">
         <span class="meta-item">📍 {{ marker.address }}</span>
         <span class="meta-item">🗓️ {{ forrmatDate(marker.createdAt) }}</span>
+      </div>
+
+      <!-- 부가 정보는 심플하게 -->
+      <div class="card-footer info-footer">
+        <span class="meta-item">📂 {{ marker.roomName }}</span>
         <span class="meta-item">👤 {{ marker.creatorName }}</span>
+        <span class="meta-item">🔒 {{ getFormatPermission(marker.creatorRole) }}</span>
       </div>
     </div>
   </li>
@@ -57,77 +62,55 @@ $sub-text-color: #666;
 .marker-card {
   background: #fff;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem;
+  gap: 0.5rem;            /* 간격 줄임 */
+  padding: 0.4rem;        /* 패딩 축소 */
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
-  max-height: 80px;
+  max-height: 70px;       /* 세로 크기 제한 */
   overflow: hidden;
 }
 
 .marker-card.selected {
   border: 2px solid $main-color;
-  background: rgba(255, 127, 80, 0.1); /* 연한 코랄 배경 */
+  background: rgba(255,127,80,0.1);
 }
 
-/* 왼쪽 이미지 */
+/* 왼쪽 이미지: 작게 */
 .marker-card img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
   border-radius: 0.5rem;
   flex-shrink: 0;
 }
 
-/* 이미지 오른쪽 컨텐츠 래퍼 */
+/* 콘텐츠 래퍼: 간격 축소 */
 .card-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
   overflow: hidden;
 }
 
-/* 카드 헤더 */
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: bold;
-    color: $main-color;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .action-btn {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    color: $main-color;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    transition: transform 0.2s;
-
-    &:hover {
-      transform: scale(1.2);
-    }
-  }
+/* 제목 */
+.title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: $main-color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 설명(최대 1줄) */
+/* 설명은 한 줄만 */
 .description {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: $sub-text-color;
   line-height: 1.2;
   overflow: hidden;
@@ -135,21 +118,46 @@ $sub-text-color: #666;
   white-space: nowrap;
 }
 
-/* 카드 푸터 */
+/* 메타 정보 공통 */
 .card-footer {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.7rem;
+  gap: 0.4rem;
+  font-size: 0.65rem;
   color: $sub-text-color;
+  margin: 0;
+
+  /* 약간의 상단 여백 */
+  &:not(:first-of-type) {
+    margin-top: 0.2rem;
+  }
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 그룹명 / 만든사람 / 권한 강조 라벨 */
+.meta-item strong {
+  color: $text-color;
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
+
+.info-footer {
+  gap: 0.4rem;
 
   .meta-item {
+    font-size: 0.65rem;
+    color: $sub-text-color;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    gap: 0.2rem;
   }
 }
 </style>

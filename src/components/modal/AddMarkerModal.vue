@@ -7,6 +7,8 @@ import { saveMarker } from '@/api/marker/marker.ts'
 import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import ImageCropModal from '@/components/modal/ImageCropModal.vue'
+import { useToastStore } from '@/store/useToastMessage.ts'
+import { useCreateMarker } from '@/api/marker/marker.query.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const emit =defineEmits(['closeAddModal'])
@@ -14,10 +16,12 @@ const props = defineProps<{
   result: SearchModel
 }>()
 
-
+const toastStore = useToastStore()
 const markerListStore = useMarkserListStore()
 const {data:myRoomList} = useFetchMyRoomList()
+const {mutate: addMarker, } = useCreateMarker()
 
+const isLoading = ref(false)
 const isShowCropModal = ref<boolean>(false)
 const selectRoomId = ref<number | null>(null)
 const description = ref<string>("")
@@ -45,19 +49,43 @@ const closeAddModal = () => {
 
 
 const submit = async() => {
+  if(isLoading.value) return
+
+  if(localStorage.getItem("accessToken") === null || localStorage.getItem("accessToken") === undefined) {
+    toastStore.show("로그인이 필요합니다.",'error')
+    return
+  }
+
+
   if(selectRoomId.value === null) {
-    alert("그룹을 선택해주세요")
+    toastStore.show("그룹을 선택해주세요",'error')
     return
   }
 
   const data = props.result
-  const res = await saveMarker(data.place_name, Number(data.y), Number(data.x), description.value, data.category_name, data.address_name, data.road_address_name, selectRoomId.value, croppedBlob.value)
-
-  console.log(res)
-
-  /** 특정 방에 마커추가시, 기존에 저장되어있던 방을 지움. 새로 방을 fetch해서 마커리스트를 다시 조회하기위해 */
-  markerListStore.deleteRoom(selectRoomId.value.toString())
-  closeAddModal()
+  const vars = {
+    title: data.place_name,
+    lat:  Number(data.y),
+    lng: Number(data.x),
+    description: description.value,
+    storeType: data.category_name,
+    address: data.address_name,
+    roadAddress: data.road_address_name,
+    roomId: selectRoomId.value,
+    imageBlob: croppedBlob.value
+  }
+  addMarker(vars,{
+    onSuccess() {
+      toastStore.show("마커가 추가되었습니다.")
+      /** 특정 방에 마커추가시, 기존에 저장되어있던 방을 지움. 새로 방을 fetch해서 마커리스트를 다시 조회하기위해 */
+      markerListStore.deleteRoom(selectRoomId.value!.toString())
+      closeAddModal()
+    },
+    onError(error) {
+      console.log(error)
+      toastStore.show("마커 추가에 실패했습니다", "error")
+    },
+  })
 }
 
 
@@ -95,86 +123,75 @@ const saveCropImage = (blob: Blob | null) => {
 </script>
 
 <template>
-  <article>
+  <article class="add-marker-modal">
     <section class="head">
-      <p>마커를 추가하세염</p>
+      <p>마커 추가</p>
       <i class="pi pi-times" @click="closeAddModal"></i>
     </section>
 
-    <Map class="map" ref="map" style="width: 100%; height: 250px"/>
+    <Map class="map" ref="map" />
 
     <section class="searchInfo">
-      <div class="storeName">
-        <p class="sub">상호명</p>
-        <p class="result">{{result.place_name}}</p>
+      <div class="row">
+        <span class="sub">상호명</span>
+        <span class="result">{{ result.place_name }}</span>
       </div>
-
-      <div class="storeName">
-        <p class="sub">분류</p>
-        <p class="result">{{result.category_name}}</p>
+      <div class="row">
+        <span class="sub">분류</span>
+        <span class="result">{{ result.category_name }}</span>
       </div>
-
-      <div>
-        <p class="sub">주소</p>
-        <p class="result">{{result.address_name}}</p>
+      <div class="row">
+        <span class="sub">주소</span>
+        <span class="result">{{ result.address_name }}</span>
       </div>
-
-      <div>
-        <p class="sub">도로명 주소</p>
-        <p class="result">{{result.road_address_name}}</p>
+      <div class="row">
+        <span class="sub">설명</span>
+        <input v-model="description" placeholder="간단히 입력해주세요" />
       </div>
-
-      <div>
-        <p class="sub">링크</p>
-        <a class="result" :href="result.place_url" target="_blank" rel="noopener noreferrer">카카오맵 리뷰보기</a>
-      </div>
-
-      <div>
-        <p class="sub">설명</p>
-        <input class="result" v-model="description" placeholder="해당 장소에 대한 설명을 작성해보세요"/>
-      </div>
-
-      <div>
-        <p class="sub">추가할 그룹명</p>
-        <select class="result" v-model="selectRoomId">
-          <option v-for="(room) in myRoomList?.data"
-                  :key="room.id"
-                  :value="room.roomId"
-          >{{room.roomName}}</option>
+      <div class="row">
+        <span class="sub">그룹</span>
+        <select v-model="selectRoomId">
+          <option v-for="room in myRoomList?.data" :key="room.roomId" :value="room.roomId">
+            {{ room.roomName }}
+          </option>
         </select>
       </div>
+    </section>
 
-      <!--   이미지 넣는곳   -->
-      <div class="uploader-wrapper">
-        <!-- 파일 없음 시 -->
+    <div class="uploader-wrapper">
       <div v-if="!originalImageUrl && !previewCroppedUrl" class="placeholder">
         <label class="upload-label">
           <i class="pi pi-image"></i>
-          <span>이미지를 선택하세요</span>
           <input type="file" accept="image/*" @change="onFileChange" hidden />
         </label>
       </div>
-
-      <!-- 크롭된 결과 미리보기 -->
-      <div v-if="previewCroppedUrl" class="preview-area">
+      <div v-else class="preview-area">
         <div
           class="cropped-preview"
           :style="{ backgroundImage: `url(${previewCroppedUrl})` }"
         ></div>
         <label class="upload-label small">
           <i class="pi pi-refresh"></i>
-          <span>이미지 변경</span>
           <input type="file" accept="image/*" @change="onFileChange" hidden />
         </label>
       </div>
-      </div>
+    </div>
 
+    <!-- 바로가기 + 저장 버튼 -->
+    <div class="action-buttons">
+      <a
+        :href="result.place_url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="kakao-btn"
+      >
+        카카오맵 열기
+      </a>
+      <button class="save" @click="submit">저장하기</button>
+    </div>
 
-    </section>
-    <button @click="submit" class="save">저장하기</button>
-    <div
-      v-if="isShowCropModal"
-      class="modal-overlay"/>
+<!--    TODO: ??????-->
+    <div v-if="isShowCropModal" class="modal-overlay" />
     <ImageCropModal
       class="cropModal"
       v-if="isShowCropModal"
@@ -196,222 +213,185 @@ const saveCropImage = (blob: Blob | null) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9;
+  z-index: 4;
   pointer-events: auto; // 모달 쪽은 이벤트 다시 활성화
 }
 
 .cropModal {
-  position: absolute;
-  /* 화면의 정확히 중간 지점 */
+  position: fixed;
   top: 50%;
   left: 50%;
-  /* 너비/높이는 원하는 대로 설정 */
-  width: 450px;
-  height: 60%;
-  max-width: 90%;
-  background: white;
-  border-radius: 8px;
+  width: 90vw;
+  max-width: 400px;
   padding: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-
-  /* transform을 이용해 자신의 가로/세로 크기의 절반만큼 빼주면 진짜 중앙 정렬 */
+  height: 500px;
+  max-height: 80vh;
   transform: translate(-50%, -50%);
-  z-index: 14;
+  z-index: 5;
+  overflow: visible;
 }
 
-article {
+.add-marker-modal {
   font-family: nanum-5;
+  position: fixed;
+  top: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 400px;
+  max-height: 80vh;       /* 전체 높이 제한 */
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 
+  /* 내부 스크롤 */
+  > .searchInfo,
+  > .uploader-wrapper {
+    overflow-y: auto;
+  }
 }
-.map {
-  width: 100%;
-  height: 250px;
-  margin-bottom: 2rem;
-}
+
 .head {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 100%;
-  margin-bottom: 2rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
 
   p {
-    font-size: 1.3rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
   }
-
+  .pi-times {
+    font-size: 1.2rem;
+    color: #666;
+  }
 }
 
+/* 맵 높이 단축 */
+.map {
+  width: 100%;
+  height: 120px !important;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* 폼 섹션 */
 .searchInfo {
+  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  width: 100%;
+  gap: 0.5rem;
 
-  input.result {
-    padding: 0.6rem 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-
-    &::placeholder {
-      color: #aaa;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: coral;
-    }
-  }
-
-  div {
+  .row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    font-size: 1.2rem;
+    font-size: 0.9rem;
 
     .sub {
-      color: gray;
-      width: 30%;
-      //background-color: chartreuse;
-    }
-    .result {
       flex: 1;
+      color: #666;
+    }
+    .result,
+    input, select {
+      flex: 2;
+      font-size: 0.9rem;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 0.4rem;
+      padding: 0.4rem 0.6rem;
+    }
+    input, select {
+      background: #fafafa;
+      &:focus {
+        border-color: coral;
+        outline: none;
+      }
     }
   }
 }
 
-select {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-}
-.save {
-  width: 100%;
-  outline: none;
-  border: none;
-  background-color: coral;
-  color: white;
-  font-size: 1.2rem;
-  font-family: nanum-4;
-  padding: 1rem 0.5rem;
-  border-radius: 0.4rem;
-}
-
+/* 이미지 업로드 */
 .uploader-wrapper {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 1.5rem;
-  border: 2px dashed #e0e0e0;
-  border-radius: 0.75rem;
-  background-color: #fafafa;
-  position: relative;
-  overflow: hidden;
-
+  width: 80px;
+  height: 80px;
+  margin: 0.5rem auto;
+  border: 2px dashed #ddd;
+  border-radius: 0.6rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
 
-  transition: border-color 0.2s, background-color 0.2s;
-
-  &:hover {
-    border-color: #ff914d;
-    background-color: #fff;
+  .placeholder .upload-label {
+    font-size: 1.5rem;
+    color: #ccc;
   }
 
-  /* 파일 없음 상태 */
-  .placeholder {
-    text-align: center;
-    width: 100%;
-    color: #b0b0b0;
-
-    height: 100%;
-
-    .upload-label {
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      gap: 0.3rem;
-
-      i.pi {
-        font-size: 2rem;
-        color: #e0e0e0;
-        transition: color 0.2s;
-      }
-
-      span {
-        font-size: 0.85rem;
-        color: #888;
-      }
-
-      &:hover i.pi {
-        color: #ff914d;
-      }
-    }
-  }
-
-  /* 미리보기 영역 */
   .preview-area {
-    /* Flex로 중앙 정렬 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     width: 100%;
     height: 100%;
-    position: relative;
 
-    /* 미리보기 이미지 */
     .cropped-preview {
-      width: 70%;   /* 테두리 대비 조금 여유 두기 (원하는 비율로 조정) */
-      height: 70%;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center center;
-      border-radius: 0.5rem;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      border-radius: 0.6rem;
     }
-
-    /* 이미지 변경 레이블 */
     .upload-label.small {
-      margin-top: 4px; /* 이미지와 레이블 사이 간격 */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      cursor: pointer;
-      font-size: 0.7rem;       /* 조금 더 작은 글자 */
-      color: #aaaaaa;         /* 연한 회색 */
-      transition: color 0.2s;
-
-      i.pi-refresh {
-        font-size: 1rem;
-        color: #aaaaaa;
-      }
-
-      span {
-        font-size: 0.7rem;
-      }
-
-      &:hover i.pi-refresh,
-      &:hover span {
-        color: #ff914d;       /* 호버 시 강조색 */
-      }
-
-      input[type="file"] {
-        display: none;
-      }
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      font-size: 0.8rem;
+      color: coral;
     }
-  }
-
-  /* 인풋 숨기기 */
-  input[type="file"] {
-    display: none;
   }
 }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+}
+
+/* 카카오맵 바로가기 버튼 */
+.kakao-btn {
+  flex: 1;
+  text-align: center;
+  background-color: #f7e600;
+  color: #191919;
+  padding: 0.6rem 0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: nanum-4;
+  text-decoration: none;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f4d500;
+  }
+}
+
+/* 기존 저장 버튼 */
+.save {
+  flex: 1;
+  padding: 0.6rem 0;
+  background: coral;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: nanum-4;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #e67350;
+  }
+}
 </style>

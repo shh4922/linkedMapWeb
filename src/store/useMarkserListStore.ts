@@ -41,7 +41,9 @@ export const useMarkserListStore = defineStore('markerListStore', ()=> {
     if (!markerListByRoomId.value[roomId]) {
       const res = await fetchMarkerList(roomId)
       markerListByRoomId.value[roomId] = res.data
+      console.log("data ",res.data)
     }
+
     return markerListByRoomId.value[roomId]
   }
 
