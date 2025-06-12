@@ -5,13 +5,14 @@ import { reactive, ref } from 'vue'
 import { updateRoom } from '@/api/room/room.ts'
 import { useRouter } from 'vue-router'
 import ImageCropModal from '@/components/modal/ImageCropModal.vue'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const router = useRouter()
 const props = defineProps<{
   roomDetailInfo: RoomDetail
 }>()
 const emit = defineEmits(['toggleRoomEditModal'])
-
+const toastStore = useToastStore()
 
 const imageFile = ref<Blob|null>(null)
 const inputFiled = reactive({
@@ -39,11 +40,11 @@ const uploadImage = (event: Event) => {
 
 const checkInput = () => {
   if(inputFiled.title.length === 0 || inputFiled.title.length === 30) {
-    alert("그룹명은 최소 1~30 글자 사이여야 합니다")
+    toastStore.show("그룹명은 최소 1~30 글자 사이여야 합니다",'error')
     return false
   }
   if(inputFiled.description.length === 0 || inputFiled.description.length === 200) {
-    alert("그룹의 설명은 최소 1~200 글자 사이")
+    toastStore.show("그룹의 설명은 최소 1~200 글자 사이",'error')
     return false
   }
   return true
@@ -54,8 +55,12 @@ const update = async () => {
   if(!checkInput()) { return }
 
   const res = await updateRoom(props.roomDetailInfo.roomId, inputFiled.title, inputFiled.description, imageFile.value)
-  if(res.data) { alert("업데이트가 완료되었습니다.")}
-  router.go(-1)
+  if(res.data) {
+    router.go(-1)
+    toastStore.show("업데이트가 완료되었습니다.")
+  } else {
+    router.go(-1)
+  }
 }
 
 const saveCropImage = (blob: Blob | null) => {

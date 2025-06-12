@@ -6,23 +6,22 @@ import type { DefaultError } from '@/api/DefaultResponse.ts'
 import type { AxiosError } from 'axios'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { useMyInfo } from '@/store/myInfoStore.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const myInfoStore = useMyInfo()
 const loginInput = reactive({
   email: '',
   password: ''
 })
-
+const toastMessage = useToastStore()
 const router = useRouter()
 
 const submit = async () => {
   const res = await login(loginInput.email, loginInput.password)
   if(res.error) {
     if(res.error?.status === 400) {
-      alert("이메일 또는 패스워드가 잘못되었습니다")
-    }
-    if(res.error?.status === 500) {
-      alert("예기치못한 에러가 발생했습니다.")
+      toastMessage.show("이메일 또는 패스워드가 잘못되었습니다", 'error')
+      // alert("이메일 또는 패스워드가 잘못되었습니다")
     }
     return
   }
@@ -35,12 +34,10 @@ const submit = async () => {
 const getMyInfo = async () => {
   if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
   const res = await fetchMyInfo()
-  if(res.error) {
-    console.log(res.error)
-    return
+  if(res.data) {
+    myInfoStore.setMyInfo(res.data)
   }
-  console.log("login getmyinfo",res)
-  myInfoStore.setMyInfo(res.data)
+
 }
 
 </script>

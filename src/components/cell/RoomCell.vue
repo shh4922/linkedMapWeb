@@ -14,7 +14,7 @@ const props = defineProps<{
 
 <template>
   <li @click="moveToDetail" class="container">
-    <img class="roomImage" src="https://recipe1.ezmember.co.kr/cache/recipe/2017/11/21/8cb4b9f30e3570f4ff93dd3303eeff7f1.jpg"/>
+<!--    <img class="roomImage" :src="room."/>-->
 
     <div class="category-card">
       <div class="title">{{props.room.roomName }}</div>

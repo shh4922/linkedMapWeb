@@ -8,20 +8,19 @@ import MarkerModel from '@/components/map/marker/MarkerModel.ts'
 import type { Marker } from '@/api/marker/marker.model.ts'
 import type { LatLng } from '@/components/map/LatLng.ts'
 import EditMarkerModal from '@/components/modal/EditMarkerModal.vue'
+import { useFetchRoomDetail } from '@/api/room/room.query.ts'
 
 
 const route = useRoute()
 const map = ref<InstanceType<typeof Map> | null>(null)
 
-const {data: markerListResponse, refetch, isError} = useFetchMarkerList(route.params.roomId as string)
+const {data: markerListResponse, refetch} = useFetchMarkerList(route.params.roomId as string)
+const {data: roomDetail} = useFetchRoomDetail(route.params.roomId as string)
 
 const markerList = ref<Marker[]|null>(null)
 const selectMarker = ref<Marker | null>(null)
 const isShowEditMarker = ref(false)
 
-watch(isError, (newValue) => {
-  alert("마커를 불러오는 중 오류가 발생했습니다.")
-})
 
 watch(() => markerListResponse?.value?.data, (newValue) => {
   if (!newValue) return
@@ -97,9 +96,15 @@ const onToggleEditMarker = (isShow:boolean, marker: Marker|null=null) => {
     </div>
 
 
-    <ul>
+    <div v-if="roomDetail?.data && markerList?.length! > 0" class="room-info-simple">
+        <p class="room-name-simple">{{ roomDetail.data.roomName }}</p>
+        <router-link class="add-marker-link-simple" :to="{ name:'search' }">마커 추가하기</router-link>
+    </div>
+
+    <ul v-if="markerList && roomDetail?.data">
       <RoomMarkerCell v-for="(marker) in markerList"
                       :key="marker.id"
+                      :my-permission="roomDetail?.data.myRole"
                       :marker="marker"
                       :selected-marker="selectMarker?.id ?? 0"
                       @select-marker="onSelectMarker"
@@ -117,6 +122,27 @@ const onToggleEditMarker = (isShow:boolean, marker: Marker|null=null) => {
 </template>
 
 <style scoped lang="scss">
+.room-info-simple {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+}
+
+.room-name-simple {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-marker-link-simple {
+  font-size: 1rem;
+  color: coral;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
 .overlay {
   position: fixed;
   inset: 0;

@@ -7,7 +7,6 @@ import { ref } from 'vue'
 const cropperRef = ref<InstanceType<typeof CropperType> | null>(null)
 
 
-/** Props */
 const props = defineProps<{
   src: string
   aspectRatio?: number
@@ -56,6 +55,10 @@ const cancle = () => {
 
 
 <style scoped lang="scss">
+//.cropper-wrapper {
+//  width: 100%;
+//  height: 100%;
+//}
 .cropper-wrapper {
   position: fixed;
   top: 50%;
@@ -63,7 +66,7 @@ const cancle = () => {
   transform: translate(-50%, -50%);
   width: 90vw;
   max-width: 600px;
-  height: 80vh;
+  height: 60vh;
   max-height: 700px;
   background-color: #fff;
   border-radius: 0.5rem;
@@ -84,7 +87,7 @@ const cancle = () => {
 /* 버튼 영역 */
 .cropper-footer {
   position: absolute;
-  bottom: 20px;
+  bottom: 50px;
   right: 20px;
   display: flex;
   justify-content: flex-end;

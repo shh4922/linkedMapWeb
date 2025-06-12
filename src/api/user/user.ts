@@ -6,15 +6,3 @@ export const fetchMyInfo = () => {
   return getWithToken<myInfo>('/user/my')
 }
 
-
-export const getRoomMemberInfo = (userId:number, roomId:number) => {
-
-  const params:AxiosRequestConfig = {
-    params: {
-      userId : userId,
-      roomId : roomId
-    }
-  }
-
-  return getWithToken('/roommember', params)
-}

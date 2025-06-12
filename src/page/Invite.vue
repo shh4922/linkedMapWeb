@@ -1,26 +1,68 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-
-import { useFetchRoomDetail } from '@/api/room/room.query.ts'
-import { forrmatDate } from '../utils/common.ts'
-import { joinRoom } from '@/api/invite/invite.ts'
-
+import { forrmatDate } from '@/utils/common.ts'
+import { checkInviteKey, joinRoom } from '@/api/invite/invite.ts'
+import { onMounted, ref } from 'vue'
+import { AxiosError } from 'axios'
+import { fetchJoinRoom } from '@/api/room/room.ts'
+import type { RoomDetail } from '@/api/room/room.model.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const route = useRoute()
-// const myInfo = useMyInfo()
 const router = useRouter()
+const isValid = ref(false)
 
-const { data: roomDetail } = useFetchRoomDetail(route.params.roomId as string)
+
+const toastStore = useToastStore()
+const roomDetail = ref<RoomDetail|null>(null)
 
 const join = async () => {
   const roomId = route.params.roomId as string
   const key = route.params.key as string
   const res = await joinRoom(roomId, key)
-  if(res.status === 200) {
-    alert("가입에 완료되었습니다.")
-    router.push('')
+
+  if(res.error) {
+    router.push('/')
+    toastStore.show(res.error.message,'error')
+    return
+  }
+
+  if(res.data) {
+    router.push('/')
+    toastStore.show("가입에 완료되었습니다!")
+    return
   }
 }
+
+const checkKey = async () => {
+  try {
+    const key = route.params.key as string
+    await checkInviteKey(key);
+    isValid.value = true
+    getJoinRoomId()
+  } catch (err) {
+    const axiosError = err.error as AxiosError
+    router.push('/')
+    toastStore.show(axiosError.response?.data?.message,'error')
+  }
+}
+
+const getJoinRoomId = async () => {
+  const res = await fetchJoinRoom(route.params.roomId as string)
+  if(res.data) {
+    roomDetail.value = res.data
+  }
+}
+
+
+onMounted(()=> {
+  if(localStorage.getItem("accessToken") === null) {
+    router.push({name: 'login'})
+    toastStore.show("로그인이 필요한 서비스입니다.", 'error')
+  }
+  checkKey()
+})
+
 
 
 </script>
@@ -28,15 +70,15 @@ const join = async () => {
 <template>
   <article class="invite">
     <h1 class="head">이 방이 맞나유?</h1>
-    <div class="invite-info">
-      <p class="room-name">{{ roomDetail?.data.roomName }}</p>
-      <p class="room-description">{{ roomDetail?.data.roomDescription }}</p>
-      <p class="meta">생성일: {{ forrmatDate(roomDetail?.data.createdAt ?? "") }}</p>
-      <p class="meta">방장: {{ roomDetail?.data.currentRoomOwnerName }} ({{ roomDetail?.data.currentRoomOwnerEmail }})</p>
-      <p class="meta">멤버 수: {{ roomDetail?.data.memberList.length }}명</p>
+    <div class="invite-info" v-if="roomDetail">
+      <p class="room-name">{{ roomDetail.roomName }}</p>
+      <p class="room-description">{{ roomDetail.roomDescription }}</p>
+      <p class="meta">생성일: {{ forrmatDate(roomDetail.createdAt) }}</p>
+      <p class="meta">방장: {{ roomDetail.currentRoomOwnerName }} ({{ roomDetail.currentRoomOwnerEmail }})</p>
+      <p class="meta">멤버 수: {{ roomDetail.memberList.length }}명</p>
       <img
-        v-if="roomDetail?.data.imageUrl"
-        :src="roomDetail.data.imageUrl"
+        v-if="roomDetail.imageUrl"
+        :src="roomDetail.imageUrl"
         alt="방 이미지"
         class="room-image"
       />

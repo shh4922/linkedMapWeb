@@ -9,7 +9,7 @@ export enum pageType {
 export const usePageStore = defineStore('usePageStore', {
   state: () => ({
     currentPage: pageType.HOME,
-    isPageOpen: true,
+    isOpenSheetView: true,
   }),
 
   getters: {
@@ -17,22 +17,34 @@ export const usePageStore = defineStore('usePageStore', {
       return state.currentPage
     },
     getIsPageOpen: state => {
-      return state.isPageOpen
+      return state.isOpenSheetView
     }
   },
 
   actions: {
     setCurrentPage(page:pageType)  {
-      if (this.currentPage === page && this.isPageOpen) {
-        this.setTogglePage(false)
-      } else {
-        this.currentPage = page
-        this.setTogglePage(true)
-      }
+      this.currentPage = page
+      // if (page === pageType.HOME && this.isOpenSheetView) {
+      //   this.toggleSheetView(false)
+      // }
+      // else if(page === pageType.HOME && !this.isOpenSheetView){
+      //   this.toggleSheetView(true)
+      // }
+      // else if (page === pageType.MY){
+      //   this.currentPage = page
+      //   this.toggleSheetView(false)
+      // }
+
+      // if (this.currentPage === pageType.HOME) {
+      //   this.toggleSheetView(false)
+      // } else {
+      //   this.currentPage = page
+      //   this.toggleSheetView(true)
+      // }
     },
 
-    setTogglePage(isShow: boolean)  {
-      this.isPageOpen = isShow
+    toggleSheetView(isShow: boolean)  {
+      this.isOpenSheetView = isShow
     }
   }
 

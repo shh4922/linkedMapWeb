@@ -5,26 +5,18 @@ import { useMyInfo } from '@/store/myInfoStore.ts'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { forrmatDate } from '../../../utils/common.ts'
-import { logout } from '@/api/auth/auth.ts'
+import { deleteAccount, logout } from '@/api/auth/auth.ts'
 import { useQueryClient } from '@tanstack/vue-query'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const router = useRouter()
 const { data:roomList } = useFetchMyRoomList()
-const myInfoStore = useMyInfo()
 const queryClient = useQueryClient()
+const toastStore = useToastStore()
 
 const goToLogin = () => {
   router.push({name:'login'})
 }
-
-// const getMyInfo = async () => {
-//   const res = await fetchMyInfo()
-//
-//   if(res.error) { return}
-//   if(res.data === undefined) return
-//
-//   myInfoStore.setMyInfo(res.data)
-// }
 
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
@@ -34,15 +26,31 @@ const logout2 = async () => {
   const res = await logout()
   if(res.error) { return }
 
+  clearInfo()
+}
+
+
+const deleteMyAccount = async () => {
+  try {
+    if(!confirm("정말로 회원탈퇴를 하시겠습니까?, 탈퇴시, 기존에 참여했던 방은 모두 사라지게됩니다.")) {
+      return
+    }
+
+    const res = await deleteAccount();
+    if(res.data) {
+      toastStore.show("회원탈퇴가 완료되었습니다.")
+      clearInfo()
+    }
+  } catch (err) {
+    toastStore.show("탈퇴에 실패했습니다.", 'error')
+  }
+}
+
+const clearInfo =  () => {
   localStorage.removeItem('accessToken')
   queryClient.removeQueries()
   window.location.replace('/')
 }
-
-// onMounted(() => {
-//   getMyInfo()
-// })
-
 
 </script>
 
@@ -70,10 +78,10 @@ const logout2 = async () => {
 
       <div class="actions">
         <button class="btn logout-btn" @click="logout2">로그아웃</button>
-        <button class="btn withdraw-btn">회원탈퇴</button>
+        <button class="btn withdraw-btn" @click="deleteMyAccount">회원탈퇴</button>
       </div>
 
-      <div class="category-section">
+      <div class="category-section" v-if="roomList?.data">
         <h2>내 그룹</h2>
 
         <div class="noCategory" v-if="roomList?.data.length === 0">

@@ -15,5 +15,5 @@ createApp(App)
   .use(VueQueryPlugin)
   .directive('debounce', vueDebounce({lock:true}))
   .mount('#app')
-
+export {piana}
 window.Kakao.init(import.meta.env.VITE_KAKAO_JS)

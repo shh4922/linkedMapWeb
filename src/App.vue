@@ -7,6 +7,7 @@ import { useMyInfo } from '@/store/myInfoStore.ts'
 
 // CropperJS의 CSS를 전역으로 한 번만 로드
 import 'cropperjs/dist/cropper.css'
+import ToastMessage from '@/components/error/ToastMessage.vue'
 
 const myInfoStore = useMyInfo()
 
@@ -33,17 +34,35 @@ const getMyInfo = async () => {
 
 <template>
   <div id="app">
+    <ToastMessage />
     <router-view />
   </div>
 </template>
 
-<style>
+<style lang="scss">
+
+
+/* 혹은 다크모드 미디어쿼리 내부에서 덮어쓰기 */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #fff !important;
+    color: #333 !important;
+  }
+  /* 필요하다면 더 구체적인 컴포넌트 셀렉터에도 !important 로 덮어쓰세요 */
+}
+
 html, body, #app {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   font-size: 10px;
+
+  /* 여러분이 쓰시는 배경/텍스트 색상으로 바꿔주세요 */
+  background-color: #fff !important;
+  color: #333 !important;
+  /* 라이트 모드만 쓰겠다고 선언 */
+  color-scheme: light !important;
 }
 
 #app {

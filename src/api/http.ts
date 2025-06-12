@@ -5,8 +5,10 @@ import type { AxiosRequestConfig } from 'axios';
 
 const http: Axios = axios.create({
   baseURL: import.meta.env.VITE_BASEURL+import.meta.env.VITE_API_VERSION,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    // "Access-Control-Allow-Origin":
   },
   timeout: 5000
 })
@@ -40,6 +42,9 @@ export const getWithToken = async <T>(url: string, config?: AxiosRequestConfig):
     return { data: res.data.data };
   } catch (error) {
     const err = error as AxiosError<DefaultError>
+    if(err.status === 401) {
+      return {error:err}
+    }
     throw { error: err }
   }
 };
@@ -51,6 +56,9 @@ export const postWithToken = async <T>(url: string, data?: object, config?: Axio
     return {data:res.data.data};
   } catch (error) {
     const err = error as AxiosError<DefaultError>
+    if(err.status === 401) {
+      return {error:err}
+    }
     throw {error: err}
   }
 };
@@ -62,6 +70,9 @@ export const deleteWithToken = async <T>(url: string, config?: AxiosRequestConfi
     return { data: response.data.data };
   } catch (error) {
     const err = error as AxiosError<DefaultError>
+    if(err.status === 401) {
+      return {error:err}
+    }
     throw  { error:err }
   }
 };

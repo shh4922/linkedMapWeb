@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import type { Marker } from '@/api/marker/marker.model.ts'
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { deleteMarkerByMarkerId } from '@/api/marker/marker.ts'
 import { forrmatDate } from '@/utils/common.ts'
 import noImage from "@/assets/image/placeholder_no_image.png"
-import EditMarkerModal from '@/components/modal/EditMarkerModal.vue'
+import { useMyInfo } from '@/store/myInfoStore.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const props = defineProps<{
+  myPermission: string
   marker: Marker
   selectedMarker: number|null
 }>()
 const emit = defineEmits(['selectMarker', 'deleteMarker', 'toggleEditMarker'])
 
+const toastStore = useToastStore()
+const myInfo = computed(() => {
+  return useMyInfo().getMyInfo
+})
 
 /** 선택 상태를 계산해서 클래스에 바인딩 */
 const isSelected = computed(() => props.selectedMarker === props.marker.id)
@@ -27,16 +33,26 @@ const deleteMarker = async () => {
   const res = await deleteMarkerByMarkerId(props.marker.id.toString())
 
   if(res.data) {
-    alert("마커 삭제가 완료되었습니다.")
+    toastStore.show("마커 삭제가 완료되었습니다.")
     emit('deleteMarker', props.marker.id)
   }
 }
 
 /** 마커 편집 모달 토글*/
 const toggle = () => {
-  console.log("toggle")
+  console.log("toggle", props.marker)
   emit("toggleEditMarker", true, props.marker)
 }
+
+
+/** 권한 체크 */
+// 메니저의 경우 어케해야할지 더 확인
+const checkPermission = () => {
+  if(props.myPermission === 'OWNER') return true
+  if(props.marker.creatorId === myInfo.value?.memberId) return true
+  return false
+}
+
 
 </script>
 
@@ -46,7 +62,7 @@ const toggle = () => {
     <img :src="marker.imageUrl ?? noImage" alt="marker-image" class="markerImage"/>
 
     <div class="markerInfo">
-      <div class="marker-header">
+      <div class="marker-header" v-if="checkPermission()">
         <h3>{{ marker.title }}</h3>
         <div class="actions">
 

@@ -6,6 +6,8 @@ import EditPermissionModal from '@/components/modal/EditPermissionModal.vue'
 import { expelledRoomMember } from '@/api/room/room.ts'
 import type { AxiosError } from 'axios'
 import { useExpelledRoomMember } from '@/api/room/room.query.ts'
+import { getFormatPermission } from '@/utils/permission.ts'
+import { useToastStore } from '@/store/useToastMessage.ts'
 
 const emit = defineEmits(['togglePermissionModal'])
 const props = defineProps<{
@@ -14,6 +16,7 @@ const props = defineProps<{
   currentOwnerId: number
 }>()
 
+const toastStore = useToastStore()
 const {mutate: expelledMember} = useExpelledRoomMember()
 const fireUser = async () => {
   if (!confirm(`${props.userInfo.name} 를 추방 하시겠습니까? 유저를 추방해도 해당유저가 생성한 마커는 삭제되지 않습니다.`)){
@@ -26,7 +29,7 @@ const fireUser = async () => {
   }
   expelledMember(vars,{
     onSuccess(data, variables, context) {
-      alert("추방이 완료되었습니다.")
+      toastStore.show("추방이 완료되었습니다.")
     },
   })
 }
@@ -45,7 +48,7 @@ const myInfo = computed(() => {
     <div class="info">
       <p><strong>이름</strong>: {{userInfo.name}}</p>
       <p><strong>이메일</strong>: {{userInfo.email}}</p>
-      <p><strong>권한</strong>: {{userInfo.role}}</p>
+      <p><strong>권한</strong>: {{getFormatPermission(userInfo.role)}}</p>
     </div>
     <div class="actions" v-if="myInfo?.memberId === currentOwnerId && userInfo.role !== 'OWNER'">
       <button @click="isShowChangePermision" class="btn permission">권한변경</button>
