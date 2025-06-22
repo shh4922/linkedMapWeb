@@ -8,9 +8,8 @@ import type { Marker } from '@/api/marker/marker.model.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import { useCurrentPosition } from '@/store/useCurrentPosition.ts'
 import type { LatLng } from '@/components/map/LatLng.ts'
-import { pageType, usePageStore } from '@/store/usePageStore.ts'
+import {  usePageStore } from '@/store/usePageStore.ts'
 
-const pageStore = usePageStore()
 const map = ref<InstanceType<typeof Map> | null>(null)
 const isAnimating = ref(false)
 const roomStore = useToggleRoomStore()

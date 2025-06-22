@@ -1,53 +1,51 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { forrmatDate } from '@/utils/common.ts'
-import { checkInviteKey, joinRoom } from '@/api/invite/invite.ts'
+import { checkInviteKey } from '@/api/invite/invite.ts'
 import { onMounted, ref } from 'vue'
-import { AxiosError } from 'axios'
 import { fetchJoinRoom } from '@/api/room/room.ts'
 import type { RoomDetail } from '@/api/room/room.model.ts'
 import { useToastStore } from '@/store/useToastMessage.ts'
+import { useJoinRoom } from '@/api/invite/invite.query.ts'
+import type { CustomError, DefaultError } from '@/api/DefaultResponse.ts'
 
 const route = useRoute()
 const router = useRouter()
-const isValid = ref(false)
-
-
 const toastStore = useToastStore()
+
+const {mutate:joinRoom} = useJoinRoom()
 const roomDetail = ref<RoomDetail|null>(null)
 
 const join = async () => {
-  const roomId = route.params.roomId as string
-  const key = route.params.key as string
-  const res = await joinRoom(roomId, key)
-
-  if(res.error) {
-    router.push('/')
-    toastStore.show(res.error.message,'error')
-    return
+  const vals = {
+    roomId: route.params.roomId as string,
+    key: route.params.key as string
   }
-
-  if(res.data) {
-    router.push('/')
-    toastStore.show("가입에 완료되었습니다!")
-    return
-  }
+  joinRoom(vals,{
+    onSuccess() {
+        toastStore.show("가입에 완료되었습니다.")
+    },
+    onError(error: DefaultError) {
+      console.log("error",error)
+        toastStore.show(error.message)
+    },
+  })
 }
+
 
 const checkKey = async () => {
   try {
     const key = route.params.key as string
     await checkInviteKey(key);
-    isValid.value = true
-    getJoinRoomId()
+    getJoinRoomInfo()
   } catch (err) {
-    const axiosError = err.error as AxiosError
+    const error = err as CustomError
+    toastStore.show(error.serverResponse.message, "error")
     router.push('/')
-    toastStore.show(axiosError.response?.data?.message,'error')
   }
 }
 
-const getJoinRoomId = async () => {
+const getJoinRoomInfo = async () => {
   const res = await fetchJoinRoom(route.params.roomId as string)
   if(res.data) {
     roomDetail.value = res.data
