@@ -21,7 +21,7 @@ const markerList = ref<Marker[]|null>(null)
 const selectMarker = ref<Marker | null>(null)
 const isShowEditMarker = ref(false)
 
-
+/** 마커리스트가 응답이 왔을떄. */
 watch(() => markerListResponse?.value?.data, (newValue) => {
   if (!newValue) return
     markerList.value = newValue
@@ -29,6 +29,7 @@ watch(() => markerListResponse?.value?.data, (newValue) => {
   { immediate: true }  // 이미 로딩되어 있으면 즉시 실행
 )
 
+/** 마커리스트 와 지도가 완전히 렌더되었을떄. */
 watch(
   [markerList, map],
   ([list, mapInstance]) => {
@@ -42,6 +43,7 @@ watch(
   { immediate: true }
 )
 
+/** 선택한 마커가 변경되었을때. */
 watch(() => selectMarker.value, (newValue) => {
   if(newValue === null) return
 

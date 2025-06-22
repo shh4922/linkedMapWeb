@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SearchModel } from '@/api/auth/search.ts'
+import type { SearchModel } from '@/api/search/search.ts'
 import { onMounted, ref } from 'vue'
 import Map from '@/components/map/Map.vue'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
@@ -9,6 +9,7 @@ import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import ImageCropModal from '@/components/modal/ImageCropModal.vue'
 import { useToastStore } from '@/store/useToastMessage.ts'
 import { useCreateMarker } from '@/api/marker/marker.query.ts'
+import type { CustomError } from '@/api/DefaultResponse.ts'
 
 const map = ref<InstanceType<typeof Map> | null>(null)
 const emit =defineEmits(['closeAddModal'])
@@ -19,7 +20,7 @@ const props = defineProps<{
 const toastStore = useToastStore()
 const markerListStore = useMarkserListStore()
 const {data:myRoomList} = useFetchMyRoomList()
-const {mutate: addMarker, } = useCreateMarker()
+const {mutate: addMarker } = useCreateMarker()
 
 const isLoading = ref(false)
 const isShowCropModal = ref<boolean>(false)
@@ -81,8 +82,8 @@ const submit = async() => {
       markerListStore.deleteRoom(selectRoomId.value!.toString())
       closeAddModal()
     },
-    onError(error) {
-      console.log(error)
+    onError(err) {
+      const error = err as CustomError
       toastStore.show("마커 추가에 실패했습니다", "error")
     },
   })

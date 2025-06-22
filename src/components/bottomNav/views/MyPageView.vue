@@ -1,51 +1,49 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { useFetchMyRoomList } from '@/api/room/room.query.ts'
-import { fetchMyInfo } from '@/api/user/user.ts'
 import { forrmatDate } from '../../../utils/common.ts'
 import { deleteAccount, logout } from '@/api/auth/auth.ts'
 import { useQueryClient } from '@tanstack/vue-query'
 import { useToastStore } from '@/store/useToastMessage.ts'
+import type { CustomError } from '@/api/DefaultResponse.ts'
+
 
 const router = useRouter()
-const { data:roomList } = useFetchMyRoomList()
 const queryClient = useQueryClient()
 const toastStore = useToastStore()
-
-const goToLogin = () => {
-  router.push({name:'login'})
-}
+const { data:roomList, error} = useFetchMyRoomList()
 
 const myInfo = computed(() => {
   return useMyInfo().getMyInfo
 })
 
+/** 로그아웃 */
 const logout2 = async () => {
-  const res = await logout()
-  if(res.error) { return }
-
-  clearInfo()
+  try {
+    await logout()
+    clearInfo()
+  } catch (err) {
+    const error = err as CustomError
+    toastStore.show(error.serverResponse.message)
+  }
 }
 
-
+/** 회원탈퇴*/
 const deleteMyAccount = async () => {
   try {
-    if(!confirm("정말로 회원탈퇴를 하시겠습니까?, 탈퇴시, 기존에 참여했던 방은 모두 사라지게됩니다.")) {
-      return
-    }
+    if(!confirm("정말로 회원탈퇴를 하시겠습니까?, 탈퇴시, 기존에 참여했던 방은 모두 사라지게됩니다.")) return
 
-    const res = await deleteAccount();
-    if(res.data) {
-      toastStore.show("회원탈퇴가 완료되었습니다.")
-      clearInfo()
-    }
-  } catch (err) {
+    await deleteAccount();
+    toastStore.show("회원탈퇴가 완료되었습니다.")
+    clearInfo()
+  } catch {
     toastStore.show("탈퇴에 실패했습니다.", 'error')
   }
 }
 
+/** 캐시, 스토리지 clear */
 const clearInfo =  () => {
   localStorage.removeItem('accessToken')
   queryClient.removeQueries()
@@ -58,6 +56,7 @@ const clearInfo =  () => {
 
 <template>
   <div class="mypage-container" @touchstart.stop @touchmove.stop>
+    <p v-if="error">{{error}}</p>
     <template v-if="myInfo !== null">
       <h1>마이페이지</h1>
 
@@ -103,7 +102,7 @@ const clearInfo =  () => {
       <div class="login-required">
         <h2>로그인이 필요합니다</h2>
         <p>마이페이지를 확인하려면 먼저 로그인해주세요.</p>
-        <button class="btn login-btn" @click="goToLogin">로그인 하러가기</button>
+        <button class="btn login-btn" @click="router.push({name:'login'})">로그인 하러가기</button>
       </div>
     </template>
   </div>

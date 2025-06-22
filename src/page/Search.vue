@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import debounce from "lodash.debounce"
-import { kakaoSearch, type SearchModel, type searchResponse } from '@/api/auth/search.ts'
+import { kakaoSearch, type SearchModel, type searchResponse } from '@/api/search/search.ts'
 import SearchResultCell from '@/components/cell/SearchResultCell.vue'
 import { useRouter } from 'vue-router'
 import { VueSpinner } from 'vue3-spinners'
 import AddMarkerModal from '@/components/modal/AddMarkerModal.vue'
-
 
 
 const router = useRouter()

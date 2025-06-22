@@ -34,6 +34,7 @@ const getMyInfo = async () => {
 
 <template>
   <div id="app">
+    <!--  전역 toastMessage  -->
     <ToastMessage />
     <router-view />
   </div>
@@ -51,6 +52,7 @@ const getMyInfo = async () => {
   /* 필요하다면 더 구체적인 컴포넌트 셀렉터에도 !important 로 덮어쓰세요 */
 }
 
+
 html, body, #app {
   margin: 0;
   padding: 0;
@@ -65,10 +67,22 @@ html, body, #app {
   color-scheme: light !important;
 }
 
+//body {
+//  padding-top: constant(safe-area-inset-top);    /* 구버전 iOS */
+//  padding-top: env(safe-area-inset-top);         /* 최신 브라우저 */
+//  padding-bottom: constant(safe-area-inset-bottom);
+//  padding-bottom: env(safe-area-inset-bottom);
+//}
+
+
 #app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  //- env(safe-area-inset-bottom)
+  //- env(safe-area-inset-top)
+  //height: calc(100vh - 50px );
+  min-height: calc(100vh - 50px );
+  overflow-y: auto;
   margin: 0 auto;
   width: 769px; /* 데스크탑 기준의 고정 너비 */
   position: relative;

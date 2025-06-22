@@ -14,7 +14,7 @@ export const joinRoom = (roomId:string, key:string) => {
     roomId: roomId,
     inviteKey: key
   }
-  return postWithToken("/invite/join", data)
+  return postWithToken<string>("/invite/join", data)
 }
 
 export const checkInviteKey = (key:string) => {

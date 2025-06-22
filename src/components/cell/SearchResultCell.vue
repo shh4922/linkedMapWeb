@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import type { SearchModel } from '@/api/auth/search.ts'
+import type { SearchModel } from '@/api/search/search.ts'
 import { useCurrentPosition } from '@/store/useCurrentPosition.ts'
 import { getDistanceKm } from '../../utils/common.ts'
 import type { LatLng } from '@/components/map/LatLng.ts'
