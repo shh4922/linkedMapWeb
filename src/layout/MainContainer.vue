@@ -19,7 +19,10 @@ const blur = useBackgroundBlur()
     <BottomNavBar class="sheetNavBar" />
 
     <div v-if="blur.isShowBlur" @click="blur.toggleBlur(false)" class="modal-overlay" />
-    <RoomListModal v-if="blur.isShowBlur" class="roomListModal"/>
+    <RoomListModal
+      class="roomListModal"
+      v-if="blur.isShowBlur"
+      @close="()=>{blur.toggleBlur(false)}" />
   </div>
 </template>
 

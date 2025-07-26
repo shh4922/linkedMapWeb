@@ -191,6 +191,7 @@ i {
   width: 80%;
   height: 6%;
   transition: all 1s ease;
+  border: 2px solid coral;
 
   &.animate {
     top: -10%; // 위로 사라지듯 올라감

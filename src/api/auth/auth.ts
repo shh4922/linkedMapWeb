@@ -17,9 +17,9 @@ export const register = (email:string, password:string, userName:string) => {
   const data = {
     email: email,
     password: password,
-    userName: userName,
+    username: userName,
   }
-  return post('/register',data)
+  return post<string>('/register',data)
 }
 
 export const logout = () => {

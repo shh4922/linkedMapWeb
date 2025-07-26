@@ -5,11 +5,12 @@ import { useToggleRoomStore } from '@/store/useToggleRoomStore.ts'
 import { useMarkserListStore } from '@/store/useMarkserListStore.ts'
 import HomeMarkerCell from '@/components/cell/HomeMarkerCell.vue'
 import { useBackgroundBlur } from '@/store/useBackgroundBlur.ts'
+import { useMyInfo } from '@/store/myInfoStore.ts'
 
 const markerListStore = useMarkserListStore()
 const roomStore = useToggleRoomStore()
 const blur = useBackgroundBlur()
-
+const myInfoStore = useMyInfo()
 const checkedRoomList = computed<string[]>(() =>
   Object.entries(roomStore.isCheckedMap)
     .filter(([_, checked]) => checked)  // 1) filter: [id, checked] 형태의 각 항목에서 checked === true 만
@@ -49,10 +50,15 @@ watch(currentMarkers.value, (newMarkers) => {
       </div>
     </div>
 
-    <!-- ‘선택된 그룹이 없슴’ 메시지 -->
-    <p v-if="checkedRoomList.length === 0" class="empty-message">
-      선택된 그룹이 없습니다. <br/>그룹리스트를 눌러 그룹을 선택해보세요!
+    <p v-if="myInfoStore.myInfo === null" class="empty-message">
+      로그인하셈
     </p>
+
+    <!-- ‘선택된 그룹이 없슴’ 메시지 -->
+    <div v-else-if="checkedRoomList.length === 0" class="empty-message">
+      <p>선택된 그룹이 없습니다. <br/>그룹리스트를 눌러 그룹을 선택해보세요!</p>
+      <p class="groupListOpen" @click="blur.toggleBlur(true)">그룹 선택하기</p>
+    </div>
 
     <!-- ‘마커가 없습니다.’ 메시지 -->
     <p v-else-if="currentMarkers.length === 0" class="empty-message">
@@ -72,6 +78,11 @@ watch(currentMarkers.value, (newMarkers) => {
 </template>
 
 <style scoped lang="scss">
+.groupListOpen {
+  padding: 1rem;
+  color: #ff774d; /* 링크 색상 */
+  font-family: nanum-5;
+}
 .container {
   font-family: "nanum-5";
   max-height: 350px;

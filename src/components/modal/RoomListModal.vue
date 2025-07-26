@@ -29,8 +29,11 @@ const onToggleChange = (event: Event, roomId: number) => {
 
 <template>
   <div class="category-container">
+    <i class="pi pi-times" @click="$emit('close')"></i>
     <div v-if="!token" class="login">
-      <p>로그인후, 그룹을 만들어보세요!</p>
+      <router-link :to="{ name: 'login' }">
+        로그인후, 그룹을 만들어보세요!
+      </router-link>
     </div>
 
     <template v-else>
@@ -76,11 +79,13 @@ const onToggleChange = (event: Event, roomId: number) => {
 <style scoped lang="scss">
 .login {
   width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.2rem;
   font-family: "nanum-5";
+
 }
 
 .category-container {

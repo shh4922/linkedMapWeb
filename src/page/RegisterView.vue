@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { register } from '@/api/user.ts'
 import type { AxiosError } from 'axios'
 import { useToastStore } from '@/store/useToastMessage.ts'
+import { useRegister } from '@/api/auth/auth.query.ts'
+import { useExpelledRoomMember } from '@/api/room/room.query.ts'
+import router from '@/router'
 
 const registerInput = reactive({
   name : "",
@@ -11,21 +14,30 @@ const registerInput = reactive({
   password : "",
 })
 
-const router = useRouter()
+const {mutate: register} = useRegister()
 const toastStore = useToastStore()
-const submit = async() => {
 
-  const res = await register(registerInput.email, registerInput.password, registerInput.name)
-  if(!res.error) {
-    router.push('login')
-    toastStore.show("회원가입이 완료되었습니다.")
+const submit = async() => {
+  if(registerInput.name === '' || registerInput.email === '' || registerInput.password === '') {
+    toastStore.show("정보를 모두 입력하세요.",'error')
     return
   }
-
-  const status = res.error.response?.status
-  if(status === 409) {
-    toastStore.show("중복된 이메일입니다.")
+  const vars = {
+    email: registerInput.email,
+    password: registerInput.password,
+    userName: registerInput.name
   }
+  register(vars,{
+    onSuccess() {
+      router.push({
+        name:'home'
+      })
+      toastStore.show('가입에 완료되었습니다.')
+    },
+    onError(error) {
+        toastStore.show(error.message,'error')
+    },
+  })
 }
 </script>
 
@@ -35,7 +47,7 @@ const submit = async() => {
     <div class="loginForm">
       <input type="text" v-model="registerInput.name" placeholder="이름" required />
       <input type="email" v-model="registerInput.email" placeholder="이메일" required />
-      <input type="password" v-model="registerInput.password" placeholder="비밀번호" required />
+      <input type="password" v-model="registerInput.password" placeholder="비밀번호 최소6자 이상" required />
       <button @click="submit">회원가입</button>
     </div>
 

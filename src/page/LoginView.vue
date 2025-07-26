@@ -7,52 +7,68 @@ import type { AxiosError } from 'axios'
 import { fetchMyInfo } from '@/api/user/user.ts'
 import { useMyInfo } from '@/store/myInfoStore.ts'
 import { useToastStore } from '@/store/useToastMessage.ts'
+import { useLogin } from '@/api/auth/auth.query.ts'
 
 const myInfoStore = useMyInfo()
+const { mutate:login,isSuccess } = useLogin()
 const loginInput = reactive({
   email: '',
-  password: ''
+  password: '',
 })
 const toastMessage = useToastStore()
 const router = useRouter()
 
 const submit = async () => {
-  const res = await login(loginInput.email, loginInput.password)
-  if(res.error) {
-    if(res.error?.status === 400) {
-      toastMessage.show("이메일 또는 패스워드가 잘못되었습니다", 'error')
-      // alert("이메일 또는 패스워드가 잘못되었습니다")
-    }
-    return
+  if(loginInput.email ==='' || loginInput.password === '') {
+    toastMessage.show('빈칸을 입력하세요', 'error')
   }
-  console.log('login res', res.data)
-  localStorage.setItem('accessToken', res.data?.accessToken ?? "")
-  await getMyInfo()
-  router.push({name:'home'})
+  const vars = {
+    email:loginInput.email,
+    password:loginInput.password
+  }
+
+  login(vars,{
+    onSuccess(data, variables, context) {
+      localStorage.setItem('accessToken', data.accessToken ?? '')
+      getMyInfo()
+    },
+    onError(error, variables, context) {
+      toastMessage.show(error.message, 'error')
+      return
+    },
+  })
+
 }
 
 const getMyInfo = async () => {
-  if(localStorage.getItem('accessToken') === null || localStorage.getItem('accessToken') === undefined) return
-  const res = await fetchMyInfo()
-  if(res.data) {
-    myInfoStore.setMyInfo(res.data)
+  if (
+    localStorage.getItem('accessToken') === null ||
+    localStorage.getItem('accessToken') === undefined
+  ) {
+    return
   }
 
+  const res = await fetchMyInfo()
+  if (res.data) {
+    myInfoStore.setMyInfo(res.data)
+    router.push({ name: 'home' })
+    toastMessage.show('로그인완료',)
+  }
+  return
 }
-
 </script>
 
 <template>
   <div class="auth-container">
     <h1>로그인</h1>
-    <div class="loginForm" >
+    <div class="loginForm">
       <input type="email" v-model="loginInput.email" placeholder="이메일" required />
       <input type="password" v-model="loginInput.password" placeholder="비밀번호" required />
       <button @click="submit">로그인</button>
     </div>
     <p class="link-text">
       아직 계정이 없으신가요?
-      <router-link :to="{name:'register'}">회원가입</router-link>
+      <router-link :to="{ name: 'register' }">회원가입</router-link>
     </p>
   </div>
 </template>
@@ -66,7 +82,7 @@ const getMyInfo = async () => {
   background-color: #fff8f5;
   border-radius: 12px;
   text-align: center;
-  font-family: "nanum-5";
+  font-family: 'nanum-5';
 
   h1 {
     color: #ff774d;

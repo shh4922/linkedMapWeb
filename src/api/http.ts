@@ -25,13 +25,13 @@ export const get = async <T>(url: string, config?: AxiosRequestConfig): Promise<
   }
 };
 
-export const post = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<Result<T>> => {
+export const post = async <T>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
   try {
     const res = await http.post<DefaultResponse<T>>(url, data, config);
-    return { data: res.data.data };
+    return res.data.data
   } catch (error) {
     const err = error as AxiosError<DefaultError>
-    return  { error:err }
+    throw  err.response?.data
   }
 };
 
