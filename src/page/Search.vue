@@ -73,12 +73,19 @@ const toggleAddModal = (selectedSearchIndex:number) => {
       </div>
 
       <div class="search-container">
+<!--        <input-->
+<!--          ref="searchInput"-->
+<!--          class="search-input"-->
+<!--          v-model="keyword"-->
+<!--          @input="onInput"-->
+<!--          placeholder="위치를 검색하세요"-->
+<!--        />-->
         <input
           ref="searchInput"
           class="search-input"
           v-model="keyword"
           @input="onInput"
-          placeholder="위치를 검색하세요"
+          @compositionend="onInput"
         />
         <i class="pi pi-search search-icon"/>
       </div>
@@ -91,7 +98,7 @@ const toggleAddModal = (selectedSearchIndex:number) => {
     <ul class="result-list" v-else-if="searchResponse.length > 0">
       <SearchResultCell v-for="(result,index) in searchResponse" :key="index" :result="result" :index="index" @showAddModal="toggleAddModal"/>
     </ul>
-    <p v-else class="default">검색을 해보셔유</p>
+    <p v-else class="default">검색후 위치를 추가해 보세요</p>
   </main>
 </template>
 
