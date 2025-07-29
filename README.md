@@ -1,39 +1,12 @@
-# webviewmap
+# linkedmap.kr
 
-This template should help get you started developing with Vue 3 in Vite.
+---
+기존 국내 지도 플랫폼의 경우 다른 유저와 함께 편집이 어렵다는 단점이 있습니다.
+공유는 가능하지만 읽기전용 이라 해당 지도의 주인만 편집이 가능합니다.
 
-## Recommended IDE Setup
+linkedmap 은 사용자간의 링크를 통해 원하는 그룹에 가입하고, 가입된 유저는 자유롭게 위치를 공유하며 유저들의 지도를 만드는 서비스입니다.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+권한에 따라 사용가능한 기능이 제한되어있으며 초대링크의 유효기한은 30분으로 설정하였습니다.
 
-## Type Support for `.vue` Imports in TS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
