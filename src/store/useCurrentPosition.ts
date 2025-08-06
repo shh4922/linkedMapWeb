@@ -18,7 +18,10 @@ export const useCurrentPosition= defineStore('currentPosition', () => {
       return
     }
 
+
     startHeading()
+
+    // 위취
     watcherId = navigator.geolocation.watchPosition(
       ({ coords }) => {
         position.value = {
@@ -64,6 +67,7 @@ export const useCurrentPosition= defineStore('currentPosition', () => {
     }
   }
 
+  /** 내가 보고있는 방향 가져오는 함수 */
   const startHeading = () => {
     console.log("startHead")
     if (window.DeviceOrientationEvent) {
@@ -71,6 +75,8 @@ export const useCurrentPosition= defineStore('currentPosition', () => {
       window.addEventListener('deviceorientation', onDeviceOrientation, true)
     }
   }
+
+  /** 내가*/
   const stopHeading = ()=> {
     window.removeEventListener('deviceorientation', onDeviceOrientation)
   }

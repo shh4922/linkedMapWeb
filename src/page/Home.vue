@@ -137,6 +137,7 @@ const moveToSearch = () => {
         @click="moveToSearch"
       />
     </div>
+<!--    <button @click="currentPositionStore.start()">위치공유 시작</button>-->
     <!--  <i class="pi pi-users" :class="isShowRoomModal ? 'active' : '' " @click="toggleRoomModal" ></i>-->
     <!--  <i class="pi pi-map-marker" @click="currentPositionStore.start()"></i>-->
 

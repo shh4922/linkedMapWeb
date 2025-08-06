@@ -15,6 +15,8 @@ import MyPageView from '@/components/bottomNav/views/MyPageView.vue'
 import CreateRoom from '@/components/bottomNav/views/CreateRoom.vue'
 import Invite from '@/page/Invite.vue'
 import { useToastStore } from '@/store/useToastMessage.ts'
+import Test from '@/Test.vue'
+import KakaoLogin from '@/KakaoLogin.vue'
 
 //라우트(routes) 정의 : URL 요청에 대해 어떤 페이지(컴포넌트)를 보여줄지에 대한 매핑정보를 정의
 const routes = [
@@ -32,7 +34,16 @@ const routes = [
         name: 'mypage',
         component: MyPageView,
       },
-
+      {
+        path: 'test',
+        name: 'test',
+        component: Test,
+      },
+      {
+        path: 'kakao',
+        name: 'kakao',
+        component: KakaoLogin,
+      },
     ]
   },
 

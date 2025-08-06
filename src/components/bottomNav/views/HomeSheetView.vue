@@ -51,7 +51,7 @@ watch(currentMarkers.value, (newMarkers) => {
     </div>
 
     <p v-if="myInfoStore.myInfo === null" class="empty-message">
-      로그인하셈
+      <router-link :to="{name:'login'}" >로그인 하러 가기!</router-link>
     </p>
 
     <!-- ‘선택된 그룹이 없슴’ 메시지 -->
@@ -78,6 +78,15 @@ watch(currentMarkers.value, (newMarkers) => {
 </template>
 
 <style scoped lang="scss">
+a {
+  color: #ff774d; /* 링크 색상 */
+  text-decoration: none;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline; /* 호버 시 밑줄 */
+  }
+}
 .groupListOpen {
   padding: 1rem;
   color: #ff774d; /* 링크 색상 */
@@ -85,14 +94,14 @@ watch(currentMarkers.value, (newMarkers) => {
 }
 .container {
   font-family: "nanum-5";
-  max-height: 350px;
-  overflow-y: auto;     /* 내용이 넘치면 세로 스크롤 */
+  overflow-y: auto;
   padding: 1rem 0.5rem;
-  padding-bottom: 60px; /* 하단 여유 */
+  //padding-bottom: 60px; /* 하단 여유 */
 
   /* 얇고 깔끔한 스크롤바 */
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scroll-padding-bottom: 60px;
 
   &::-webkit-scrollbar {
     width: 6px;

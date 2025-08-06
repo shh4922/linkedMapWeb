@@ -14,6 +14,16 @@ const myInfoStore = useMyInfo()
 
 onMounted(()=> {
   getMyInfo()
+
+  const setViewportHeight = () => {
+    const vh = window.innerHeight * 0.01
+    document.documentElement.style.setProperty('--vh', `${vh}px`)
+  }
+
+  setViewportHeight()
+
+  // 뷰포트가 바뀌면 다시 계산 (주소창 접히거나 방향 전환 등)
+  window.addEventListener('resize', setViewportHeight)
 })
 
 /**
@@ -27,7 +37,6 @@ const getMyInfo = async () => {
   if(res.data) {
     myInfoStore.setMyInfo(res.data)
   }
-
 }
 
 </script>
@@ -35,7 +44,9 @@ const getMyInfo = async () => {
 <template>
   <div id="app">
     <ToastMessage />
-    <router-view />
+    <div class="main-container">
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -51,27 +62,51 @@ const getMyInfo = async () => {
   /* 필요하다면 더 구체적인 컴포넌트 셀렉터에도 !important 로 덮어쓰세요 */
 }
 
-html, body, #app {
+html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
   height: 100%;
+  width: 100%;
   font-size: 10px;
-
-  /* 여러분이 쓰시는 배경/텍스트 색상으로 바꿔주세요 */
-  background-color: #fff !important;
-  color: #333 !important;
-  /* 라이트 모드만 쓰겠다고 선언 */
-  color-scheme: light !important;
+  background-color: #fff;
+  color: #333;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%; // 🔥 769px 제거
+  max-width: 100%;
   margin: 0 auto;
-  width: 769px; /* 데스크탑 기준의 고정 너비 */
   position: relative;
+  padding: 0;
+  /* 사용하는 곳에서 */
+
+
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+//main-container {
+//  flex: 1; /* 남는 공간만 차지 */
+//  max-height:calc(var(--vh, 1vh) * 100);
+//  overflow: auto;
+//}
+.main-container {
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: auto;
+
+  // ✅ 스크롤 가려지지 않게
+  //scroll-padding-bottom: 60px;
+
+  // ✅ 하단바를 가리지 않도록 여백 확보
+  //margin-bottom: 60px;
+
+  // ❌ padding-bottom은 제거
 }
 
 input {

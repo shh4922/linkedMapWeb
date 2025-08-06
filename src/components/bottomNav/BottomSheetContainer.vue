@@ -43,7 +43,7 @@ watch(isPageOpen, (newValue) => {
 
 <style scoped lang="scss">
 .bottom-sheet {
-  height: 80vh;
+  height: calc(var(--vh, 1vh) * 80);
   background-color: white;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);

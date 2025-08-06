@@ -27,11 +27,11 @@ const moveToHome = () => {
 <template>
   <div class="bottom-nav">
     <div class="nav-item" @click="moveToHome">
-      <i class="pi pi-map" style="font-size: 2.5rem"></i>
+      <i class="pi pi-map" ></i>
     </div>
 
     <div class="nav-item" @click="moveToMyPage">
-      <i class="pi pi-user" style="font-size: 2.5rem"></i>
+      <i class="pi pi-user" ></i>
     </div>
   </div>
 </template>
@@ -40,13 +40,20 @@ const moveToHome = () => {
 /* 네비게이션 바 */
 .bottom-nav {
   display: flex;
-  height: 6%; /* 높이 설정 */
+  height: 7%; /* 높이 설정 */
   border-top: 1px solid #ccc; /* 상단 구분선 */
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
   background-color: gray;
   //z-index: 10;
   background-color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  //height: 60px; // 고정된 px 단위로 추천
+  border-top: 1px solid #ccc;
+
+  z-index: 999;
 }
 
 /* 네비게이션 아이템 */
@@ -58,7 +65,13 @@ const moveToHome = () => {
   position: relative;
   font-size: 14px; /* 텍스트 크기 */
   color: #333; /* 텍스트 색상 */
+
+  i {
+    font-size: 1.5rem;
+  }
+
 }
+
 
 /* 각 요소 구분선 */
 .nav-item:not(:last-child)::after {
